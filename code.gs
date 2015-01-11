@@ -83,7 +83,7 @@ function changeProperties() {
   var userProps = new RGTProperties();
   
   userProps.recListPrefix =  "RTL";
-  userProps.destTaskListName = "Test";
+  userProps.destTaskListName = "Recurrent";
   userProps.dateRangeLength = 60;
   
   userProps.save();
