@@ -7,6 +7,10 @@ function processRecurrentLists() {
   
   // read user preferecies for this user & script
   var userProps = new RGTProperties()
+  
+  //override for testing purposes
+  //userProps.recListPrefix =  "RTLT";
+  //userProps.destTaskListName = "Test List";
 
   // create Task Calendar - all recurrent tasks will be created in Task Calendar first
   var taskCal = new TaskCalendar();
@@ -35,7 +39,7 @@ function processRecurrentLists() {
       
       // process all Tasks lists and create instances of tasks from Recurrent task lists (those having the right prefix in task list name)
       for (i = 0; i < taskLists.items.length; i++) {
-        if (taskLists.items[i].title.substr(0,3) == userProps.recListPrefix && taskLists.items[i].id != defaultTaskList.id ) {
+        if (taskLists.items[i].title.indexOf(userProps.recListPrefix) == 0 && taskLists.items[i].id != defaultTaskList.id ) {
           Logger.log('Recurrent task list "%s" ID "%s" copying to list "%s"', taskLists.items[i].title, taskLists.items[i].id, defaultTaskList.title);
           
           // load tasks from Google Tasks recurrent task list
@@ -74,6 +78,19 @@ function processRecurrentLists() {
 }
   
 
+function changeProperties() {
+  // utility function changing already saved properties
+  var userProps = new RGTProperties();
+  
+  userProps.recListPrefix =  "RTL";
+  userProps.destTaskListName = "Test";
+  userProps.dateRangeLength = 60;
+  
+  userProps.save();
+  
+}
+
+
 
 //**********************************************************  
 //**********************************************************
@@ -90,7 +107,7 @@ function RGTProperties() {
 
 RGTProperties.prototype.setDefaults = function() {
   // set default task list name - instances of tasks will be created in this tasklist
-  this.destTaskListName = "RTL Testlist";
+  this.destTaskListName = "Recurrent";
   // set number of days into the future for maintainng recurrent tasks - it does not make sense to recreate whole year in advance
   this.dateRangeLength = 60;
   // Recurrent Tasks Task List prefix
@@ -214,7 +231,7 @@ TaskCalendar.prototype.alignMonthDays = function(m, dom) {
 }
 
 //--------------------------------------------------
-TaskCalendar.prototype.createTasks_DoM = function(task, dom, rangeStart, rangeEnd) {
+TaskCalendar.prototype.createTasks_DoM = function(task, rangeStart, rangeEnd, dom) {
   //create "Day of Month recurrence" task occurences
   //params:
   //   task - task
@@ -252,7 +269,7 @@ TaskCalendar.prototype.createTasks_DoM = function(task, dom, rangeStart, rangeEn
 }
 
 //--------------------------------------------------
-TaskCalendar.prototype.createTasks_DoY = function(task, moy, dom, rangeStart, rangeEnd) {
+TaskCalendar.prototype.createTasks_DoY = function(task, rangeStart, rangeEnd, moy, dom) {
   //create "Date of Year recurrence" task occurences
   //params:
   //   task - task
@@ -277,6 +294,39 @@ TaskCalendar.prototype.createTasks_DoY = function(task, moy, dom, rangeStart, ra
     this.dayTasks[m][d][this.dayTasks[m][d].length] = t;
     y++;
     dt.setUTCFullYear(y);
+  }
+  
+}
+
+//--------------------------------------------------
+TaskCalendar.prototype.createTasks_DAY = function(task, rangeStart, rangeEnd, freq) {
+  //create "Every X days recurrence" task occurences
+  //params:
+  //   task - task
+  //   freq - every X day
+  //   recStart - starting date for recurrency
+  //   rangeStart, rangeEnd - start and end date for data range to be considered
+  
+  var d = (rangeStart.getTime() - task.recStart.getTime()) / 86400000; //difference in miliseconds to days
+  d = Math.ceil(d % freq); // number of days since last calculated occurence rounded to WHOLE days
+  var m;
+  
+  var dt = new Date();
+  dt.setUTCHours(0);
+  dt.setUTCMinutes(0);
+  dt.setUTCSeconds(0);
+  dt.setUTCMilliseconds(0);
+  
+  dt.setTime(dt.getTime() + (freq - d)*86400000); // date of the next occurence
+  
+  while (dt <= rangeEnd) {
+    t = this.copyTask(task);
+    t.due = dt.toISOString(); //Google Tasks require due date to be written in ISO format
+    t.due2msec = dt.getTime(); //secondary due date kept for further internal processing
+    d = dt.getUTCDate();
+    m = dt.getUTCMonth();
+    this.dayTasks[m][d][this.dayTasks[m][d].length] = t;
+    dt.setDate(dt.getDate()+freq);
   }
   
 }
@@ -313,20 +363,23 @@ TaskCalendar.prototype.createTasks = function(rTask, rangeStart, rangeEnd) {
   // supported patterns:
   //   DOM - day of a month (parameters: {day of a month})
   //   DOY - day of a year (parameters: {month of a year}, {day of a month})
+  //   DAY - exery X day (parameters: {frequency in days})
   var p1, p2
   
   if (rTask.recStart <= rangeEnd && rTask.recEnd >= rangeStart) {
     switch (rTask.recType.toUpperCase()) {  
       case "DAY":
+        p1 = parseInt(rTask.recParam.substr(0,3));
+        this.createTasks_DAY(rTask, rangeStart, rangeEnd, p1);
         break;
       case "DOM":
         p1 = parseInt(rTask.recParam.substr(0,2));
-        this.createTasks_DoM(rTask, p1, rangeStart, rangeEnd);
+        this.createTasks_DoM(rTask, rangeStart, rangeEnd, p1);
         break;
       case "DOY":
         p1 = parseInt(rTask.recParam.substr(0,2));
         p2 = parseInt(rTask.recParam.substr(2,2));
-        this.createTasks_DoY(rTask, p1, p2, rangeStart, rangeEnd);
+        this.createTasks_DoY(rTask, rangeStart, rangeEnd, p1, p2);
         break;
     }
   }
