@@ -19,12 +19,12 @@ function processRecurrentLists() {
   var dateEnd = new Date();
   var tasks;
   
-  dateEnd.setTime(dateEnd.getTime());
-  dateEnd.setDate(dateEnd.getDate() + userProps.dateRangeLength);
+  dateStart.setUTCHours(0,0,0,0);
   
-  dateEnd.setHours(23);
-  dateEnd.setMinutes(59);
-  dateEnd.setSeconds(59);
+  dateEnd.setTime(dateEnd.getTime());
+  dateEnd.setUTCDate(dateEnd.getUTCDate() + userProps.dateRangeLength);
+  
+  dateEnd.setUTCHours(23,59,59,0);
 
   var taskLists = Tasks.Tasklists.list();
   if (taskLists.items) {
@@ -244,11 +244,13 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rangeStart, rangeEnd, do
   var t;
   
   var dt = new Date(Date.UTC(y, m, d));
+  dt.setUTCHours(0,0,0,0);
   
   while (dt < rangeStart) {
     m++;
     d = this.alignMonthDays(m, dom);    
     dt.setTime(Date.UTC(y, m, d));
+    dt.setUTCHours(0,0,0,0);
   }
   
   while (dt <= rangeEnd) {
@@ -284,6 +286,8 @@ TaskCalendar.prototype.createTasks_DoY = function(task, rangeStart, rangeEnd, mo
   
   var dt = new Date(Date.UTC(y, m, d));
   
+  dt.setUTCHours(0,0,0,0);
+  
   if (dt < rangeStart) 
     dt.setUTCFullYear(++y);
   
@@ -308,16 +312,15 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rangeStart, rangeEnd, fr
   //   rangeStart, rangeEnd - start and end date for data range to be considered
   
   var d = (rangeStart.getTime() - task.recStart.getTime()) / 86400000; //difference in miliseconds to days
-  d = Math.ceil(d % freq); // number of days since last calculated occurence rounded to WHOLE days
+  d = Math.floor(d % freq); // number of days since last calculated occurence rounded to WHOLE days
   var m;
   
   var dt = new Date();
-  dt.setUTCHours(0);
-  dt.setUTCMinutes(0);
-  dt.setUTCSeconds(0);
-  dt.setUTCMilliseconds(0);
+  dt.setUTCHours(0,0,0,0);
   
-  dt.setTime(dt.getTime() + (freq - d)*86400000); // date of the next occurence
+  dt.setUTCDate(dt.getUTCDate() - d); // date of the previous occurence
+  if (dt < rangeStart) // if outside the range, then add one occurence
+    dt.setUTCDate(dt.getUTCDate() + freq);
   
   while (dt <= rangeEnd) {
     t = this.copyTask(task);
@@ -326,7 +329,7 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rangeStart, rangeEnd, fr
     d = dt.getUTCDate();
     m = dt.getUTCMonth();
     this.dayTasks[m][d][this.dayTasks[m][d].length] = t;
-    dt.setDate(dt.getDate()+freq);
+    dt.setUTCDate(dt.getUTCDate()+freq);
   }
   
 }
