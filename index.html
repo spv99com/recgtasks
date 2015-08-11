@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<?!= HtmlService.createHtmlOutputFromFile('stylesheet').getContent(); ?>
+</head>
+<body>
+
+<h1>Recurrent Tasks for Google Apps</h1>
+<h2>What is it about</h2>
+<p>
+  This application allows you to manage repeating tasks without any special additional service,
+  purely by using <a href="https://mail.google.com/tasks/canvas" target="_blank">Google Tasks</a>.
+</p>
+
+<h2>Manual Run</h2>
+<p>
+  Normal tasks are generated from recurrent tasks templates automatically every 60 minutes, 
+  but you can start the process manually by clicking button below.
+</p>
+
+<table>
+  <tr>
+    <td><button type="button" id="btnRunNow">Process recurrent tasks now</button></td>
+    <td id="btnRunNowStatus"> ... click button to run </td>
+  </tr>
+</table>
+
+<h2>Settings</h2>
+
+<form name="settings" id="frmSettings" >
+  <table>
+    <tr>
+      <td> <label for="rttl-prefix">RTTL Name Prefix:</label></td>
+      <td> <input type="text" name="rttl-prefix" id="rttl-prefix" /></td>
+    </tr>
+    <tr>
+      <td> <label for="dest-tasklist">Destination Task List:</label></td>
+      <td> <input type="text" name="dest-tasklist" id="dest-tasklist" /></td>
+    </tr>
+    <tr>
+      <td> <input type="submit" name="save" id="btnSaveSettings" value="Save Settings" /></td>
+      <td id="frmSaveStatus"></td>
+    </tr>
+  </table>
+  
+</form>
+
+
+<?!= HtmlService.createHtmlOutputFromFile('scripts').getContent(); ?>
+
+</body>
+</html>
