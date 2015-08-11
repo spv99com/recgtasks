@@ -1,0 +1,78 @@
+<!-- Load the jQuery and jQuery UI libraries. -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+
+
+<script>
+  // When the page loads.
+  $(function() {
+    $('#frmSettings').submit(function(e) { saveSettings(); return false });
+    $('#btnRunNow').click(function(e) { runNow(); });
+    installTriggers();
+    loadSettings();
+  });
+
+  /**
+   * Installs time based Google Apps trigger, which will periodically process recurrent tasks
+   */
+  function installTriggers() {
+    google.script.run.withSuccessHandler(function (){console.log("Clock based trigger for recurrent tasks processing initialized...");})
+        .withFailureHandler(instTrigError)
+        .initTriggers();
+
+  }
+  
+  function instTrigError(error) {
+    console.log(error);
+    window.alert('An error has occurred while instaling triggers, please try again.');
+  }  
+
+  /**
+   * Manully starts immediate processing of recurrent tasks
+   */
+  function runNow() {
+    $('#btnRunNowStatus').text('Running...');
+    $('#btnRunNow').prop('disabled',true);
+    google.script.run.withSuccessHandler(runNowDone)
+        .withFailureHandler(runNowError)
+        .processRecurrentLists();
+  }
+
+  function runNowDone(res) {
+    $('#btnRunNowStatus').text(res||'Finished.');
+    $('#btnRunNow').prop('disabled',false);
+  }
+
+  /**
+   * Logs an error message and shows an alert to the user.
+   */
+  function runNowError(error) {
+    console.log(error);
+    $('#btnRunNowStatus').text('Finished with errors.');
+    $('#btnRunNow').prop('disabled',false);
+  }
+
+function saveSettings() {
+  google.script.run.withSuccessHandler(function() {  
+    $('#frmSaveStatus').text('Settings saved.');
+    $('#frmSaveStatus').css( "display", "inline" ).fadeOut( 2000 );
+    console.log("Settings saved.")
+  }).withFailureHandler(function(error) { 
+    console.log(error);
+    $('#frmSaveStatus').text('Save failed.');
+  }).setUserProps({
+       recListPrefix: $('#rttl-prefix').val(),
+       destTaskListName: $('#dest-tasklist').val()
+    })
+}
+
+function loadSettings() {
+  google.script.run.withSuccessHandler(function(userProps) {  
+    $('#rttl-prefix').val(userProps.recListPrefix);
+    $('#dest-tasklist').val(userProps.destTaskListName);
+  }).withFailureHandler(function(error){ console.log(error)} )
+    .getUserProps();
+}
+
+
+</script>
