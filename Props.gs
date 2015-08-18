@@ -22,11 +22,11 @@ function getUserProps() {
 
   // read user specific properties and initialize them if needed
   var newp = {
-    destTaskListName: p.getProperty("destTaskListName") || (allOK = false) || "Default List",
-    dateRangeLength: parseInt(p.getProperty("dateRangeLength") || (allOK = false) || 60 ),
+    destTaskListName: p.getProperty("destTaskListName") || (allOK = false) || Tasks.Tasklists.list().items[0].title,
+    dateRangeLength: parseInt(p.getProperty("dateRangeLength")) || (allOK = false) || parseInt("60") ,
     recListPrefix: p.getProperty("recListPrefix") ||  (allOK = false) || "RTTL",
-    dateFormat: p.getProperty("dateFormat") || (allOK = false) || 1,
-    logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || 1
+    dateFormat: p.getProperty("dateFormat") || (allOK = false) || parseInt("1"),
+    logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || parseInt("3")
   };
 
   //if not all properties were written in the property store
