@@ -6,10 +6,17 @@
 <script>
   // When the page loads.
   $(function() {
+    hideAllSections();
+    
     $('#frmSettings').submit(function(e) { saveSettings(); return false });
     $('#btnRunNow').click(function(e) { runNow(); });
+    $('#btnShowLog').click(function(e) { showLog(); });
+    $('#btnShowMain').click(function(e) { showMain(); });
     installTriggers();
     loadSettings();
+    
+    $('#sectionMain').show();
+
   });
 
   /**
@@ -37,6 +44,11 @@
         .withFailureHandler(runNowError)
         .processRecurrentLists();
   }
+  
+  function hideAllSections(){
+    $('#sectionMain').hide();
+    $('#sectionLogFile').hide();
+  }
 
   function runNowDone(res) {
     $('#btnRunNowStatus').text(res||'Finished.');
@@ -62,7 +74,8 @@ function saveSettings() {
     $('#frmSaveStatus').text('Save failed.');
   }).setUserProps({
        recListPrefix: $('#rttl-prefix').val(),
-       destTaskListName: $('#dest-tasklist').val()
+       destTaskListName: $('#dest-tasklist').val(),
+       logVerboseLevel: $('#log-level').val()
     })
 }
 
@@ -70,8 +83,29 @@ function loadSettings() {
   google.script.run.withSuccessHandler(function(userProps) {  
     $('#rttl-prefix').val(userProps.recListPrefix);
     $('#dest-tasklist').val(userProps.destTaskListName);
+    $('#log-level').val(userProps.logVerboseLevel);
   }).withFailureHandler(function(error){ console.log(error)} )
     .getUserProps();
+}
+
+function showMain() {
+  hideAllSections();
+  $('#sectionMain').show();
+}
+
+
+function showLog() {
+  hideAllSections();
+  $('#sectionLogFile').show();
+  getLogFile();
+}
+
+function getLogFile() {
+  $('#logfile').html('<p>... wait please... loading log file...</p>');
+  google.script.run
+        .withSuccessHandler(function(t){$('#logfile').html(t);})
+        .withFailureHandler(function(t){$('#logfile').html('<p>Error while loading a log file. Please, contact developer.</p>');})
+        .getLog();
 }
 
 

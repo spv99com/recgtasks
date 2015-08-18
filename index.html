@@ -5,11 +5,17 @@
 </head>
 <body>
 
-<h1>Recurrent Tasks for Google Apps</h1>
+<div id="sectionMain">
+<h1>Recurrent Tasks for Google Tasks</h1>
 <h2>What is it about</h2>
 <p>
   This application allows you to manage repeating tasks without any special additional service,
   purely by using <a href="https://mail.google.com/tasks/canvas" target="_blank">Google Tasks</a>.
+</p>
+
+<h2>Finding help/info</h2>
+<p>
+  If you need additional info, please, refer to <a href="https://github.com/sovcik/recgtasks/wiki" target="_blank"> our help pages</a>.
 </p>
 
 <h2>Manual Run</h2>
@@ -22,6 +28,9 @@
   <tr>
     <td><button type="button" id="btnRunNow">Process recurrent tasks now</button></td>
     <td id="btnRunNowStatus"> ... click button to run </td>
+  </tr>
+  <tr>
+    <td><button type="button" id="btnShowLog">Show Log</button></td>
   </tr>
 </table>
 
@@ -38,12 +47,26 @@
       <td> <input type="text" name="dest-tasklist" id="dest-tasklist" /></td>
     </tr>
     <tr>
+      <td> <label for="log-level">Log Verbosity Level:</label></td>
+      <td> <input type="text" name="log-level" id="log-level" /></td>
+    </tr>    
+    <tr>
       <td> <input type="submit" name="save" id="btnSaveSettings" value="Save Settings" /></td>
       <td id="frmSaveStatus"></td>
     </tr>
   </table>
   
 </form>
+
+</div>
+<div id="sectionLogFile" >
+<h1>Recurrent Tasks for Google Tasks</h1>
+<h2>Execution Log</h2>
+<button type="button" id="btnShowMain">Back</button>
+<div id="logfile" class="log">
+.. empty page?
+</div>
+</div>
 
 
 <?!= HtmlService.createHtmlOutputFromFile('scripts').getContent(); ?>

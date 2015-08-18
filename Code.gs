@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+var TESTMODE = 0; //DO NOT DELETE THIS LINE
+
+// comment or un-comment following line to disable/enable test mode
+//TESTMODE = 1;  
+
 /**
  * Special function that handles HTTP GET requests to the published web app.
  * @return {HtmlOutput} The HTML page to be served.
@@ -28,29 +33,40 @@ function doGet() {
 //*****************************************
 
 function processRecurrentLists() {
+  //TODO - test script for handling of timezones
   
   // read user preferecies for this user & script
-  var userProps = getUserProps()
+  var userProps = getUserProps();
+  
+  logLevel = userProps.logVerboseLevel;
+  
+  logIt(LOG_CRITICAL, "Executing script as "+Session.getActiveUser().getEmail());
   
   //override for testing purposes
-  //userProps.recListPrefix =  "RTLT";
-  //userProps.destTaskListName = "Test List";
+  if (TESTMODE == 1) {
+    userProps.recListPrefix =  "TRTL";
+    userProps.destTaskListName = "Test List";
+    userProps.dateRangeLength = 60;
+    logLevel = 999;
+    
+    logIt(LOG_CRITICAL, "**** TEST MODE ENABLED **** THIS IS NOT SUITABLE FOR REAL DEPLOYMENT ***")
+  }
 
   // create Task Calendar - all recurrent tasks will be created in Task Calendar first
   var taskCal = new TaskCalendar();
   
+  // starting date for calculation is TODAY
   var dateStart = new Date();
+  dateStart.setUTCHours(0,0,0,0); //set hours/minutes/seconds to zero
+  
+  // set ending date for recurrent tasks processing
   var dateEnd = new Date();
+  dateEnd.setTime(dateEnd.getTime());  //why I did this???
+  dateEnd.setUTCDate(dateStart.getUTCDate() + userProps.dateRangeLength); 
+  dateEnd.setUTCHours(23,59,59,999);
+  
   var tasks;
-  
   var result;
-  
-  dateStart.setUTCHours(0,0,0,0);
-  
-  dateEnd.setTime(dateEnd.getTime());
-  dateEnd.setUTCDate(dateEnd.getUTCDate() + userProps.dateRangeLength);
-  
-  dateEnd.setUTCHours(23,59,59,0);
 
   var taskLists = Tasks.Tasklists.list();
   if (taskLists.items) {
@@ -66,7 +82,7 @@ function processRecurrentLists() {
       // process all Tasks lists and create instances of tasks from Recurrent task lists (those having the right prefix in task list name)
       for (i = 0; i < taskLists.items.length; i++) {
         if (taskLists.items[i].title.indexOf(userProps.recListPrefix) == 0 && taskLists.items[i].id != defaultTaskList.id ) {
-          Logger.log('Processing RTTL "%s" ID "%s" to destination task list "%s"', taskLists.items[i].title, taskLists.items[i].id, defaultTaskList.title);
+          logIt(LOG_INFO, '<b>Processing RTTL "%s" to list "%s"</b>', taskLists.items[i].title, defaultTaskList.title);
           
           // load tasks from Google Tasks recurrent task list
           tasks = Tasks.Tasks.list(taskLists.items[i].id);
@@ -75,7 +91,7 @@ function processRecurrentLists() {
           taskCal.processRecTasks(tasks, dateStart, dateEnd)
           
         } else {
-          Logger.log('Ignoring task list "%s" - it is not RTTL.', taskLists.items[i].title);
+          logIt(LOG_INFO, '<b>Ignoring task list "%s" - it is not RTTL.</b>', taskLists.items[i].title);
         }
 
       }        
@@ -88,22 +104,28 @@ function processRecurrentLists() {
         maxResults:1000
       });
       
+      logIt(LOG_EXTINFO, 'Going to remove possible duplicates.');
       // remove tasks which already exist in Google tasks from our array, so only new tasks will remain
       if (tasks) 
         taskCal.removeDuplicatesFromArray(tasks);
       
+      logIt(LOG_EXTINFO, 'Going save newly created instances of tasks.');
       // save tasks from work calendar to Default task list - avoid duplicates
       taskCal.saveAllTasks(defaultTaskList.id, dateStart, dateEnd)
       
     } else {
-      result = 'ERROR: Destination task list '+userProps.destTaskListName+' not found.';
-      Logger.log(result);
+      result = 'Destination task list '+userProps.destTaskListName+' not found.';
+      logIt(LOG_CRITICAL, result);
       
     }  
   } else {
-    result = 'Warning: No task lists found.';
-    Logger.log(result);
+    result = 'No task lists found.';
+    logIt(LOG_CRITICAL, result);
   }
+  
+  
+  var cache = CacheService.getUserCache();
+  cache.put("execLog", Logger.getLog());
   
   return result;
 }
