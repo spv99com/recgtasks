@@ -1,4 +1,4 @@
-function Record_RGT() {
+﻿function Record_RGT() {
 
   this.recType = "#";
   this.frequency = -1;
