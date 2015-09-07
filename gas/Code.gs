@@ -42,6 +42,9 @@ function processRecurrentLists() {
   
   logIt(LOG_INFO, "Executing script as "+Session.getActiveUser().getEmail());
   
+  logIt(LOG_DEV, "Installed triggers: ");
+  ScriptApp.getProjectTriggers().forEach(function (i) { logIt(LOG_DEV, "  > "+i)});
+  
   //override for testing purposes
   if (TESTMODE == 1) {
     userProps.recListPrefix =  "TRTL";

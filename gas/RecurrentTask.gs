@@ -1,4 +1,4 @@
-function RecurrentTask(t) {
+﻿function RecurrentTask(t) {
   // RecurrentTask object constructor
   
   this.title = t;
