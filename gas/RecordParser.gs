@@ -41,7 +41,7 @@ function Record_Parser() {
   this.recordId_RGT = [ /\*E/, upcase, function(x, dcx){  this.syntax.push([dcx, this.recType]); this.syntax.push([dcx, this.frequency]); return true} ];
   this.frequency = [/^[0-9]+$/, , this.proc_frequency];
   this.recType = [/^['D','W','M','Y']$/, , this.proc_recType];
-  this.days_of_week = [/^[1-7]{1-7}$/, , this.proc_days_of_week];
+  this.days_of_week = [/^[1-7]{1,7}$/, , this.proc_days_of_week];
   this.day_of_month = [/^[0-9]{1,2}$/, , this.proc_day_of_month];
   this.month_and_day = [/^[0-9]{1,2}\/[0-9]{1,2}$/, , this.proc_month_and_day];
   this.date_sys = [/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/, , this.proc_date];
@@ -128,6 +128,7 @@ Record_Parser.prototype.proc_month_and_day = function(x, dcx){
 Record_Parser.prototype.proc_days_of_week = function(x, dcx){
   for (var i=0; i<x.length; i++) 
     dcx.days_of_week[parseInt(x[i])-1] = true;
+  return true; //no issues expected
 };
 
 Record_Parser.prototype.proc_date = function(x, dcx){
