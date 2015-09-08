@@ -1,9 +1,10 @@
-﻿function initTriggers () {
-  var tf = "processRecurrentLists"
+﻿var triggerFunction = "processRecurrentLists";
+
+function initTriggers () {
   if (TESTMODE == 1) 
     logIt(LOG_CRITICAL,'TESTMODE - No trigger will be installed.');
   else
-    if (!ScriptApp.getProjectTriggers().filter(function(trg){ trg.getHandlerFunction() == tf })) {
+    if (!ScriptApp.getProjectTriggers().filter(function(trg){ trg.getHandlerFunction() == triggerFunction })) {
       logIt(LOG_CRITICAL,'No trigger for "'+tf+'" found. Installing trigger.');
       createTriggers();
     }
@@ -17,4 +18,9 @@ function createTriggers() {
       .timeBased()
       .everyHours(1)
       .create();
+}
+
+function getTriggerDetails () {
+  var cache = CacheService.getUserCache();
+  return [cache.get("execStarted"), cache.get("execFinished")];
 }

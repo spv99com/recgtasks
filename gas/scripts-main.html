@@ -9,6 +9,7 @@ function runNow() {
   google.script.run.withSuccessHandler(runNowDone)
       .withFailureHandler(runNowError)
       .processRecurrentLists();
+  getRuntimeDetails();
 }
   
 function runNowDone(res) {
@@ -29,6 +30,7 @@ function showLog() {
   hideAllSections();
   $('#sectionLogFile').show();
   getLogFile();
+  
 }
 
 function getLogFile() {
@@ -52,7 +54,27 @@ function installTriggers() {
 function instTrigError(error) {
   console.log(error);
   window.alert('An error has occurred while instaling triggers, please try again.');
-}  
+}
 
+/**
+ * Get runtime details
+ */
+function getRuntimeDetails() {
+  google.script.run.withSuccessHandler(showExecutionDetails)
+      .getTriggerDetails();
+
+}
+
+function showExecutionDetails(a) {
+  $('#execStarted').text('unknown');
+  $('#execFinished').text('unknown');
+  $('#btnShowLog').prop('disabled',true);
+  if (a[1]) {
+    $('#btnShowLog').prop('disabled',false);
+    $('#execStarted').text(Date(parseInt(a[1])));
+    $('#execFinished').text(Date(parseInt(a[2])));
+    
+  }
+}
 
 </script>
