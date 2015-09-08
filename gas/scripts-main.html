@@ -9,12 +9,12 @@ function runNow() {
   google.script.run.withSuccessHandler(runNowDone)
       .withFailureHandler(runNowError)
       .processRecurrentLists();
-  getRuntimeDetails();
 }
   
 function runNowDone(res) {
   $('#btnRunNowStatus').text(res||'Finished.');
   $('#btnRunNow').prop('disabled',false);
+  getRuntimeDetails();
 }
 
 /**
@@ -24,13 +24,13 @@ function runNowError(error) {
   console.log(error);
   $('#btnRunNowStatus').text('Finished with errors. See JavaScript console.');
   $('#btnRunNow').prop('disabled',false);
+  getRuntimeDetails();
 }
 
 function showLog() {
   hideAllSections();
   $('#sectionLogFile').show();
   getLogFile();
-  
 }
 
 function getLogFile() {
@@ -66,13 +66,16 @@ function getRuntimeDetails() {
 }
 
 function showExecutionDetails(a) {
+  var d = new Date();
   $('#execStarted').text('unknown');
   $('#execFinished').text('unknown');
   $('#btnShowLog').prop('disabled',true);
-  if (a[1]) {
+  if (a[0]) {
     $('#btnShowLog').prop('disabled',false);
-    $('#execStarted').text(Date(parseInt(a[1])));
-    $('#execFinished').text(Date(parseInt(a[2])));
+    d.setTime(parseInt(a[0]));
+    $('#execStarted').text(d);
+    d.setTime(parseInt(a[1]));
+    $('#execFinished').text(d);
     
   }
 }
