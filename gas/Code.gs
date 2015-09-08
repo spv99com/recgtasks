@@ -38,6 +38,9 @@ function processRecurrentLists() {
   // read user preferecies for this user & script
   var userProps = getUserProps();
   
+  var cache = CacheService.getUserCache();
+  cache.put("execStarted",Date.now(), 8000);
+  
   logLevel = userProps.logVerboseLevel;
   
   logIt(LOG_INFO, "Executing script as "+Session.getActiveUser().getEmail());
@@ -128,8 +131,8 @@ function processRecurrentLists() {
   
   logIt(LOG_CRITICAL, "*** Script execution completed ***");
   
-  var cache = CacheService.getUserCache();
-  cache.put("execLog", Logger.getLog());
+  cache.put("execLog", Logger.getLog(), 8000);
+  cache.put("execFinished",Date.now(), 8000);
   
   return result;
 }
