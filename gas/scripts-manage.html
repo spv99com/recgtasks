@@ -1,29 +1,31 @@
 ﻿<script>
 
-function loadTaskLists() {
-  google.script.run.withSuccessHandler(showTaskLists)
-      .getTaskLists();
-}
-
 /**
  * Show the returned task lists in the dropdown box.
  * @param {Array.<Object>} taskLists The task lists to show.
  */
-function showTaskLists(taskLists) {
+function showTaskLists_Manage(taskLists) {
   var select = $('#tasklist');
   var prefix = $('#rttl-prefix').val();
   select.empty();
+  $('#noTaskListsPanel').hide();
+  
+  taskLists = taskLists.filter(function(i){return i.name.indexOf(prefix) == 0}); //only RTTL lists will be displayed
   
   taskLists.forEach(function(taskList) {
-    if (taskList.name.indexOf(prefix) == 0) { //only RTTL lists will be displayed
-      var option = $('<option>')
-        .attr('value', taskList.id)
-        .text(taskList.name);
-      select.append(option);
-    };
-    
+    var option = $('<option>')
+      .attr('value', taskList.id)
+      .text(taskList.name);
+    select.append(option);
   });
-  loadTasks();
+  
+  if (taskLists.length > 0)
+    loadTasks();
+  else {
+    $('#noTaskListsPanel').show();
+    showTasks([]);
+  }
+
 }
 
 

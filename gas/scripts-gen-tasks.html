@@ -1,0 +1,11 @@
+﻿<script>
+/**
+ * Load the available task lists.
+ */
+function loadTaskLists(h) {
+  google.script.run.withSuccessHandler(h)
+      .getTaskLists();
+}
+
+</script>
+

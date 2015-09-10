@@ -53,7 +53,8 @@
       <td>  
         <h2>Finding help/info</h2>
         <p>
-          If you need additional info, please, refer to <a href="https://github.com/jsdev2015/recgtasks/wiki" target="_blank"> our help pages</a>.
+          If you need additional info, please, refer to <a href="https://github.com/jsdev2015/recgtasks/wiki" target="_blank"> our help pages</a>.<br/><br/>
+          Optionally, you can <a class="linkExample" href="">click here</a> to create an example of task list containing recurrent task templates. After that you can run processing of recurrent tasks manually (see bellow) and see results for yourself.
         </p>
       </td>
     </tr>
@@ -121,6 +122,10 @@
       <option>Loading...</option>
     </select>
   </div>
+  
+  <div id="noTaskListsPanel" style="padding-bottom:10pt">
+    <p style="color:red"> No RTTL task list found. <a class="linkExample" href="">Click here</a> to create example task list containing templates of recurrent tasks. </p>
+  </div>
 
   <div class="taskTableHeader"> <h2>Tasks</h2></div>
   <table id="tasks" width="100%">
@@ -138,24 +143,72 @@
   <p> Configure application settings.</p>
 
   <form name="settings" id="frmSettings" >
-    <table>
-      <tr>
-        <td> <label for="rttl-prefix">RTTL Name Prefix:</label></td>
-        <td> <input type="text" name="rttl-prefix" id="rttl-prefix" /></td>
-      </tr>
-      <tr>
-        <td> <label for="dest-tasklist">Destination Task List:</label></td>
-        <td> <input type="text" name="dest-tasklist" id="dest-tasklist" /></td>
-      </tr>
-      <tr>
-        <td> <label for="log-level">Log Verbosity Level:</label></td>
-        <td> <input type="text" name="log-level" id="log-level" /></td>
-      </tr>    
-      <tr>
-        <td> <input type="submit" name="save" id="btnSaveSettings" value="Save Settings" /></td>
-        <td id="frmSaveStatus"></td>
-      </tr>
-    </table>
+    <div class="setting">
+      <div class="settings3">RTTL Name Prefix:</div>
+      <div class="settings3"><input type="text" name="rttl-prefix" id="rttl-prefix" /> </div>
+      <div class="settings3"><span id="rttl-count">?</span> existing list(s).</div>
+    </div>      
+    
+    <div class="setting help-settings">
+      "RTTL prefix" is used to distinguish recurrent task lists (those used for storing recurrent tasks) from normal task lists. Every task list which would contain recurrent tasks should have title prefixed with this prefix.
+    </div>
+    
+    <div class="setting">
+      <div class="settings3">Destination Task List:</div>
+      <div class="settings3">
+        <select id="dest-tasklist">
+          <option>- Empty -</option>
+        </select>
+      </div>
+      <div class="settings3"><br/></div>
+    </div>
+
+    <div class="setting help-settings">
+      "Destination Task List" is a task list into which app is going to crete tasks based on recurrent task templates. This should be your daily used task list.
+    </div>
+
+    <div class="setting">
+      <div class="settings3">Processing Date Range:</div>
+      <div class="settings3">
+        <select id="dest-range">
+          <option value="14">2 weeks</option>
+          <option value="21">3 weeks</option>
+          <option value="28">4 weeks</option>
+          <option value="42">6 weeks</option>
+          <option value="56">8 weeks</option>
+        </select>
+      </div>
+      <div class="settings3"><br/></div>
+    </div>
+
+    <div class="setting help-settings">
+      "Processing Date Range" is a number of days into the future for which app is going to create tasks from task templates. E.g. 3 weeks, means app will limit creation of tasks to 21 day from the day it calculates the tasks.
+    </div>
+
+
+    <div class="setting">
+      <div class="settings3">Log Verbosity Level:</div>
+      <div class="settings3">
+        <select id="log-level">
+          <option value="1">Only critical messages</option>
+          <option value="2">Warnings too</option>
+          <option value="3">Show info</option>
+          <option value="4">Even extended info</option>
+          <option value="10">Include Developer info</option>
+        </select>
+      </div>
+      <div class="settings3"><br/></div>
+    </div>
+    
+    <div class="setting help-settings">
+      "Log Verbosity Level" defines how many detail app will put into a log file. Log file can help you in case you will feel something is not right. When contacting support, make sure to set it to "Developer" level.
+    </div>
+
+    <div class="setting">
+      <input type="submit" name="save" id="btnSaveSettings" value="Save Settings" />
+      <span id="frmSaveStatus"></span>
+    </div>
+
   </form>
 </div>
 
@@ -165,9 +218,12 @@
 </div>
 <!-- ********** END OF APP -->
 
+<?!= HtmlService.createHtmlOutputFromFile('scripts-gen-tasks').getContent(); ?>
+<?!= HtmlService.createHtmlOutputFromFile('scripts-settings').getContent(); ?>
+<?!= HtmlService.createHtmlOutputFromFile('scripts-manage').getContent(); ?>
+<?!= HtmlService.createHtmlOutputFromFile('scripts-main').getContent(); ?>
 
 <?!= HtmlService.createHtmlOutputFromFile('scripts').getContent(); ?>
-<?!= HtmlService.createHtmlOutputFromFile('scripts-main').getContent(); ?>
-<?!= HtmlService.createHtmlOutputFromFile('scripts-manage').getContent(); ?>
-<?!= HtmlService.createHtmlOutputFromFile('scripts-settings').getContent(); ?>
+
+
 

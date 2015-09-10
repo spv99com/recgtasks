@@ -80,4 +80,18 @@ function showExecutionDetails(a) {
   }
 }
 
+function createExampleList() {
+  google.script.run.withSuccessHandler(newListCreated)
+      .withFailureHandler(function (err){console.log(err);window.alert('ERROR creating example list.',i);})
+      .createExampleList("My repeating tasks");
+  return false;
+}
+
+function newListCreated(result){
+  window.alert('New Task List Created.');
+  loadTaskLists(showRTTLcount);
+  loadTaskLists(showTaskLists_Manage);
+  loadTaskLists(showTaskLists_Settings);
+}
+
 </script>

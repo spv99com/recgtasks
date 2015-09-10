@@ -16,6 +16,8 @@ $(function() {
   $('#navBarItmOverview').bind('click', showMain);
   $('#navBarItmManage').bind('click', showManage);
   $('#navBarItmSettings').bind('click', showSettings);
+  $('.linkExample').bind('click', createExampleList);
+  $('#noTaskListsPanel').hide();
     
   $('#tasklist').bind('change', loadTasks);
     
@@ -58,6 +60,8 @@ function showSettings() {
   $('#navBarItmSettings').addClass("navBarItemSelected");
   $('#navBarItmSettings').removeClass("navBarItem");
   
+  loadTaskLists(showTaskLists_Settings);
+  
 }
 
 function showManage() {
@@ -65,9 +69,15 @@ function showManage() {
   $('#sectionManage').show();
   $('#navBarItmManage').addClass("navBarItemSelected");
   $('#navBarItmManage').removeClass("navBarItem");
-  loadTaskLists();
+  
+  loadTaskLists(showTaskLists_Manage);
   
 }
 
+function showErrorWindow(error, msg) {
+    console.log(msg);
+    console.log(error);
+    window.alert('An error has occurred, please try again.\r'+msg);
+  }
 
 </script>

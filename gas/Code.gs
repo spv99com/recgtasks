@@ -33,8 +33,7 @@ function doGet() {
 //*****************************************
 
 function processRecurrentLists() {
-  //TODO - test script for handling of timezones
-  
+ 
   // read user preferecies for this user & script
   var userProps = getUserProps();
   
@@ -51,8 +50,7 @@ function processRecurrentLists() {
   //override for testing purposes
   if (TESTMODE == 1) {
     userProps.recListPrefix =  "TRTL";
-    userProps.destTaskListName = "Test List";
-    userProps.dateRangeLength = 60;
+    userProps.destTaskListId = Tasks.Tasklists.list().items.filter(function(i){return i.name == "Test List"})[0].id;
     logLevel = 999;
     
     logIt(LOG_CRITICAL, "**** TEST MODE ENABLED **** THIS IS NOT SUITABLE FOR REAL DEPLOYMENT ***")
@@ -67,7 +65,6 @@ function processRecurrentLists() {
   
   // set ending date for recurrent tasks processing
   var dateEnd = new Date();
-  dateEnd.setTime(dateEnd.getTime());  //why I did this???
   dateEnd.setDate(dateStart.getDate() + userProps.dateRangeLength); 
   dateEnd.setHours(23,59,59,999);
   
@@ -79,7 +76,7 @@ function processRecurrentLists() {
     
     // identify default Task List which instances of recurrent tasks will be copied into
     for (var i = 0; i < taskLists.items.length; i++) {
-      if (taskLists.items[i].title == userProps.destTaskListName) 
+      if (taskLists.items[i].id == userProps.destTaskListId) 
         var defaultTaskList = taskLists.items[i];
     }
     
@@ -120,7 +117,7 @@ function processRecurrentLists() {
       taskCal.saveAllTasks(defaultTaskList.id, dateStart, dateEnd)
       
     } else {
-      result = 'Destination task list '+userProps.destTaskListName+' not found.';
+      result = 'Destination task list '+userProps.destTaskListId+' not found.';
       logIt(LOG_CRITICAL, result);
       
     }  
