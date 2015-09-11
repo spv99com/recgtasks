@@ -210,6 +210,46 @@
     </div>
 
     <div class="setting">
+      <div class="settings3">Date format:</div>
+      <div class="settings3">
+        <select id="dateFmt">
+          <option value="1">Old: MM/DD YYYY-DD-MM</option>
+          <option value="2"> US: MM/DD MM/DD/YYYY</option>
+          <option value="3"> UK: DD/MM DD/MM/YYYY</option>
+        </select>
+      </div>
+      <div class="settings3"><br/></div>
+    </div>
+    
+    <div class="setting help-settings">
+      "Date Format" impacts how dates are understood. It impacts both "yearly" recurrence type, 
+      where you need to specity month and day of year (MM/DD or DD/MM), and dates entered 
+      for start and end of the task validity (YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY).
+      <p style="color:red"> Changing this setting WILL require you to modify recurrence patterns
+      in your recurrent tasks notes to comform new format as the old ones might be wrongly understood.</p>
+    </div>
+
+    <div class="setting">
+      <div class="settings3">Week Starts on</div>
+      <div class="settings3">
+        <select id="weekStart">
+          <option value="S">Sunday</option>
+          <option value="M">Monday</option>
+        </select>
+      </div>
+      <div class="settings3"><br/></div>
+    </div>
+    
+    <div class="setting help-settings">
+      "Week Starts On" impacts how tasks repeating weekly are evaluated as 1-7 stands for Sunday-Saturday if week starts on Sunday,
+      but 1-7 stands for Monday-Sunday if week starts on Monday.
+      <p style="color:red"> Changing this setting WILL initially create duplicates for tasks recurring weekly. 
+      Please, modify this only if you have only few recurring tasks 
+      or you are ready to perform manual task clensing afterwards.</p>
+    </div>
+
+
+    <div class="setting">
       <input type="submit" name="save" id="btnSaveSettings" value="Save Settings" />
       <span id="frmSaveStatus"></span>
     </div>

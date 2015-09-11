@@ -16,6 +16,8 @@
 
 function Record_Parser() {
 
+  this.locFmt = new LocaleFmt();
+
   this.PARSE_STOP = 0;
   this.PARSE_OK = 1;
   this.PARSE_SYNTAX_ERROR = 10;
@@ -23,6 +25,10 @@ function Record_Parser() {
 
   // small local helper function used to make syntax case insensitive
   upcase = function(x){return x.toLocaleUpperCase()};
+  
+  // helper for putting zeroes in
+  pad = function(n,m) {return ((m>1)&&(n<(10*(m-1)))) ? '0'+pad(n,m-1) : n}
+  
 
   // small helper object used to pass error information
   this.err = {
@@ -38,19 +44,19 @@ function Record_Parser() {
   //    <match-pattern> - token on the top of the input buffer is matched with this RegExp pattern - if not matching then syntax error
   //    prepare - optional prepare function is called prior to pattern-matching and can be used to tweak input (e.g. changing all letters to upper-case ones, so matching will be case insensitive)
   //    validate - validation function is called after match passed successfully - it can be used to validate data entered (e.g month does have less than 31 days) and to store data into DCX (data-context object)
-  this.recordId_RGT = [ /\*E/, upcase, function(x, dcx){  this.syntax.push([dcx, this.recType]); this.syntax.push([dcx, this.frequency]); return true} ];
-  this.frequency = [/^[0-9]+$/, , this.proc_frequency];
-  this.recType = [/^['D','W','M','Y']$/, , this.proc_recType];
-  this.days_of_week = [/^[1-7]{1,7}$/, , this.proc_days_of_week];
-  this.day_of_month = [/^[0-9]{1,2}$/, , this.proc_day_of_month];
-  this.month_and_day = [/^[0-9]{1,2}\/[0-9]{1,2}$/, , this.proc_month_and_day];
-  this.date_sys = [/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/, , this.proc_date];
-  this.recStart = [/^S$/, upcase, function(x, dcx) {this.syntax.push([dcx.recStart, this.date_sys]); return true}];
-  this.recEnd = [/^E$/, upcase, function(x, dcx) {this.syntax.push([dcx.recEnd, this.date_sys]); return true}];
+  this.sx_recordId_RGT = [ /\*E/, upcase, function(x, dcx){  this.syntax.push([dcx, this.sx_recType]); this.syntax.push([dcx, this.sx_frequency]); return true} ];
+  this.sx_frequency = [/^[0-9]+$/, , this.proc_frequency];
+  this.sx_recType = [/^['D','W','M','Y']$/, , this.proc_recType];
+  this.sx_DoW = [/^[1-7]{1,7}$/, , this.proc_days_of_week];
+  this.sx_DoM = [/^[0-9]{1,2}$/, , this.proc_day_of_month];
+  this.sx_MD = [/^[0-9]{1,2}\/[0-9]{1,2}$/, , this.proc_month_and_day];
+  this.sx_FullDate = [/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/, , this.proc_date];
+  this.sx_recStart = [/^S$/, upcase, function(x, dcx) {this.syntax.push([dcx.recStart, this.sx_FullDate]); return true}];
+  this.sx_recEnd = [/^E$/, upcase, function(x, dcx) {this.syntax.push([dcx.recEnd, this.sx_FullDate]); return true}];
 
   // following tokens are optional and parser is trying to match them after syntax stack is empty and input buffer still contains some tokens
   // I admit it is not elegant solution - maybe I'll refactor it later...
-  this.optional = [this.recStart, this.recEnd];
+  this.optional = [this.sx_recStart, this.sx_recEnd];
 
   //*E 1 D S 2015-11-02 E 2016-07-26
   //*E 1 W 12567 S 2015-11-02 E 2016-07-26
@@ -60,8 +66,20 @@ function Record_Parser() {
   this.aBuffer = []; //buffer containing input tokens - it will be reversed to simulate a stack
   this.syntax = [];  //stack containing pairs defining [data-context, syntax] - it might be dynamically modified by tokens being processed
   
-  
 }
+
+Record_Parser.prototype.setWeekStart = function (ws) {
+  this.locFmt.setWeekStart(ws);
+}
+
+Record_Parser.prototype.setDateFmt = function (df) {
+// set date format and according syntax validation regExps
+
+  this.locFmt.setDateFmt(df);
+  this.sx_MD[0] = this.locFmt.sxMD;
+  this.sx_FullDate[0] = this.locFmt.sxFullDate;
+}
+
 
 Record_Parser.prototype.proc_day_of_month = function(x, dcx) {
 // validation function for "day of month"
@@ -69,10 +87,11 @@ Record_Parser.prototype.proc_day_of_month = function(x, dcx) {
 // TODO: differentiate months & leap years
 
   x = parseInt(x,10);
-  dcx.day = x;
+  dcx.day = -1;
   if (x < 1 || x > 31) {
     this.err.set(this.PARSE_VALUE_ERROR,"Wrong day of month specified: "+x);
-  }
+  } else
+    dcx.day = x;
 
   return (this.PARSE_OK == this.err.code);
 };
@@ -98,9 +117,9 @@ Record_Parser.prototype.proc_recType = function(x, dcx){
   dcx.recType = x.toLocaleUpperCase();
   switch (dcx.recType) {
     case "D": break;
-    case "W": this.syntax.push([dcx.weekly,this.days_of_week]); break;
-    case "M": this.syntax.push([dcx.monthly, this.day_of_month]); break;
-    case "Y": this.syntax.push([dcx.yearly, this.month_and_day]); break;
+    case "W": this.syntax.push([dcx.weekly,this.sx_DoW]); break;
+    case "M": this.syntax.push([dcx.monthly, this.sx_DoM]); break;
+    case "Y": this.syntax.push([dcx.yearly, this.sx_MD]); break;
     default: res = false;
   }
   return res;
@@ -108,41 +127,87 @@ Record_Parser.prototype.proc_recType = function(x, dcx){
 
 Record_Parser.prototype.proc_month_and_day = function(x, dcx){
 // validation function for month/day pairs (no year specified)
-// Right now hardcoded to MM/DD
-// TODO: allow DD.MM and DD/MM - will requre some date format type property
   
-  var a = x.split('/');
-  dcx.month = parseInt(a[0],10)-1; //decrease by 1 as months in Javascript are 0-11
-  dcx.day = parseInt(a[1],10);
+  var a = x.split(this.locFmt.sepMD);
+  
+  switch (this.locFmt.dateType) {
+    case "3":
+      dcx.month = parseInt(a[1],10)-1; //decrease by 1 as months in Javascript are 0-11
+      dcx.day = parseInt(a[0],10);
+      break;
+    default:
+      dcx.month = parseInt(a[0],10)-1; //decrease by 1 as months in Javascript are 0-11
+      dcx.day = parseInt(a[1],10);
+      break;
+  }
 
   if (dcx.month < 0 || dcx.month > 11)
-    this.err.set(this.PARSE_VALUE_ERROR, "Wrong month specified in: "+x);
+    this.err.set(this.PARSE_VALUE_ERROR, "Wrong month specified in: "+x+" expected format: "+this.locFmt.fmtMD);
 
   if (dcx.day < 1 || dcx.day > 31)
-    this.err.set (this.PARSE_VALUE_ERROR, "Wrong day specified in: "+x);
+    this.err.set (this.PARSE_VALUE_ERROR, "Wrong day specified in: "+x+" expected format: "+this.locFmt.fmtMD);
 
   return (this.PARSE_OK == this.err.code);
 
 };
 
 Record_Parser.prototype.proc_days_of_week = function(x, dcx){
+// converting string representing days of week, e.g "1256" into array of boolean values
+
   for (var i=0; i<x.length; i++) 
     dcx.days_of_week[parseInt(x[i])-1] = true;
+    
+  //logIt(LOG_DEV, '    >> DoW#1 %s,%s ', this.locFmt.weekStartsOn, dcx.days_of_week);
+  
+  //if week starts on Monday, then 1 = Monday, so we need to correct array values so [0] is always Sunday
+  if (this.locFmt.weekStartsOn == "M") {  //if week starts on Monday, 
+    dcx.days_of_week.splice(0,0,dcx.days_of_week[6]);  //move 7th item to the head of array
+    dcx.days_of_week.pop(); // and remove unnecessary 8th element
+  }
+  
+  //logIt(LOG_DEV, '    >> DoW#2 %s', dcx.days_of_week);
+  
   return true; //no issues expected
 };
 
 Record_Parser.prototype.proc_date = function(x, dcx){
-// validation function for system dates formatted as YYYY-MM-DD
-// TODO: allow other date formats
+// validation function for full dates 
 
-  var a = x.split('-');
-  var y = parseInt(a[0],10);
-  var m = parseInt(a[1],10);
-  var d = parseInt(a[2],10);
+  var a;
+  var sep = this.locFmt.sepFullDate;
+  var y, m, d;
+  
+  var a = x.split(sep);
+  
+  //logIt(LOG_DEV, '    >> proc_date#1 "%s", "%s"', this.locFmt.dateType, sep);
+  //logIt(LOG_DEV, '    >> proc_date#2 %s', a);
+  
+  switch (this.locFmt.dateType) {
+    case "2": //US fmt MM/DD/YYYY
+      y = parseInt(a[2],10);
+      m = parseInt(a[0],10);
+      d = parseInt(a[1],10);
+      break;
+    case "3": //GB fmt DD/MM/YYYY
+      y = parseInt(a[2],10);
+      m = parseInt(a[1],10);
+      d = parseInt(a[0],10);
+      break;
+    case "1": //old fmt YYYY-MM-DD
+      y = parseInt(a[0],10);
+      m = parseInt(a[1],10);
+      d = parseInt(a[2],10);
+      break;
+    default:
+      this.err.set(this.PARSE_VALUE_ERROR,"Unknown date format "+ this.locFmt.dateType);
+  }
+  
+  //logIt(LOG_DEV, '    >> proc_date#3 %s', [y,m,d]);
+  
   if (y > 0 && m > 0 && m < 13 && d > 0 && d < 32)
     dcx.date = new Date(y,m-1,d); //decrease month by 1 as months in JS are 0-11
   else
-    this.err.set(this.PARSE_VALUE_ERROR, "Wrong date specified: "+x);
+    this.err.set(this.PARSE_VALUE_ERROR, "Wrong date specified: "+x+" expected format: "+this.locFmt.fmtFullDate+" for type "+this.locFmt.dateType+" parsed "+[y,m,d]);
 
   return (this.PARSE_OK == this.err.code);
 
@@ -155,14 +220,25 @@ Record_Parser.prototype.doParse = function(input_line, dcx){
 // for now syntaxt is initialized for recurrency patterns only
 // TODO: implement record type recognition (definitely not needed for recurrent tasks :-)
   
+  this.aBuffer = [];
+  this.syntax = [];
+  
   // empty input - nothing to do
   if (0 == input_line.trim().length) return true;
 
-  //split string buffer into pieces and reverse it so push/pop can be used
-  this.aBuffer = input_line.trim().split(/[ \f\n\r\t\v]/).reverse();
+  //logIt(LOG_DEV, '    >> p#1 buffer: %s', this.aBuffer);
+  //logIt(LOG_DEV, '    >> p#1 syntax: %s', this.syntax);
+
+  // split string buffer into pieces and reverse it so push/pop can be used
+  // before splitting remove unnecessary white spaces
+  this.aBuffer = input_line.trim().replace(/\s\s/g," ").split(/[\s]/).reverse();
 
   // for now hardcoded so the first token should be RGT record prefix
-  this.syntax.push([dcx, this.recordId_RGT ]);
+  this.syntax.push([dcx, this.sx_recordId_RGT ]);
+
+  //logIt(LOG_DEV, '    >> p#2 buffer: %s', this.aBuffer);
+  //logIt(LOG_DEV, '    >> p#2 syntax: %s', this.syntax);
+
 
   this.doParse_prim(dcx);
 };
@@ -186,6 +262,10 @@ Record_Parser.prototype.doParse_prim = function(mdcx){
       dcx = ss[0];
       s = ss[1];
       b = this.aBuffer.pop();
+      
+      //logIt(LOG_DEV, '    >> parse#1 status: %s, %s', this.err.code, this.err.text);      
+      //logIt(LOG_DEV, '    >> parse#1 buffer: %s', this.aBuffer);
+      //logIt(LOG_DEV, '    >> parse#1 syntax: %s', this.syntax);
 
       // if prep function is defined, run it
       if (s[1])
@@ -194,6 +274,10 @@ Record_Parser.prototype.doParse_prim = function(mdcx){
       // check syntax
       if (b.search(s[0]) < 0)
         this.err.set(this.PARSE_SYNTAX_ERROR,"Syntax error: "+b);
+      
+      //logIt(LOG_DEV, '    >> parse#2 status: %s, %s', this.err.code, this.err.text);
+      //logIt(LOG_DEV, '    >> parse#2 buffer: %s', this.aBuffer);
+      //logIt(LOG_DEV, '    >> parse#2 syntax: %s', this.syntax);
 
       // process & validate data
       if (!s[2].call(this, b, dcx)){
@@ -202,21 +286,30 @@ Record_Parser.prototype.doParse_prim = function(mdcx){
           this.err.set(this.PARSE_VALUE_ERROR, "Data error: "+b);
       }
 
+      //logIt(LOG_DEV, '    >> parse#3 status: %s, %s', this.err.code, this.err.text);
+      //logIt(LOG_DEV, '    >> parse#3 buffer: %s', this.aBuffer);
+      //logIt(LOG_DEV, '    >> parse#3 syntax: %s', this.syntax);
+
     }
 
     // empty input buffer, but syntax is expecting something
-    if (this.aBuffer.length == 0 && this.syntax.length != 0)
+    if (this.aBuffer.length == 0 && this.syntax.length != 0){
       this.err.set(this.PARSE_SYNTAX_ERROR,"Attributes missing.");
+      //logIt(LOG_DEV, '    >> parse#4 buffer: %s', this.aBuffer);
+      //logIt(LOG_DEV, '    >> parse#4 syntax: %s', this.syntax);
+    }
 
     // if input buffer is not empty, but no syntax element left try optional attributes
     if (this.aBuffer.length != 0 && this.syntax.length == 0) {
       b = this.aBuffer[this.aBuffer.length-1];
-      for (i = 0; i < this.optional.length; i++){
-        if (b.search(this.optional[i][0]) == 0) {
-          this.syntax.push([mdcx, this.optional[i]]);
-          break;
+      logIt(LOG_DEV, '    >> trying optional parameters for input %s ', this.aBuffer);
+      i = 0;
+      do {
+        if (b.search(this.optional[i][0]) == 0) {       // if optional matches
+          this.syntax.push([mdcx, this.optional[i]]);   // push its syntax
+          i = this.optional.length;                     // and we are done, for now
         }
-      }
+      } while (++i < this.optional.length);
     }
 
     // if not even optional attributes matched, yell error
@@ -228,3 +321,4 @@ Record_Parser.prototype.doParse_prim = function(mdcx){
   return (this.PARSE_OK == this.err.code);
 
 };
+

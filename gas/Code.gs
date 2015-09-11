@@ -12,11 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var TESTMODE = 0; //DO NOT DELETE THIS LINE
-
-// comment or un-comment following line to disable/enable test mode
-//TESTMODE = 1;  
-
 /**
  * Special function that handles HTTP GET requests to the published web app.
  * @return {HtmlOutput} The HTML page to be served.
@@ -32,33 +27,16 @@ function doGet() {
 //*****************************************
 //*****************************************
 
-function processRecurrentLists() {
- 
-  // read user preferecies for this user & script
-  var userProps = getUserProps();
-  
+function processRecurrentLists(testParam) {
+
+  // record start of execution
   var cache = CacheService.getUserCache();
   cache.put("execStarted",Date.now(), 8000);
-  
-  logLevel = userProps.logVerboseLevel;
-  
-  logIt(LOG_INFO, "Executing script as "+Session.getActiveUser().getEmail());
-  
-  logIt(LOG_DEV, "Installed triggers: ");
-  ScriptApp.getProjectTriggers().forEach(function (i) { logIt(LOG_DEV, "  >  %s, %s, %s, %s", i.getUniqueId(), i.getEventType(), i.getHandlerFunction(), i.getTriggerSource()) });
-  
-  //override for testing purposes
-  if (TESTMODE == 1) {
-    userProps.recListPrefix =  "TRTL";
-    userProps.destTaskListId = Tasks.Tasklists.list().items.filter(function(i){return i.name == "Test List"})[0].id;
-    logLevel = 999;
-    
-    logIt(LOG_CRITICAL, "**** TEST MODE ENABLED **** THIS IS NOT SUITABLE FOR REAL DEPLOYMENT ***")
-  }
 
-  // create Task Calendar - all recurrent tasks will be created in Task Calendar first
-  var taskCal = new TaskCalendar();
-  
+  // read user preferecies for this user & script
+  var userProps = getUserProps();
+  logLevel = userProps.logVerboseLevel;
+
   // starting date for calculation is TODAY
   var dateStart = new Date();
   dateStart.setHours(0,0,0,0); //set hours/minutes/seconds to zero
@@ -67,6 +45,26 @@ function processRecurrentLists() {
   var dateEnd = new Date();
   dateEnd.setDate(dateStart.getDate() + userProps.dateRangeLength); 
   dateEnd.setHours(23,59,59,999);
+
+  //override for testing purposes
+  if (TESTMODE == 1) {
+     logIt(LOG_CRITICAL, "**** TEST MODE ENABLED ****")
+     
+     userProps = testParam.userProps;
+     dateStart = testParam.dateStart;
+     dateEnd = testParam.dateEnd;
+   
+  }
+  
+  logIt(LOG_INFO, "Executing script as "+Session.getActiveUser().getEmail());
+  
+  logIt(LOG_DEV, "Installed triggers: ");
+  ScriptApp.getProjectTriggers().forEach(function (i) { logIt(LOG_DEV, "  >  %s, %s, %s, %s", i.getUniqueId(), i.getEventType(), i.getHandlerFunction(), i.getTriggerSource()) });
+  
+  // create Task Calendar - all recurrent tasks will be created in Task Calendar first
+  var taskCal = new TaskCalendar();
+  taskCal.setLocale(userProps.weekStartsOn, userProps.dateFormat);
+
   
   var tasks;
   var result;
@@ -104,7 +102,7 @@ function processRecurrentLists() {
         dueMin:dateStart.toISOString(), 
         dueMax:dateEnd.toISOString(),
         showHidden:true,
-        maxResults:1000
+        maxResults:2000
       });
       
       logIt(LOG_INFO, 'Removing possible duplicates.');
@@ -128,7 +126,7 @@ function processRecurrentLists() {
   
   logIt(LOG_CRITICAL, "*** Script execution completed ***");
   
-  cache.put("execLog", Logger.getLog(), 8000);
+  saveLog(cache, Logger.getLog());
   cache.put("execFinished",Date.now(), 8000);
   
   return result;

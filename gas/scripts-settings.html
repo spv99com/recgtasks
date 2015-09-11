@@ -12,7 +12,9 @@ function saveSettings() {
        recListPrefix: $('#rttl-prefix').val(),
        destTaskListId: $('#dest-tasklist').val(),
        logVerboseLevel: $('#log-level').val(),
-       dateRangeLength: $('#dest-range').val()
+       dateRangeLength: $('#dest-range').val(),
+       weekStartsOn: $('#weekStart').val(),
+       dateFormat:$('#dateFmt').val()
     });
 }
 
@@ -22,6 +24,8 @@ function loadSettings() {
     $('#dest-tasklist').val(userProps.destTaskListId);
     $('#log-level').val(userProps.logVerboseLevel);
     $('#dest-range').val(userProps.dateRangeLength); 
+    $('#weekStart').val(userProps.weekStartsOn);
+    $('#dateFmt').val(userProps.dateFormat);     
   }).withFailureHandler(function(error){ console.log(error)} )
     .getUserProps();
 }
