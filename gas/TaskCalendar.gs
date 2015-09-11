@@ -32,12 +32,18 @@ function TaskCalendar() {
   // how many day there are in each calendar month?
   this.monthDays = [31,28,31,30,31,30,31,31,30,31,30,31];
   
-  // date format
-  this.dateFormat;
-  
   // caching time zone offset string for faster processing    
   this.TZoffset = this.tzOffsetString();
+  
+  this.localeDateFormat = 1; // date format - default is "old"
+  this.localeWeekStartsOn = "S"; //weeks starts on "Sunday" by default, but "M" for "Monday" is possible too
 
+}
+
+//--------------------------------------------------
+TaskCalendar.prototype.setLocale = function(ws, dtfmt) {
+  this.localeWeekStartsOn = ws;
+  this.localeDateFormat = dtfmt;
 }
 
 //--------------------------------------------------
@@ -114,14 +120,16 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rangeStart, rangeEnd) {
   var d = this.alignMonthDays(m, task.recDef.monthly.day);
   var t;
   
-  if (rangeEnd > task.recDef.recEnd.date) rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
+  if (rangeEnd > task.recDef.recEnd.date) 
+    rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
   
-  var dt = new Date(y, m, d,0,0,0,0);
+  var dt = new Date(rangeStart.getTime());
+  dt.setDate(d);
   
   while (dt < rangeStart) {
     m += task.recDef.frequency;
-    d = this.alignMonthDays(m, task.recDef.monthly.day);    
-    dt.setTime(Date(y, m, d,0,0,0,0));
+    d = this.alignMonthDays(m % 12, task.recDef.monthly.day);    
+    dt = new Date(y, m, d, 0, 0, 0, 0);
   }
   
   while (dt <= rangeEnd) {
@@ -130,11 +138,12 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rangeStart, rangeEnd) {
     t.due2msec = dt.getTime(); //secondary due date kept for further internal processing
     
     logIt(LOG_DEV, '    >>> Creating instance %s ** %s/%s', dt, m, d);
-    this.dayTasks[m][d].push(t); //append to the end 
+    this.dayTasks[m % 12][d].push(t); //append to the end 
     
     m += task.recDef.frequency;
-    d = this.alignMonthDays(m, task.recDef.monthly.day);
-    dt.setTime(Date(y, m, d,0,0,0,0));
+    d = this.alignMonthDays(m % 12, task.recDef.monthly.day);
+    dt = new Date(y, m, d, 0, 0, 0, 0);
+
   }
   
 }
@@ -151,9 +160,10 @@ TaskCalendar.prototype.createTasks_DoY = function(task, rangeStart, rangeEnd) {
   var d = this.alignMonthDays(m, task.recDef.yearly.day);
   var t;
   
-  if (rangeEnd > task.recDef.recEnd.date) rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
+  if (rangeEnd > task.recDef.recEnd.date) 
+    rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
   
-  var dt = new Date();
+  var dt = new Date(rangeStart.getTime());
   dt.setTime(task.recDef.recStart.date.getTime());
   
   if (dt < rangeStart) 
@@ -192,9 +202,10 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rangeStart, rangeEnd) {
   d = Math.floor(d % task.recDef.frequency); // number of days since last calculated occurence rounded to WHOLE days
   var m;
   
-  if (rangeEnd > task.recDef.recEnd.date) rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
+  if (rangeEnd > task.recDef.recEnd.date) 
+    rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
   
-  var dt = new Date();
+  var dt = new Date(rangeStart.getTime());
   dt.setHours(0,0,0,0);
   
   dt.setDate(dt.getDate() - d); // date of the previous occurence
@@ -229,26 +240,36 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rangeStart, rangeEnd) {
   var m;
   var w;
   
-  var dt = new Date();
+  var dt = new Date(rangeStart.getTime());
   dt.setHours(0,0,0,0);
   var eow = new Date();
   
-  if (rangeEnd > task.recDef.recEnd.date) rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
+  if (rangeEnd > task.recDef.recEnd.date) 
+    rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
   
   dt.setDate(dt.getDate() - dt.getDay()); // the last Sunday (beginning of the week)
-  dt.setDate(dt.getDate() - (d*7) ); // date of the earliest possible Sunday
+  
+  if (this.localeWeekStartsOn == "M") //if week starts on Monday, then let's move to Monday
+    dt.setDate(dt.getDate() + 1); 
+  //logIt(LOG_DEV, '    >>> DoW#2 begining of week is %s', this.localeWeekStartsOn);
+  //logIt(LOG_DEV, '    >>> DoW#2 begining of week %s', dt);
+  
+  dt.setDate(dt.getDate() - (d*7) ); // move weeks back to the past to when recurrence start was set
+  //logIt(LOG_DEV, '    >>> DoW#3 start %s', dt);
+  
   eow.setDate(dt.getDate() + 7);
   
   if (eow < rangeStart) // if outside the range, then add one occurence
       dt.setDate(dt.getDate() + (task.recDef.frequency*7));
   
   while (dt <= rangeEnd) {
+    //logIt(LOG_DEV, '    >>> DoW#4 dt %s', dt);
     eow.setDate(dt.getDate() + 7);
     
     for (i=0;i<7;i++) {
       
       if (dt >= rangeStart && dt <= rangeEnd) {
-        if (task.recDef.weekly.days_of_week[i]){
+        if (task.recDef.weekly.days_of_week["S" == this.localeWeekStartsOn ? i : (i+1)%7]){  // as [0] is always Sunday, some calculation is needed for Monday starts
           t = this.copyTask(task);
           t.due = this.date2rfc3339(dt); //Google Tasks require due date to be written in rfc3339 format
           t.due2msec = dt.getTime(); //secondary due date kept for further internal processing
@@ -278,9 +299,12 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
   // rTasks - list of tasks to be processed
   // rangeStart, rangeEnd - date range for which tasks will be created
   
-  var today = new Date();
-  today.setHours(23,59,59,999);
   var parser = new Record_Parser();
+  
+  parser.setWeekStart(this.localeWeekStartsOn);
+  parser.setDateFmt(this.localeDateFormat);
+  
+  logIt(LOG_EXTINFO,'  > Parser Fmt %s, %s', parser.locFmt.weekStartsOn, this.localeWeekStartsOn);
   
   var n, i, ii;
     
@@ -290,9 +314,10 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
       parser.err.reset();
       t.title = rTasks.items[i].title;
       t.notes = rTasks.items[i].notes;
-      t.recDef = new Record_RGT();
+      t.recDef.setDateFmt(this.localeDateFormat);
+      t.recDef.setWeekStart(this.localeWeekStartsOn);
       
-      logIt(LOG_EXTINFO,'  > Task "%s"', t.title);
+      logIt(LOG_EXTINFO,'  > Task <b>"%s"</b>', t.title);
       
       n = rTasks.items[i].notes
       // scan notes lines to find one containing recurrency pattern definition
@@ -300,32 +325,39 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
       if (n && (ii = n.search(/\*E/))>=0) {
         t.notes = n.slice(0,ii);
         n = n.slice(ii);
-        ii = n.search(/\x0A/);
+        ii = n.search(/\n/);
         if (ii > 0) {
           t.notes += n.slice(ii+1);
           n = n.slice(0,ii);
         }
         
-        logIt(LOG_DEV, '    >> to be parsed "%s"', n);
+        logIt(LOG_DEV, '    >> to be parsed #1 "%s"', n);
+
         parser.doParse(n,t.recDef); 
 
         if (parser.err.code != parser.PARSE_OK){
-          logIt(LOG_WARN,'    > ' + parser.err.text);
-        }
+          logIt(LOG_CRITICAL,'  > Task parsing error - task ignored "%s"', t.title);
+          logIt(LOG_WARN,'    >> Status: %s, %s', parser.err.code, parser.err.text);
+        } else {
         
-        logIt(LOG_DEV, '    >> parsed "%s"', JSON.stringify(t.recDef));
+          logIt(LOG_DEV, '    >> parsed "%s"', JSON.stringify(t.recDef));
         
-        // if no recurrency start date defined, then let it be January 1st, 2000
-        if (!t.recDef.recStart.date) 
-          t.recDef.recStart.date = Date(2000, 0, 1);
+          // if no recurrency start date defined, then let it be January 1st, 2000
+          if (t.recDef.recStart.date == null) 
+            t.recDef.recStart.date = new Date(2000, 0, 1);
 
-        // if no recurrency end date defined, then let it be January 1st, 3000
-        if (!t.recDef.recEnd.date) 
-          t.recDef.recEnd.date = Date(3000, 0, 1);
+          // if no recurrency end date defined, then let it be January 1st, 3000
+          if (t.recDef.recEnd.date == null) 
+            t.recDef.recEnd.date = new Date(3000, 0, 1);
           
-        // if task validity falls inside daterange to be generated, then let's generate instances of it
-        if ((t.recDef.recStart.date <= today) && t.recDef.recEnd.date >= today)
-          this.createTasks(t, rangeStart, rangeEnd);
+          // if task validity falls inside daterange to be generated, then let's generate instances of it
+          if ((t.recDef.recStart.date <= rangeEnd) && ( rangeStart <= t.recDef.recEnd.date))
+            this.createTasks(t, rangeStart, rangeEnd)
+          else {
+            logIt(LOG_DEV, '    >> out of range VS: %s VE: %s', t.recDef.recStart.date, t.recDef.recEnd.date); 
+          }
+         }
+         
       } else 
         logIt(LOG_EXTINFO, '    >> not parsed - missing recurrency pattern');
     }
@@ -360,8 +392,11 @@ TaskCalendar.prototype.createTasks = function(rTask, rangeStart, rangeEnd) {
       case "Y":
         this.createTasks_DoY(rTask, rangeStart, rangeEnd);
         break;
-    }
-  }
+      default:
+        logIt(LOG_EXTINFO, '    >> unknown rectype', 1);
+    } 
+  } else
+    logIt(LOG_EXTINFO, '    >> out of range - skipping (VS) %s (VE) %s (RS) %s (RE) %s', rTask.recDef.recStart.date, rTask.recDef.recEnd.date, rangeStart, rangeEnd);
   
 }
 
@@ -378,7 +413,7 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
     for (d = 1; d <= this.monthDays[m]; d++)
       for (i = 0; i < this.dayTasks[m][d].length; i++) {
         task = Tasks.Tasks.insert(this.dayTasks[m][d][i], taskListId);
-        logIt(LOG_EXTINFO, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
+        logIt(LOG_INFO, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
       }
   
 }

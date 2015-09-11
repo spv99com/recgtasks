@@ -21,6 +21,7 @@ LOG_EXTINFO = 4;
 LOG_DEV = 10;
 
 var logLevel = LOG_WARN;
+var logs = ["execLog1", "execLog2", "execLog3", "execLog4", "execLog5"];
 
 function logIt(l,fmt,v1, v2, v3, v4, v5, v6) {
   if (l > logLevel) return;
@@ -28,7 +29,7 @@ function logIt(l,fmt,v1, v2, v3, v4, v5, v6) {
   var prefix = "??? ";
   
   switch (l){
-    case LOG_CRITICAL: prefix = "[E] ";break;
+    case LOG_CRITICAL: prefix = "[C] ";break;
     case LOG_WARN: prefix = "[W] "; break;
     case LOG_INFO: prefix = "[I] "; break;
     case LOG_EXTINFO: prefix = "[O] "; break;
@@ -38,9 +39,19 @@ function logIt(l,fmt,v1, v2, v3, v4, v5, v6) {
 }
 
 function getLog(){
-  var body;
+  var body = "";
   var cache = CacheService.getUserCache();
-  body = cache.get("execLog");
+  logs.forEach(function(itm, idx){body += cache.get(itm);});
   return "<h3>*** Log beginning ***</h3>" + body + "<h3>*** Log end ***</h3>";
 }
 
+function saveLog(cache, log){
+  var i = 0;
+  
+  cache.removeAll(logs)
+  while (log.length > 0 || i>4){
+    cache.put(logs[i], log.substr(0,80000));
+    log = log.substr(80000);
+    i++
+  }
+}

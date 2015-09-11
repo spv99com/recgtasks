@@ -69,13 +69,55 @@ function createExampleList(title) {
   // read user preferecies for this user & script
   var userProps = getUserProps();
   
+  var r = new Record_RGT();
+  r.locFmt.setWeekStart(userProps.weekStartsOn);
+  r.locFmt.setDateFmt(userProps.dateFormat);
+  
+  var s; 
+  
   var d = new Date();
   var id = createTaskList(userProps.recListPrefix+" "+title).getId();
+  
+  r.recType = "W";
+  r.frequency = 1;
+  r.weekly.days_of_week = [false, true, false, false, true, false, false];
+  r.recStart = null;
+  r.recEnd = null;
+  s = r.toString();
+  createTask(id, "Buy milk", "Buy milk every week on Monday & Thursday\n"+s);
 
-  createTask(id, "Buy milk", "Buy milk every week on Monday & Thursday\r*E 1 W 25");
-  createTask(id, "Pay kindergarten", "Pay kindergarten every month on 20th\r*E 1 M 20");
-  createTask(id, "Pay taxes", "Every April 15th\r*E 1 Y 04/15");
-  createTask(id, "Water plants", "Every second Saturday\r*E 2 W 7");
-  createTask(id, "Do jogging", "Do it every second day during Jun-Sep, "+d.getFullYear()+"\r*E 2 D S "+d.getFullYear()+"-06-01 E "+d.getFullYear()+"-09-30");
+  r.recType = "M";
+  r.frequency = 1;
+  r.monthly.day = 20;
+  r.recStart = null;
+  r.recEnd = null;  
+  s = r.toString();
+  createTask(id, "Pay kindergarten", "Pay kindergarten every month on 20th\n"+s);
+
+  r.recType = "Y";
+  r.frequency = 1;
+  r.yearly.day = 14;
+  r.yearly.month = 3; //months are 0-11
+  r.recStart = null;
+  r.recEnd = null;  
+  s = r.toString();
+  createTask(id, "Pay taxes", "Every April 14th\n"+s);
+  
+  r.recType = "W";
+  r.frequency = 2;
+  r.weekly.days_of_week = [false, false, false, false, false, false, true];
+  r.recStart = null;
+  r.recEnd = null;  
+  s = r.toString();
+  createTask(id, "Water plants", "Every second Saturday\n"+s);
+
+  r.recType = "D";
+  r.frequency = 5;
+  r.recStart = new Date(d.getFullYear(),8,1); 
+  r.recEnd = new Date(d.getFullYear(),11,30); 
+  s = r.toString();
+  createTask(id, "Do jogging", "Do it every 5th day during Sep-Dec\n"+s);
   
 }
+
+

@@ -23,10 +23,11 @@ function getUserProps() {
   // read user specific properties and initialize them if needed
   var newp = {
     destTaskListId: p.getProperty("destTaskListId") || (allOK = false) || Tasks.Tasklists.list().items[0].id,
-    dateRangeLength: parseInt(p.getProperty("dateRangeLength")) || (allOK = false) || parseInt("21") ,
+    dateRangeLength: parseInt(p.getProperty("dateRangeLength")) || (allOK = false) || parseInt("21"), //3 weeks by default
     recListPrefix: p.getProperty("recListPrefix") ||  (allOK = false) || "~R",
-    dateFormat: p.getProperty("dateFormat") || (allOK = false) || parseInt("1"),
-    logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || parseInt("3")
+    dateFormat: p.getProperty("dateFormat") || (allOK = false) || "1", //"old" by default
+    logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || parseInt("3"),
+    weekStartsOn: p.getProperty("weekStartsOn") || (allOK = false) || "S" //Sunday by default
   };
 
   //if not all properties were written in the property store
