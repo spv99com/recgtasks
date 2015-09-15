@@ -56,10 +56,15 @@ function processRecurrentLists(testParam) {
    
   }
   
-  logIt(LOG_INFO, "Executing script as "+Session.getActiveUser().getEmail());
+  logIt(LOG_DEV, "Executing script as "+Session.getActiveUser().getEmail());
+  
+  logIt(LOG_DEV, "Date Start: %s", dateStart);
+  logIt(LOG_DEV, "Date End: %s", dateEnd);
+  logIt(LOG_DEV, "Settings: %s", JSON.stringify(userProps));
   
   logIt(LOG_DEV, "Installed triggers: ");
   ScriptApp.getProjectTriggers().forEach(function (i) { logIt(LOG_DEV, "  >  %s, %s, %s, %s", i.getUniqueId(), i.getEventType(), i.getHandlerFunction(), i.getTriggerSource()) });
+  
   
   // create Task Calendar - all recurrent tasks will be created in Task Calendar first
   var taskCal = new TaskCalendar();
@@ -97,15 +102,18 @@ function processRecurrentLists(testParam) {
 
       }        
 
+      logIt(LOG_INFO, 'Fetching tasks for deduplication ', 0);
+      logIt(LOG_DEV, 'Range Start %s [%s]', dateStart, dateStart.toISOString());
+      logIt(LOG_DEV, 'Range End %s [%s]', dateEnd, dateEnd.toISOString());
       // load tasks from Google Tasks  Default Task list
       tasks = Tasks.Tasks.list(defaultTaskList.id, {
         dueMin:dateStart.toISOString(), 
-        dueMax:dateEnd.toISOString(),
+        //dueMax:dateEnd.toISOString(),
         showHidden:true,
-        maxResults:2000
+        maxResults:3000 //load all tasks in one go
       });
       
-      logIt(LOG_INFO, 'Removing possible duplicates.');
+        logIt(LOG_INFO, 'Removing possible duplicates for %s task instances.',tasks.items == undefined ? 0 : tasks.items.length);
       // remove tasks which already exist in Google tasks from our array, so only new tasks will remain
       if (tasks) 
         taskCal.removeDuplicatesFromArray(tasks);

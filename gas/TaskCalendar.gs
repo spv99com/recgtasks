@@ -109,12 +109,15 @@ TaskCalendar.prototype.alignMonthDays = function(m, dom) {
 }
 
 //--------------------------------------------------
-TaskCalendar.prototype.createTasks_DoM = function(task, rangeStart, rangeEnd) {
+TaskCalendar.prototype.createTasks_DoM = function(task, rS, rE) {
   //create "Day of Month recurrence" task occurences
   //params:
   //   task - task
   //   rangeStart, rangeEnd - start and end date for data range to be considered
-  
+
+  var rangeStart = new Date(rS.getTime());
+  var rangeEnd = new Date(rE.getTime());
+
   var y = rangeStart.getFullYear();
   var m = rangeStart.getMonth();
   var d = this.alignMonthDays(m, task.recDef.monthly.day);
@@ -149,12 +152,15 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rangeStart, rangeEnd) {
 }
 
 //--------------------------------------------------
-TaskCalendar.prototype.createTasks_DoY = function(task, rangeStart, rangeEnd) {
+TaskCalendar.prototype.createTasks_DoY = function(task, rS, rE) {
   //create "Date of Year recurrence" task occurences
   //params:
   //   task - task
   //   rangeStart, rangeEnd - start and end date for data range to be considered
-  
+
+  var rangeStart = new Date(rS.getTime());
+  var rangeEnd = new Date(rE.getTime());
+
   var y = task.recDef.recStart.date.getFullYear();
   var m = task.recDef.yearly.month % 12;
   var d = this.alignMonthDays(m, task.recDef.yearly.day);
@@ -192,12 +198,15 @@ TaskCalendar.prototype.createTasks_DoY = function(task, rangeStart, rangeEnd) {
 }
 
 //--------------------------------------------------
-TaskCalendar.prototype.createTasks_DAY = function(task, rangeStart, rangeEnd) {
+TaskCalendar.prototype.createTasks_DAY = function(task, rS, rE) {
   //create "Every X days recurrence" task occurences
   //params:
   //   task - task
   //   rangeStart, rangeEnd - start and end date for data range to be considered
-  
+
+  var rangeStart = new Date(rS.getTime());
+  var rangeEnd = new Date(rE.getTime());
+
   var d = (rangeStart.getTime() - task.recDef.recStart.date.getTime()) / 86400000; //difference in miliseconds to days
   d = Math.floor(d % task.recDef.frequency); // number of days since last calculated occurence rounded to WHOLE days
   var m;
@@ -229,11 +238,14 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rangeStart, rangeEnd) {
 }
 
 //--------------------------------------------------
-TaskCalendar.prototype.createTasks_DoW = function(task, rangeStart, rangeEnd) {
+TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   //create "Every X weeks on specified days" task occurences
   //params:
   //   task - task
   //   rangeStart, rangeEnd - start and end date for data range to be considered
+  
+  var rangeStart = new Date(rS.getTime());
+  var rangeEnd = new Date(rE.getTime());
   
   var d = (rangeStart.getTime() - task.recDef.recStart.date.getTime()) / 86400000 / 7; //difference in miliseconds to weeks
   d = Math.floor(d % task.recDef.frequency); // number of weeks since last calculated occurence rounded to WHOLE weeks
@@ -409,12 +421,17 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
   var task;
   
   // save/insert all tasks from dayTasks array to specified Google tasks list
-  for (m = 0; m < 12; m++)
-    for (d = 1; d <= this.monthDays[m]; d++)
+  for (m = 0; m < 12; m++){
+    logIt(LOG_INFO, '  > Saving month %s', ((m+1)|0));     
+    for (d = 1; d <= this.monthDays[m]; d++) {
+      logIt(LOG_INFO, '  > Saving day %s:[%s]', ((d)|0));
+      logIt(LOG_INFO, '  > Day Tasks %s, %s', this.dayTasks[m][d].length, this.dayTasks[m][d]);
       for (i = 0; i < this.dayTasks[m][d].length; i++) {
         task = Tasks.Tasks.insert(this.dayTasks[m][d][i], taskListId);
         logIt(LOG_INFO, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
       }
+    }
+  }
   
 }
 
@@ -428,8 +445,10 @@ TaskCalendar.prototype.removeDuplicatesFromArray = function(gTasks) {
       var task = gTasks.items[i];
       var title = gTasks.items[i].title;
       var dt = new Date(gTasks.items[i].due);
-      if (dt) 
+      if (dt) {
+        logIt(LOG_DEV, '  >> Removing duplicates for %s, %s, %s', title, dt, gTasks.items[i].due);
         this.removeDuplicatesFromDayTasks(title, dt); //remove tasks from specific date
+      }
     }
   } else 
     logIt(LOG_EXTINFO, '  >> OK, no tasks found for deduplication.');
@@ -441,11 +460,16 @@ TaskCalendar.prototype.removeDuplicatesFromDayTasks = function(title, dt) {
   // remove all tasks having specified title from specified date
   var m = dt.getMonth();
   var d = dt.getDate();
+  var f = 0;
   
-  logIt(LOG_DEV, '  >> Removing duplicates for %s ** %s/%s : %s',dt, ((m+1)|0),d,title);
+  logIt(LOG_DEV, '  >>> List for %s/%s contains %s entries',m,d,this.dayTasks[m][d].length);
+  logIt(LOG_DEV, '  >>> Entries %s',this.dayTasks[m][d]);
   for (var i=0;i < this.dayTasks[m][d].length; i++) {
-    if (this.dayTasks[m][d][i].title == title) // && (this.dayTasks[m][d][i].due2msec == dt.getTime()) 3.9.15 removed condition for duetime
+    if (this.dayTasks[m][d][i].title == title){ // && (this.dayTasks[m][d][i].due2msec == dt.getTime()) 3.9.15 removed condition for duetime
       this.dayTasks[m][d].splice(i,1);
+      f++; //found +1
+    }
   }
+  logIt(LOG_DEV, '  >>> Found %s duplicates',f);
   
 }
