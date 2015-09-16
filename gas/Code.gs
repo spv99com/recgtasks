@@ -75,7 +75,7 @@ function processRecurrentLists(testParam) {
   var result;
 
   var taskLists = Tasks.Tasklists.list();
-  if (taskLists.items) {
+  if ("items" in taskLists) {
     
     // identify default Task List which instances of recurrent tasks will be copied into
     for (var i = 0; i < taskLists.items.length; i++) {
@@ -87,12 +87,16 @@ function processRecurrentLists(testParam) {
       
       // process all Tasks lists and create instances of tasks from Recurrent task lists (those having the right prefix in task list name)
       for (i = 0; i < taskLists.items.length; i++) {
-        if (taskLists.items[i].title.indexOf(userProps.recListPrefix) == 0 && taskLists.items[i].id != defaultTaskList.id ) {
+        if (taskLists.items[i].title.indexOf(userProps.recListPrefix) == 0 
+            && taskLists.items[i].id != defaultTaskList.id ) {
           logIt(LOG_INFO, '<b>Processing RTTL "%s" to list "%s"</b>', taskLists.items[i].title, defaultTaskList.title);
           
           // load tasks from Google Tasks recurrent task list
-          tasks = Tasks.Tasks.list(taskLists.items[i].id); //TODO change to paged loading
-          
+          tasks = getTasks_paged(taskLists.items[i].id, {
+            showCompleted:false // RTTL templates flagged as completed will not be processed
+            //fields: "items(id,title,notes,due)" //to limit amount of data transported
+          });
+
           // create instances of recurrent tasks in task calendar
           taskCal.processRecTasks(tasks, dateStart, dateEnd)
           
@@ -112,7 +116,6 @@ function processRecurrentLists(testParam) {
         //dueMax:dateEnd.toISOString(),
         showHidden:true,
         fields: "items(id,title,notes,due)" //to limit amount of data transported
-                   
       });
      
       logIt(LOG_INFO, 'Removing possible duplicates for %s task instances.',tasks.length);

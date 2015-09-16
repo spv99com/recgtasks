@@ -12,7 +12,7 @@ function runTest() {
   var dateEnd = new Date(dateStart.getTime()); //end of testing period
   
 
-  USEEXISTING = 0;
+  USEEXISTING = 1;
   
   if (USEEXISTING == 1) { //find task list #id using task list titles
     tlRTTL = Tasks.Tasklists.list().getItems()
@@ -45,7 +45,8 @@ function runTest() {
   up.weekStartsOn = "S";
   
   dateEnd.setDate(dateEnd.getDate()+up.dateRangeLength);
-  createTestTasks(up, tlRTTL.getId(), dateStart, dateEnd);
+  if (!USEEXISTING)
+    createTestTasks(up, tlRTTL.getId(), dateStart, dateEnd);
    
   processRecurrentLists(
     {userProps:up, 
@@ -53,7 +54,7 @@ function runTest() {
     dateEnd: dateEnd
     });
   
-  for (i=0;i<10;i++){  
+  for (i=0;i<1;i++){  
     dateStart.setDate(dateStart.getDate()+1);
     dateEnd.setDate(dateEnd.getDate()+1);
     Utilities.sleep(2000); //because of requests/second quota

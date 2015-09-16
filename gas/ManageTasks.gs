@@ -38,7 +38,7 @@ function getTaskLists() {
 function getTasks_paged(tlid, params){
 
   var p = JSON.parse(JSON.stringify(params)); //clone object
-  if (p.fields.length > 0 && p.fields.indexOf("nextPageToken") < 0)
+  if ("fields" in p && p.fields.length > 0 && p.fields.indexOf("nextPageToken") < 0) // add field nextPageToken only if no field specified or missing
     p.fields += ",nextPageToken";
   var tasks = Tasks.Tasks.list(tlid, p);
   var t = [];

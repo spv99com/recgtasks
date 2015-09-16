@@ -308,7 +308,7 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
 TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd) {
   // process all tasks from a specified task list and enter them into specified task calendar object
   //
-  // rTasks - list of tasks to be processed
+  // rTasks - array of tasks to be processed
   // rangeStart, rangeEnd - date range for which tasks will be created
   
   var parser = new Record_Parser();
@@ -320,62 +320,65 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
   
   var n, i, ii;
     
-  if (rTasks.items) {
-    for (var i = 0; i < rTasks.items.length; i++) {
-      var t = new RecurrentTask("no title");
-      parser.err.reset();
-      t.title = rTasks.items[i].title;
-      t.notes = rTasks.items[i].notes;
-      t.recDef.setDateFmt(this.localeDateFormat);
-      t.recDef.setWeekStart(this.localeWeekStartsOn);
-      
-      logIt(LOG_EXTINFO,'  > Task <b>"%s"</b>', t.title);
-      
-      n = rTasks.items[i].notes
-      // scan notes lines to find one containing recurrency pattern definition
-      // and parse only if recurrency definition was found
-      if (n && (ii = n.search(/\*E/))>=0) {
-        t.notes = n.slice(0,ii);
-        n = n.slice(ii);
-        ii = n.search(/\n/);
-        if (ii > 0) {
-          t.notes += n.slice(ii+1);
-          n = n.slice(0,ii);
-        }
-        
-        logIt(LOG_DEV, '    >> to be parsed #1 "%s"', n);
-
-        parser.doParse(n,t.recDef); 
-
-        if (parser.err.code != parser.PARSE_OK){
-          logIt(LOG_CRITICAL,'  > Task parsing error - task ignored "%s"', t.title);
-          logIt(LOG_WARN,'    >> Status: %s, %s', parser.err.code, parser.err.text);
-        } else {
-        
-          logIt(LOG_DEV, '    >> parsed "%s"', JSON.stringify(t.recDef));
-        
-          // if no recurrency start date defined, then let it be January 1st, 2000
-          if (t.recDef.recStart.date == null) 
-            t.recDef.recStart.date = new Date(2000, 0, 1);
-
-          // if no recurrency end date defined, then let it be January 1st, 3000
-          if (t.recDef.recEnd.date == null) 
-            t.recDef.recEnd.date = new Date(3000, 0, 1);
-          
-          // if task validity falls inside daterange to be generated, then let's generate instances of it
-          if ((t.recDef.recStart.date <= rangeEnd) && ( rangeStart <= t.recDef.recEnd.date))
-            this.createTasks(t, rangeStart, rangeEnd)
-          else {
-            logIt(LOG_DEV, '    >> out of range VS: %s VE: %s', t.recDef.recStart.date, t.recDef.recEnd.date); 
-          }
-         }
-         
-      } else 
-        logIt(LOG_EXTINFO, '    >> not parsed - missing recurrency pattern');
-    }
-  } else {
+  if (rTasks.length == 0) {
     logIt(LOG_INFO,'  > No tasks found in the task list.');
+    return;
   }
+  
+  for (var i = 0; i < rTasks.length; i++) {
+    var t = new RecurrentTask("no title");
+    parser.err.reset();
+    t.title = rTasks[i].title;
+    t.notes = rTasks[i].notes;
+    t.recDef.setDateFmt(this.localeDateFormat);
+    t.recDef.setWeekStart(this.localeWeekStartsOn);
+      
+    logIt(LOG_EXTINFO,'  > Task <b>"%s"</b>', t.title);
+      
+    n = rTasks[i].notes
+    // scan notes lines to find one containing recurrency pattern definition
+    // and parse only if recurrency definition was found
+    if (n && (ii = n.search(parser.sx_recordId_RGT[0])) >= 0 ) {
+    
+      //recurrence pattern found in notes -> cut it out from notes
+      t.notes = n.slice(0,ii);
+      n = n.slice(ii);
+      ii = n.search(/\n/);
+      if (ii > 0) {
+        t.notes += n.slice(ii+1);
+        n = n.slice(0,ii);
+      }
+        
+      logIt(LOG_DEV, '    >> to be parsed #1 "%s"', n);
+
+      parser.doParse(n,t.recDef); 
+
+      if (parser.err.code != parser.PARSE_OK){
+        logIt(LOG_CRITICAL,'  > Task parsing error - task ignored "%s"', t.title);
+        logIt(LOG_WARN,'    >> Status: %s, %s', parser.err.code, parser.err.text);
+      } else {
+        
+        logIt(LOG_DEV, '    >> parsed "%s"', JSON.stringify(t.recDef));
+        
+        // if no recurrency start date defined, then let it be January 1st, 2000
+        if (t.recDef.recStart.date == null) 
+          t.recDef.recStart.date = new Date(2000, 0, 1);
+
+        // if no recurrency end date defined, then let it be January 1st, 3000
+        if (t.recDef.recEnd.date == null) 
+          t.recDef.recEnd.date = new Date(3000, 0, 1);
+          
+        // if task validity falls inside daterange to be generated, then let's generate instances of it
+        if ((t.recDef.recStart.date <= rangeEnd) && ( rangeStart <= t.recDef.recEnd.date))
+          this.createTasks(t, rangeStart, rangeEnd)
+        else {
+          logIt(LOG_DEV, '    >> out of range VS: %s VE: %s', t.recDef.recStart.date, t.recDef.recEnd.date); 
+        }
+      }
+         
+    } else 
+      logIt(LOG_EXTINFO, '    >> not parsed - missing recurrency pattern');
+  } 
   
 }
 
@@ -424,7 +427,7 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
   for (m = 0; m < 12; m++){
     logIt(LOG_INFO, '  > Saving month %s', ((m+1)|0));     
     for (d = 1; d <= this.monthDays[m]; d++) {
-      logIt(LOG_INFO, '  > Saving day %s:[%s]', ((d)|0));
+      logIt(LOG_INFO, '  > Saving day %s', ((d)|0));
       logIt(LOG_INFO, '  > Day Tasks %s, %s', this.dayTasks[m][d].length, this.dayTasks[m][d]);
       for (i = 0; i < this.dayTasks[m][d].length; i++) {
         task = Tasks.Tasks.insert(this.dayTasks[m][d][i], taskListId);
@@ -464,13 +467,18 @@ TaskCalendar.prototype.removeDuplicatesFromDayTasks = function(title, dt) {
   
   logIt(LOG_DEV, '  >>> List for %s/%s contains %s entries',m,d,this.dayTasks[m][d].length);
   logIt(LOG_DEV, '  >>> Entries %s',this.dayTasks[m][d]);
-  for (var i=0;i < this.dayTasks[m][d].length; i++) {
-    if (this.dayTasks[m][d][i].title == title){ // && (this.dayTasks[m][d][i].due2msec == dt.getTime()) 3.9.15 removed condition for duetime
-      this.dayTasks[m][d].splice(i,1);
-      f++; //found +1
-    }
-  }
-  logIt(LOG_DEV, '  >>> Removed %s duplicates',f);
-  logIt(LOG_DEV, '  >>> New entries',this.dayTasks[m][d]);
+
+if (this.dayTasks[m][d].length > 0)
+    this.dayTasks[m][d] = this.dayTasks[m][d].filter(function(itm){ return itm.title != title });
+    
+  //for (var i=0;i < this.dayTasks[m][d].length; i++) {
+  //  if (this.dayTasks[m][d][i].title == title){ // && (this.dayTasks[m][d][i].due2msec == dt.getTime()) 3.9.15 removed condition for duetime
+  //    this.dayTasks[m][d].splice(i,1);
+  //    f++; //found +1
+  //  }
+  //}
+  
+  // logIt(LOG_DEV, '  >>> Removed %s duplicates',f);
+  logIt(LOG_DEV, '  >>> New entries %s',this.dayTasks[m][d]);
   
 }
