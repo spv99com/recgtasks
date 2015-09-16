@@ -32,25 +32,41 @@ function getTaskLists() {
   });
 }
 
+// primitive function wrapping task resource pagination
+// pagination implemented because of API bug causing no greater number than 100 is 
+// accepted https://code.google.com/a/google.com/p/apps-api-issues/issues/detail?id=3641
+function getTasks_paged(tlid, params){
+
+  var p = JSON.parse(JSON.stringify(params)); //clone object
+  if (p.fields.length > 0 && p.fields.indexOf("nextPageToken") < 0)
+    p.fields += ",nextPageToken";
+  var tasks = Tasks.Tasks.list(tlid, p);
+  var t = [];
+  
+  if ("items" in tasks)
+    t = t.concat(tasks.items);
+  
+  //while there is a next page
+  while ("nextPageToken" in tasks) {
+    p.pageToken = tasks.nextPageToken; // page to read is the next page...
+    tasks = Tasks.Tasks.list(tlid, p); // get the next page of results
+    if ("items" in tasks)
+      t = t.concat(tasks.items);
+  }
+  
+  return t;
+}
+
+
 /**
  * Returns information about the tasks within a given task list.
- * @param {String} taskListId The ID of the task list.
- * @return {Array.<Object>} The task data.
  */
-function getTasks(taskListId) {
-  var tasks = Tasks.Tasks.list(taskListId).getItems();
-  if (!tasks) {
-    return [];
-  }
-  return tasks.map(function(task) {
-    return {
-      id: task.getId(),
-      title: task.getTitle(),
-      notes: task.getNotes()
-    };
-  }).filter(function(task) {
-    return task.title
-  });
+function getTasks(tlid, params) {
+
+  var tasks = getTasks_paged(tlid, {fields:"items(title)"});
+
+  return tasks;
+
 }
 
 

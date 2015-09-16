@@ -12,16 +12,35 @@ function runTest() {
   var dateEnd = new Date(dateStart.getTime()); //end of testing period
   
 
-  // create test task list
-  tlDEST = createTaskList(tlDESTtitle);
-  tlRTTL = createTaskList(prefix+tlRTTLtitle);
+  USEEXISTING = 0;
+  
+  if (USEEXISTING == 1) { //find task list #id using task list titles
+    tlRTTL = Tasks.Tasklists.list().getItems()
+    tlDEST = tlRTTL.filter(function(tl){return tl.title.indexOf(tlDESTtitle) >= 0 });
+    tlRTTL = tlRTTL.filter(function(tl){return tl.title.indexOf(tlRTTLtitle) >= 0 });
+    
+    if (tlDEST.length > 0)
+      tlDEST = tlDEST[0]
+    else
+      logIt(LOG_CRITICAL, 'There is no existing list %s',tlDESTtitle);
+      
+    if (tlRTTL.length > 0)
+      tlRTTL = tlRTTL[0]
+    else
+      logIt(LOG_CRITICAL, 'There is no existing list %s',prefix+tlRTTLtitle);
+
+  } else {
+    // create test task list
+    tlDEST = createTaskList(tlDESTtitle);
+    tlRTTL = createTaskList(prefix+tlRTTLtitle);
+  }  
   
   // set testing override values for user properties
   var up = getUserProps();
   up.recListPrefix = prefix;
   up.destTaskListId = tlDEST.getId();
   up.logVerboseLevel = 999;
-  up.dateRangeLength = 50;
+  up.dateRangeLength = 350;
   up.dateFormat = "2";
   up.weekStartsOn = "S";
   
@@ -166,9 +185,9 @@ function cleanupTestTasks(userProperies) {
   var tlRTTLtitle = "#!#TEST-RTTL";
 
   var tl = getTaskLists();
-  for (var i=0; i<tl.length(); i++){
-    if (tl.name.indexOf(tlDESTtitle) >= 0 || tl.name.indexOf(tlRTTLtitle) >= 0) 
-      Tasks.Tasklists.remove(tl.id);
+  for (var i=0; i<tl.length; i++){
+    if (tl[i].name.indexOf(tlDESTtitle) >= 0 || tl[i].name.indexOf(tlRTTLtitle) >= 0) 
+      Tasks.Tasklists.remove(tl[i].id);
   }
 
 }

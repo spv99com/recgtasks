@@ -91,7 +91,7 @@ function processRecurrentLists(testParam) {
           logIt(LOG_INFO, '<b>Processing RTTL "%s" to list "%s"</b>', taskLists.items[i].title, defaultTaskList.title);
           
           // load tasks from Google Tasks recurrent task list
-          tasks = Tasks.Tasks.list(taskLists.items[i].id);
+          tasks = Tasks.Tasks.list(taskLists.items[i].id); //TODO change to paged loading
           
           // create instances of recurrent tasks in task calendar
           taskCal.processRecTasks(tasks, dateStart, dateEnd)
@@ -105,18 +105,19 @@ function processRecurrentLists(testParam) {
       logIt(LOG_INFO, 'Fetching tasks for deduplication ', 0);
       logIt(LOG_DEV, 'Range Start %s [%s]', dateStart, dateStart.toISOString());
       logIt(LOG_DEV, 'Range End %s [%s]', dateEnd, dateEnd.toISOString());
+      
       // load tasks from Google Tasks  Default Task list
-      tasks = Tasks.Tasks.list(defaultTaskList.id, {
+      tasks = getTasks_paged(defaultTaskList.id, {
         dueMin:dateStart.toISOString(), 
         //dueMax:dateEnd.toISOString(),
         showHidden:true,
-        maxResults:3000 //load all tasks in one go
+        fields: "items(id,title,notes,due)" //to limit amount of data transported
+                   
       });
-      
-        logIt(LOG_INFO, 'Removing possible duplicates for %s task instances.',tasks.items == undefined ? 0 : tasks.items.length);
+     
+      logIt(LOG_INFO, 'Removing possible duplicates for %s task instances.',tasks.length);
       // remove tasks which already exist in Google tasks from our array, so only new tasks will remain
-      if (tasks) 
-        taskCal.removeDuplicatesFromArray(tasks);
+      taskCal.removeDuplicatesFromArray(tasks);
       
       logIt(LOG_INFO, 'Saving newly created instances of tasks.');
       // save tasks from work calendar to Default task list - avoid duplicates

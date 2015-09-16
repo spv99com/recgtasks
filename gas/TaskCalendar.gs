@@ -440,13 +440,13 @@ TaskCalendar.prototype.removeDuplicatesFromArray = function(gTasks) {
   // process all tasks in gTasks and remove all tasks from dayTasks array
   // which have the same title and are due on the same date as any task from gTasks
   
-  if (gTasks.items) {
-    for (var i = 0; i < gTasks.items.length; i++) {
-      var task = gTasks.items[i];
-      var title = gTasks.items[i].title;
-      var dt = new Date(gTasks.items[i].due);
+  if (gTasks.length > 0) {
+    for (var i = 0; i < gTasks.length; i++) {
+      var task = gTasks[i];
+      var title = gTasks[i].title;
+      var dt = new Date(gTasks[i].due); //TIMEZONE?
       if (dt) {
-        logIt(LOG_DEV, '  >> Removing duplicates for %s, %s, %s', title, dt, gTasks.items[i].due);
+        logIt(LOG_DEV, '  >> Removing duplicates for %s, %s, %s', title, dt, gTasks[i].due);
         this.removeDuplicatesFromDayTasks(title, dt); //remove tasks from specific date
       }
     }
@@ -470,6 +470,7 @@ TaskCalendar.prototype.removeDuplicatesFromDayTasks = function(title, dt) {
       f++; //found +1
     }
   }
-  logIt(LOG_DEV, '  >>> Found %s duplicates',f);
+  logIt(LOG_DEV, '  >>> Removed %s duplicates',f);
+  logIt(LOG_DEV, '  >>> New entries',this.dayTasks[m][d]);
   
 }
