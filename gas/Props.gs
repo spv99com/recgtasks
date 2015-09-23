@@ -26,7 +26,7 @@ function getUserProps() {
     dateRangeLength: parseInt(p.getProperty("dateRangeLength")) || (allOK = false) || parseInt("21"), //3 weeks by default
     recListPrefix: p.getProperty("recListPrefix") ||  (allOK = false) || "~R",
     dateFormat: p.getProperty("dateFormat") || (allOK = false) || "1", //"old" by default
-    logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || parseInt("3"),
+    logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || "3",
     weekStartsOn: p.getProperty("weekStartsOn") || (allOK = false) || "S" //Sunday by default
   };
 
@@ -47,4 +47,14 @@ function setUserProps(newp) {
   logIt(LOG_INFO, "User properties saved.");
   return newp
 }
+
+//--------------------------------------------------
+// Remove all user properties set by this app
+function removeUserProps() {
+  var p = PropertiesService.getUserProperties();
+  userProperties.deleteAllProperties();
+  logIt(LOG_INFO, "User properties REMOVED.");
+  return newp
+}
+
 
