@@ -43,7 +43,7 @@ function processRecurrentLists(testParam) {
   
   // set ending date for recurrent tasks processing
   var dateEnd = new Date();
-  dateEnd.setDate(dateStart.getDate() + userProps.dateRangeLength); 
+  dateEnd.setDate(dateStart.getDate() + parseInt(userProps.dateRangeLength)); 
   dateEnd.setHours(23,59,59,999);
 
   //override for testing purposes

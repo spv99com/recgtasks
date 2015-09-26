@@ -14,11 +14,11 @@
 
 //*********************************************************
 
-LOG_CRITICAL = 1;
-LOG_WARN = 2;
-LOG_INFO = 3;
-LOG_EXTINFO = 4;
-LOG_DEV = 10;
+LOG_CRITICAL = "01";
+LOG_WARN = "02";
+LOG_INFO = "03";
+LOG_EXTINFO = "04";
+LOG_DEV = "10";
 
 var logLevel = LOG_WARN;
 var logs = ["execLog1", "execLog2", "execLog3", "execLog4", "execLog5"];
@@ -41,7 +41,7 @@ function logIt(l,fmt,v1, v2, v3, v4, v5, v6) {
 function getLog(){
   var body = "";
   var cache = CacheService.getUserCache();
-  logs.forEach(function(itm, idx){body += cache.get(itm);});
+  logs.forEach(function(itm, idx){var c = cache.get(itm); c != null ? body += c : body+="";});
   return "<h3>*** Log beginning ***</h3>" + body + "<h3>*** Log end ***</h3>";
 }
 
@@ -50,7 +50,7 @@ function saveLog(cache, log){
   
   cache.removeAll(logs)
   while (log.length > 0 || i>4){
-    cache.put(logs[i], log.substr(0,80000));
+    cache.put(logs[i], log.length>0 ? log.substr(0,80000) : "");
     log = log.substr(80000);
     i++
   }

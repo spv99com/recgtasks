@@ -31,7 +31,7 @@
   this.weekStartsOn = "S"; //S = Sunday, M = Monday
   
   //correct initialization of properties
-  this.setDateFmt(1); 
+  this.setDateFmt("1"); 
 }
 
 LocaleFmt.prototype.setWeekStart = function(sd) {
@@ -41,10 +41,11 @@ LocaleFmt.prototype.setWeekStart = function(sd) {
   }
 }
 
-LocaleFmt.prototype.setDateFmt = function(dt) {
-  if (dt < 1 || dt > this.defFmtFullDate.length) return;
+LocaleFmt.prototype.setDateFmt = function(dtype) {
+  var dt = parseInt(dtype);
+  if (!dt || dt < 1 || dt > this.defFmtFullDate.length) return;
   
-  this.dateType = dt;
+  this.dateType = dtype;
   this.sxMD = this.defFmtMonthDay[this.dateType-1][0];
   this.sxFullDate = this.defFmtFullDate[this.dateType-1][0];
   this.sepFullDate = this.defFmtFullDate[this.dateType-1][2];

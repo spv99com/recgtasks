@@ -35,7 +35,7 @@ function TaskCalendar() {
   // caching time zone offset string for faster processing    
   this.TZoffset = tzOffsetString();
   
-  this.localeDateFormat = 1; // date format - default is "old"
+  this.localeDateFormat = "1"; // date format - default is "old"
   this.localeWeekStartsOn = "S"; //weeks starts on "Sunday" by default, but "M" for "Monday" is possible too
 
 }
@@ -393,14 +393,14 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
   
   // save/insert all tasks from dayTasks array to specified Google tasks list
   for (m = 0; m < 12; m++){
-    logIt(LOG_INFO, '  > Saving month %s', ((m+1)|0));     
+    logIt(LOG_EXTINFO, '  > Saving month %s', ((m+1)|0));     
     for (d = 1; d <= this.monthDays[m]; d++) {
       if  (this.dayTasks[m][d].length > 0) {
-        logIt(LOG_INFO, '  > Saving day %s', ((d)|0));
-        logIt(LOG_INFO, '  > Day Tasks %s, %s', this.dayTasks[m][d].length, this.dayTasks[m][d]);
+        logIt(LOG_EXTINFO, '  > Saving day %s', ((d)|0));
+        logIt(LOG_EXTINFO, '  > Day Tasks %s, %s', this.dayTasks[m][d].length, this.dayTasks[m][d]);
         for (i = 0; i < this.dayTasks[m][d].length; i++) {
           task = Tasks.Tasks.insert(this.dayTasks[m][d][i], taskListId);
-          logIt(LOG_INFO, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
+          logIt(LOG_EXTINFO, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
         }
       } else 
         logIt(LOG_DEV, '  > Nothing to save for %s', ((d)|0));
