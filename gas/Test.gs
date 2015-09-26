@@ -1,18 +1,20 @@
 ﻿var TESTMODE = 0; //DO NOT DELETE THIS LINE
 
+var TEST_TL_PREFIX = "#!#TEST";
+
 function runTest() {
 
   TESTMODE = 1;
 
-  var tlDESTtitle = "#!#TEST-DEST";
-  var tlRTTLtitle = "#!#TEST-RTTL";
+  var tlDESTtitle = TEST_TL_PREFIX+"-DEST";
+  var tlRTTLtitle = TEST_TL_PREFIX+"-RTTL";
   var tlDEST, tlRTTL;
   var prefix = "$R!";
   var dateStart = new Date(2014,11,1,0,0,0); //start of testing period
   var dateEnd = new Date(dateStart.getTime()); //end of testing period
   
 
-  USEEXISTING = 1;
+  USEEXISTING = 0;
   
   if (USEEXISTING == 1) { //find task list #id using task list titles
     tlRTTL = Tasks.Tasklists.list().getItems()
@@ -38,7 +40,7 @@ function runTest() {
   // set testing override values for user properties
   var up = getUserProps();
   up.recListPrefix = prefix;
-  up.destTaskListId = tlDEST.getId();
+  up.destTaskListId = tlDEST.id;
   up.logVerboseLevel = 999;
   up.dateRangeLength = 350;
   up.dateFormat = "2";
@@ -65,7 +67,7 @@ function runTest() {
       });
   };
     
-  checkCreatedTestTasks(up, tlRTTL.getId(), dateStart, dateEnd);
+  checkCreatedTestTasks(up, tlRTTL.id, dateStart, dateEnd);
   
   // remove test task lists
 
@@ -182,12 +184,11 @@ function createTestTasks(userProps, dst, ds, de) {
 // ********************************************************************
 function cleanupTestTasks(userProperies) {
 
-  var tlDESTtitle = "#!#TEST-DEST";
-  var tlRTTLtitle = "#!#TEST-RTTL";
+  var tlTitle = TEST_TL_PREFIX;
 
   var tl = getTaskLists();
   for (var i=0; i<tl.length; i++){
-    if (tl[i].name.indexOf(tlDESTtitle) >= 0 || tl[i].name.indexOf(tlRTTLtitle) >= 0) 
+    if (tl[i].name.indexOf(tlTitle) >= 0) 
       Tasks.Tasklists.remove(tl[i].id);
   }
 
@@ -199,4 +200,32 @@ function checkCreatedTestTasks(userProperies) {
 }
 
 // ********************************************************************
+function testSliding(){
 
+  var tl = createTaskList(TEST_TL_PREFIX+" sliding");
+  var dt = new Date();
+  dt.setHours(0,0,0,0);
+  
+  // future task - should not slide
+  dt.setDate(dt.getDate()+1);
+  Tasks.Tasks.insert({title:"sliding task #0",due:date2rfc3339(dt)}, tl.id); 
+  
+  // past due task, not completed - should slide
+  dt.setDate(dt.getDate()-7);
+  Tasks.Tasks.insert({title:"sliding task #1",due:date2rfc3339(dt)}, tl.id); 
+  
+  // past due, completed - should NOT slide
+  dt.setDate(dt.getDate()+1);
+  Tasks.Tasks.insert({title:"sliding task #2",due:date2rfc3339(dt),completed:date2rfc3339(dt), status:"completed"}, tl.id); 
+
+  // past due, deleted - should NOT slide
+  dt.setDate(dt.getDate()+1);
+  Tasks.Tasks.insert({title:"sliding task #3",due:date2rfc3339(dt),deleted:true}, tl.id); 
+
+  // past due task, not completed - should slide
+  dt.setDate(dt.getDate()+1);
+  Tasks.Tasks.insert({title:"sliding task #4",due:date2rfc3339(dt)}, tl.id); 
+
+  slideTasks(tl.id, new Date());
+  
+}

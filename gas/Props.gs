@@ -27,7 +27,9 @@ function getUserProps() {
     recListPrefix: p.getProperty("recListPrefix") ||  (allOK = false) || "~R",
     dateFormat: p.getProperty("dateFormat") || (allOK = false) || "1", //"old" by default
     logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || "3",
-    weekStartsOn: p.getProperty("weekStartsOn") || (allOK = false) || "S" //Sunday by default
+    weekStartsOn: p.getProperty("weekStartsOn") || (allOK = false) || "S", //Sunday by default
+    ignoreDeleted: p.getProperty("ignoreDeleted") || (allOK = false) || "Y", 
+    slideOverdue: p.getProperty("slideOverdue") || (allOK = false) || "N" 
   };
 
   //if not all properties were written in the property store

@@ -61,9 +61,12 @@ function getTasks_paged(tlid, params){
 /**
  * Returns information about the tasks within a given task list.
  */
-function getTasks(tlid, params) {
+function getTasks(tlid) {
 
-  var tasks = getTasks_paged(tlid, {fields:"items(title)"});
+  var tasks
+  var params = {fields:"items(title)"};
+  
+  tasks = getTasks_paged(tlid, params);
 
   return tasks;
 
@@ -136,4 +139,33 @@ function createExampleList(title) {
   
 }
 
+//---------------------------------------------------------------------------------
 
+function slideTasks(tlid, d) {
+
+  var params
+  var tasks
+  var yd, ds
+
+  logIt(LOG_INFO, "Going to slide past due tasks to %s", d);
+
+  if (!d)
+    d = new Date();
+    
+  ds = date2rfc3339(d);
+
+  // calculate last midnight
+  yd = new Date(d.getTime());
+  yd.setDate(yd.getDate()-1);
+  yd.setHours(23, 59, 59, 999);
+  
+  // get list of non-completed tasks which were due before last midnight
+  params = {showCompleted:false, dueMax:date2rfc3339(yd)};
+  tasks = getTasks_paged(tlid,params);
+  
+  tasks.forEach(function(t){ 
+    logIt(LOG_EXTINFO, ">> Sliding %s from %s", t.title, t.due);
+    Tasks.Tasks.patch({due:ds}, tlid, t.id);
+  });
+
+}

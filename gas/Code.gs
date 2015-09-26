@@ -73,6 +73,7 @@ function processRecurrentLists(testParam) {
   
   var tasks;
   var result;
+  var taskProps;
 
   var taskLists = Tasks.Tasklists.list();
   if ("items" in taskLists) {
@@ -111,13 +112,15 @@ function processRecurrentLists(testParam) {
       logIt(LOG_DEV, 'Range End %s [%s]', dateEnd, dateEnd.toISOString());
       
       // load tasks from Google Tasks  Default Task list
-      tasks = getTasks_paged(defaultTaskList.id, {
+      taskProps = {
         dueMin:dateStart.toISOString(), 
         //dueMax:dateEnd.toISOString(),
         showHidden:true,
-        fields: "items(id,title,notes,due)" //to limit amount of data transported
-      });
-     
+        showDeleted:userProps.ignoreDeleted == "N",
+        fields: "items(id,title,notes,due, deleted)" //to limit amount of data transported
+      };
+      tasks = getTasks_paged(defaultTaskList.id, taskProps);
+
       logIt(LOG_INFO, 'Removing possible duplicates for %s task instances.',tasks.length);
       // remove tasks which already exist in Google tasks from our array, so only new tasks will remain
       taskCal.removeDuplicatesFromArray(tasks);
