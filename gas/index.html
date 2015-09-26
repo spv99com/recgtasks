@@ -265,6 +265,40 @@
       or you are ready to perform manual task clensing afterwards.</p>
     </div>
 
+    <div class="setting">
+      <div class="settings3">Ignore Deleted Tasks</div>
+      <div class="settings3">
+        <select id="ignoreDeleted">
+          <option value="Y">Ignore</option>
+          <option value="N">Do not ignore</option>
+        </select>
+      </div>
+      <div class="settings3"><br/></div>
+    </div>
+    
+    <div class="setting help-settings">
+      "Ignore Deleted Tasks" changes the way how deleted recurrent tasks are treated. By default, deleted tasks are ignored,
+      so if you delete future recurrent task, app will re-create such task in the next run. The only way how to get rid of it is to
+      flag it as "complete". An alternative is NOT ignoring deleted tasks. App will detect task has been deleted and won't create it
+      again for that date.
+    </div>
+
+    <div class="setting">
+      <div class="settings3">Slide Overdue Tasks</div>
+      <div class="settings3">
+        <select id="slideOverdue">
+          <option value="N">Do not slide</option>
+          <option value="Y">Slide to Today</option>
+        </select>
+      </div>
+      <div class="settings3"><br/></div>
+    </div>
+    
+    <div class="setting help-settings">
+      Enabling "Slide Overdue Tasks" will cause all not completed past due tasks be moved (to "slide") to the current date "Today".
+      This impacts both recurring and non-recurring tasks.
+    </div>
+
 
     <div class="setting">
       <input type="submit" name="save" id="btnSaveSettings" value="Save Settings" />

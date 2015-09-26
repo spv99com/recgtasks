@@ -33,7 +33,7 @@ function TaskCalendar() {
   this.monthDays = [31,28,31,30,31,30,31,31,30,31,30,31];
   
   // caching time zone offset string for faster processing    
-  this.TZoffset = this.tzOffsetString();
+  this.TZoffset = tzOffsetString();
   
   this.localeDateFormat = 1; // date format - default is "old"
   this.localeWeekStartsOn = "S"; //weeks starts on "Sunday" by default, but "M" for "Monday" is possible too
@@ -44,38 +44,6 @@ function TaskCalendar() {
 TaskCalendar.prototype.setLocale = function(ws, dtfmt) {
   this.localeWeekStartsOn = ws;
   this.localeDateFormat = dtfmt;
-}
-
-//--------------------------------------------------
-TaskCalendar.prototype.tzOffsetString = function(dt) {
-  
-  function pad(n){return n<10 ? '0'+n : n}
-  
-  var h, m, d, n
-  d = new Date();
-  h = d.getTimezoneOffset()/60;
-  if (h >= 0) {n="+"} else {n="-"};
-  h = Math.floor(Math.abs(h));
-  m = Math.abs(d.getTimezoneOffset() % 60);
-  
-  return (n+pad(h)+":"+pad(m));
-}
-
-//--------------------------------------------------
-TaskCalendar.prototype.date2rfc3339 = function(dt) {
-  // Google requires task due date in rfc3339 format, BUT ignores the time part of it,
-  // so it does shift tasks to another day in case of using toISOString() function
-  // 2008-11-13T00:00:00+01:00 == 2008-11-12T23:00:00Z
-  
-  function pad(n){return n<10 ? '0'+n : n}
-  
-  return dt.getFullYear()+'-'
-      + pad(dt.getMonth()+1)+'-'
-      + pad(dt.getDate())+'T'
-      + pad(dt.getHours())+':'
-      + pad(dt.getMinutes())+':'
-      + pad(dt.getSeconds())+this.TZoffset  
-  
 }
 
 //--------------------------------------------------
@@ -137,7 +105,7 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rS, rE) {
   
   while (dt <= rangeEnd) {
     t = this.copyTask(task);
-    t.due = this.date2rfc3339(dt); //Google Tasks require due date to be written in rfc3339 format
+    t.due = date2rfc3339(dt, this.TZoffset); //Google Tasks require due date to be written in rfc3339 format
     t.due2msec = dt.getTime(); //secondary due date kept for further internal processing
     
     logIt(LOG_DEV, '    >>> Creating instance %s ** %s/%s', dt, m, d);
@@ -185,7 +153,7 @@ TaskCalendar.prototype.createTasks_DoY = function(task, rS, rE) {
   
   while (dt <= rangeEnd) {
     t = this.copyTask(task);
-    t.due = this.date2rfc3339(dt); //Google Tasks require due date to be written in rfc3339 format
+    t.due = date2rfc3339(dt, this.TZoffset); //Google Tasks require due date to be written in rfc3339 format
     t.due2msec = dt.getTime(); //secondary due date kept for further internal processing
     
     logIt(LOG_DEV, '    >>> Creating instance %s ** %s/%s', dt, m, d);
@@ -223,7 +191,7 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rS, rE) {
   
   while (dt <= rangeEnd) {
     t = this.copyTask(task);
-    t.due = this.date2rfc3339(dt); //Google Tasks require due date to be written in rfc3339 format
+    t.due = date2rfc3339(dt, this.TZoffset); //Google Tasks require due date to be written in rfc3339 format
     t.due2msec = dt.getTime(); //secondary due date kept for further internal processing
     
     d = dt.getDate();
@@ -283,7 +251,7 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
       if (dt >= rangeStart && dt <= rangeEnd) {
         if (task.recDef.weekly.days_of_week["S" == this.localeWeekStartsOn ? i : (i+1)%7]){  // as [0] is always Sunday, some calculation is needed for Monday starts
           t = this.copyTask(task);
-          t.due = this.date2rfc3339(dt); //Google Tasks require due date to be written in rfc3339 format
+          t.due = date2rfc3339(dt, this.TZoffset); //Google Tasks require due date to be written in rfc3339 format
           t.due2msec = dt.getTime(); //secondary due date kept for further internal processing
     
           d = dt.getDate();
@@ -427,12 +395,16 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
   for (m = 0; m < 12; m++){
     logIt(LOG_INFO, '  > Saving month %s', ((m+1)|0));     
     for (d = 1; d <= this.monthDays[m]; d++) {
-      logIt(LOG_INFO, '  > Saving day %s', ((d)|0));
-      logIt(LOG_INFO, '  > Day Tasks %s, %s', this.dayTasks[m][d].length, this.dayTasks[m][d]);
-      for (i = 0; i < this.dayTasks[m][d].length; i++) {
-        task = Tasks.Tasks.insert(this.dayTasks[m][d][i], taskListId);
-        logIt(LOG_INFO, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
-      }
+      if  (this.dayTasks[m][d].length > 0) {
+        logIt(LOG_INFO, '  > Saving day %s', ((d)|0));
+        logIt(LOG_INFO, '  > Day Tasks %s, %s', this.dayTasks[m][d].length, this.dayTasks[m][d]);
+        for (i = 0; i < this.dayTasks[m][d].length; i++) {
+          task = Tasks.Tasks.insert(this.dayTasks[m][d][i], taskListId);
+          logIt(LOG_INFO, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
+        }
+      } else 
+        logIt(LOG_DEV, '  > Nothing to save for %s', ((d)|0));
+      
     }
   }
   
@@ -449,7 +421,7 @@ TaskCalendar.prototype.removeDuplicatesFromArray = function(gTasks) {
       var title = gTasks[i].title;
       var dt = new Date(gTasks[i].due); //TIMEZONE?
       if (dt) {
-        logIt(LOG_DEV, '  >> Removing duplicates for %s, %s, %s', title, dt, gTasks[i].due);
+        logIt(LOG_DEV, '  >> Removing duplicates for %s, %s, %s, %s', title, dt, gTasks[i].due,gTasks[i].deleted );
         this.removeDuplicatesFromDayTasks(title, dt); //remove tasks from specific date
       }
     }
@@ -465,7 +437,7 @@ TaskCalendar.prototype.removeDuplicatesFromDayTasks = function(title, dt) {
   var d = dt.getDate();
   var f = 0;
   
-  logIt(LOG_DEV, '  >>> List for %s/%s contains %s entries',m,d,this.dayTasks[m][d].length);
+  logIt(LOG_DEV, '  >>> List for %s/%s contains %s entries',m+1,d,this.dayTasks[m][d].length);
   logIt(LOG_DEV, '  >>> Entries %s',this.dayTasks[m][d]);
 
 if (this.dayTasks[m][d].length > 0)

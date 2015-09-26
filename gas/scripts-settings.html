@@ -14,18 +14,22 @@ function saveSettings() {
        logVerboseLevel: $('#log-level').val(),
        dateRangeLength: $('#dest-range').val(),
        weekStartsOn: $('#weekStart').val(),
-       dateFormat:$('#dateFmt').val()
+       dateFormat:$('#dateFmt').val(),
+       ignoreDeleted:$('#ignoreDeleted').val(),
+       slideOverdue:$('#slideOverdue').val()
     });
 }
 
 function loadSettings() {
-  google.script.run.withSuccessHandler(function(userProps) {  
+  google.script.run.withSuccessHandler(function(userProps) {
     $('#rttl-prefix').val(userProps.recListPrefix);
     $('#dest-tasklist').val(userProps.destTaskListId);
     $('#log-level').val(userProps.logVerboseLevel);
-    $('#dest-range').val(userProps.dateRangeLength); 
+    $('#dest-range').val(userProps.dateRangeLength);
     $('#weekStart').val(userProps.weekStartsOn);
-    $('#dateFmt').val(userProps.dateFormat);     
+    $('#dateFmt').val(userProps.dateFormat);
+    $('#ignoreDeleted').val(userProps.ignoreDeleted);
+    $('#slideOverdue').val(userProps.slideOverdue);
   }).withFailureHandler(function(error){ console.log(error)} )
     .getUserProps();
 }
