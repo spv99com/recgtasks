@@ -19,18 +19,40 @@
 function getUserProps() {
   var p = PropertiesService.getUserProperties();
   var allOK = true;
+  
+  var dftRangeLength = "21";
+  var dftDateFormat = "1";
+  var dftLogLevel = "03";
 
   // read user specific properties and initialize them if needed
   var newp = {
     destTaskListId: p.getProperty("destTaskListId") || (allOK = false) || Tasks.Tasklists.list().items[0].id,
-    dateRangeLength: parseInt(p.getProperty("dateRangeLength")) || (allOK = false) || parseInt("21"), //3 weeks by default
+    dateRangeLength: p.getProperty("dateRangeLength") || (allOK = false) || dftRangeLength, //3 weeks by default
     recListPrefix: p.getProperty("recListPrefix") ||  (allOK = false) || "~R",
-    dateFormat: p.getProperty("dateFormat") || (allOK = false) || "1", //"old" by default
-    logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || "3",
+    dateFormat: p.getProperty("dateFormat") || (allOK = false) || dftDateFormat, //"old" by default
+    logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || dftLogLevel,
     weekStartsOn: p.getProperty("weekStartsOn") || (allOK = false) || "S", //Sunday by default
     ignoreDeleted: p.getProperty("ignoreDeleted") || (allOK = false) || "Y", 
     slideOverdue: p.getProperty("slideOverdue") || (allOK = false) || "N" 
   };
+  
+  logIt(LOG_DEV, "Props loaded %s",JSON.stringify(newp));
+  
+  // check values
+  if (newp.dateRangeLength.toString().search(/^14|21|28|42|56$/) == -1) { 
+    newp.dateRangeLength = dftRangeLength;
+    allOK = false;
+  }
+  
+  if (!newp.dateFormat.toString().search(/^1|2|3$/) == -1 ) { 
+    newp.dateFormat = dftDateFormat;
+    allOK = false;
+  }
+  
+  if (!newp.logVerboseLevel.toString().search(/^01|02|03|04|10$/) == -1) {
+    newp.logVerboseLevel = dftLogLevel;
+    allOK = false;
+  }
 
   //if not all properties were written in the property store
   if (!allOK) {
@@ -47,6 +69,7 @@ function setUserProps(newp) {
   var p = PropertiesService.getUserProperties();
   p.setProperties(newp);
   logIt(LOG_INFO, "User properties saved.");
+  logIt(LOG_DEV, "%s",JSON.stringify(newp));
   return newp
 }
 
@@ -54,9 +77,8 @@ function setUserProps(newp) {
 // Remove all user properties set by this app
 function removeUserProps() {
   var p = PropertiesService.getUserProperties();
-  userProperties.deleteAllProperties();
+  p.deleteAllProperties();
   logIt(LOG_INFO, "User properties REMOVED.");
-  return newp
 }
 
 

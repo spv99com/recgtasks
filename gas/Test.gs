@@ -41,12 +41,12 @@ function runTest() {
   var up = getUserProps();
   up.recListPrefix = prefix;
   up.destTaskListId = tlDEST.id;
-  up.logVerboseLevel = 999;
-  up.dateRangeLength = 350;
+  up.logVerboseLevel = "10";
+  up.dateRangeLength = "350";
   up.dateFormat = "2";
   up.weekStartsOn = "S";
   
-  dateEnd.setDate(dateEnd.getDate()+up.dateRangeLength);
+  dateEnd.setDate(dateEnd.getDate()+parseInt(up.dateRangeLength));
   if (!USEEXISTING)
     createTestTasks(up, tlRTTL.getId(), dateStart, dateEnd);
    
