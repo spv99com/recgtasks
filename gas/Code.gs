@@ -75,7 +75,14 @@ function processRecurrentLists(testParam) {
   var result;
   var taskProps;
 
-  var taskLists = Tasks.Tasklists.list();
+  try {
+    var taskLists = Tasks.Tasklists.list();
+  } catch (e) {
+    result = "Internal Google Error occured: "+JSON.stringify(e);
+    logIt(LOG_CRITICAL,result );
+    return result
+  }
+    
   if ("items" in taskLists) {
     
     // identify default Task List which instances of recurrent tasks will be copied into
@@ -138,6 +145,11 @@ function processRecurrentLists(testParam) {
     result = 'No task lists found.';
     logIt(LOG_CRITICAL, result);
   }
+  
+  // if default task list does exist and sliding of overdue tasks enabled, then slide them to TODAY
+  if (defaultTaskList && userProps.slideOverdue == "Y") 
+    slideTasks(defaultTaskList.id, new Date());
+
   
   logIt(LOG_CRITICAL, "*** Script execution completed ***");
   

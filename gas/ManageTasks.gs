@@ -40,7 +40,13 @@ function getTasks_paged(tlid, params){
   var p = JSON.parse(JSON.stringify(params)); //clone object
   if ("fields" in p && p.fields.length > 0 && p.fields.indexOf("nextPageToken") < 0) // add field nextPageToken only if no field specified or missing
     p.fields += ",nextPageToken";
-  var tasks = Tasks.Tasks.list(tlid, p);
+  
+  try {  
+    var tasks = Tasks.Tasks.list(tlid, p);
+  } catch (e) {
+    logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+  }
+  
   var t = [];
   
   if ("items" in tasks)
@@ -49,7 +55,13 @@ function getTasks_paged(tlid, params){
   //while there is a next page
   while ("nextPageToken" in tasks) {
     p.pageToken = tasks.nextPageToken; // page to read is the next page...
-    tasks = Tasks.Tasks.list(tlid, p); // get the next page of results
+    
+    try {
+      tasks = Tasks.Tasks.list(tlid, p); // get the next page of results
+    } catch (e) {
+      logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+    }
+        
     if ("items" in tasks)
       t = t.concat(tasks.items);
   }
