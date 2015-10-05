@@ -205,13 +205,21 @@ function testSliding(){
   var tl = createTaskList(TEST_TL_PREFIX+" sliding");
   var dt = new Date();
   dt.setHours(0,0,0,0);
-  
+
+  // today task - should not slide
+  dt.setDate(dt.getDate());
+  Tasks.Tasks.insert({title:"today task #0",due:date2rfc3339(dt)}, tl.id); 
+
   // future task - should not slide
   dt.setDate(dt.getDate()+1);
   Tasks.Tasks.insert({title:"sliding task #0",due:date2rfc3339(dt)}, tl.id); 
-  
-  // past due task, not completed - should slide
+
+  // past due task, not completed, but duplicate - should not slide
   dt.setDate(dt.getDate()-7);
+  Tasks.Tasks.insert({title:"today task #0",notes:"overdue duplicate", due:date2rfc3339(dt)}, tl.id); 
+
+  // past due task, not completed - should slide
+  dt.setDate(dt.getDate());
   Tasks.Tasks.insert({title:"sliding task #1",due:date2rfc3339(dt)}, tl.id); 
   
   // past due, completed - should NOT slide
@@ -228,4 +236,8 @@ function testSliding(){
 
   slideTasks(tl.id, new Date());
   
+  removeDuplicateTasks(tl.id, new Date());
+  
 }
+
+

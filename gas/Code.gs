@@ -147,9 +147,12 @@ function processRecurrentLists(testParam) {
   }
   
   // if default task list does exist and sliding of overdue tasks enabled, then slide them to TODAY
-  if (defaultTaskList && userProps.slideOverdue == "Y") 
+  if (defaultTaskList && userProps.slideOverdue == "Y") {
     slideTasks(defaultTaskList.id, new Date());
-
+    
+    //if sliding caused any duplication, then remove duplicates
+    removeDuplicateTasks(defaultTaskList.id, new Date());
+  }
   
   logIt(LOG_CRITICAL, "*** Script execution completed ***");
   

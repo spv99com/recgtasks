@@ -158,12 +158,10 @@ function slideTasks(tlid, d) {
   var params
   var tasks
   var yd, ds
+  var count = 0;
 
-  logIt(LOG_INFO, "Going to slide past due tasks to %s", d);
+  logIt(LOG_INFO, "Sliding past due tasks to date: %s", d);
 
-  if (!d)
-    d = new Date();
-    
   ds = date2rfc3339(d);
 
   // calculate last midnight
@@ -172,12 +170,53 @@ function slideTasks(tlid, d) {
   yd.setHours(23, 59, 59, 999);
   
   // get list of non-completed tasks which were due before last midnight
+  logIt(LOG_DEV, ">> Getting list of overdue tasks: %s", yd);
   params = {showCompleted:false, dueMax:date2rfc3339(yd)};
   tasks = getTasks_paged(tlid,params);
-  
+
   tasks.forEach(function(t){ 
     logIt(LOG_EXTINFO, ">> Sliding %s from %s", t.title, t.due);
     Tasks.Tasks.patch({due:ds}, tlid, t.id);
+    count++
   });
+
+  logIt(LOG_EXTINFO, ">> Slid %s tasks", count);
+
+}
+
+//-----------------------------------------------------------------------------------
+
+function removeDuplicateTasks(tlid, d){
+
+  var ds, td1, td2
+  var count
+  
+  logIt(LOG_INFO, "Removing duplicate tasks from date: %s", d);
+
+  // beginning of the date
+  td1 = new Date(d.getTime());
+  td1.setHours(0,0,0,000);
+  // end of date
+  td2 = new Date(d.getTime());
+  td2.setHours(23,59,59,999);
+
+  // get the list of tasks for specified date
+  logIt(LOG_DEV, ">> Getting list of tasks date: %s, %s", td1, td2);
+  params = {showCompleted:true, dueMin:date2rfc3339(td1), dueMax:date2rfc3339(td2)};
+  tasks = getTasks_paged(tlid,params);
+    
+  // remove duplicates
+  for (var i=0; i<tasks.length; i++)
+    for (var j = i+1; j<tasks.length; j++){
+      // check if every task of today is different from the one currently being slid
+      if (tasks[i].title == tasks[j].title) {
+        logIt(LOG_EXTINFO, ">> Deleting duplicate %s from %s", tasks[j].title, tasks[j].due);
+        Tasks.Tasks.patch({deleted:true}, tlid, tasks[j].id);
+        count++
+      };
+    };
+
+  logIt(LOG_EXTINFO, ">> Removed %s duplicate tasks", count);
+
 
 }
