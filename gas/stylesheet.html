@@ -32,6 +32,10 @@
     font-family: Ubuntu, sans-serif;
   }
   
+  th {
+    text-align: left;
+  }
+  
   .log {
     font-family: "Courier New", Courier, monospace;
   }
@@ -76,14 +80,20 @@
     width: 100%;
   }
   
-  .task {
+  .taskRow {
     padding-top: 5pt;
     padding-bottom: 5pt;
     border-bottom-width: 2px;
     border-bottom-style: solid;
     border-bottom-color: #EDEEF3;
   }
-  
+
+  .taskItem {
+    display: table-cell;
+    float: left;
+  }
+
+
   .taskTableHeader {
     padding: 5pt;
     background-color: #EDEEF3;
@@ -112,6 +122,18 @@
     padding: 10pt;
     color:#8A8A8A;    
   }
+  
+  .recDialog .ui-dialog-titlebar {
+    display:none
+  }  
+  
+  .inline-icon {
+    vertical-align: text-bottom;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+  
+  .icon-delete {}
 
 </style>
 

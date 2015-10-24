@@ -17,19 +17,8 @@ function runTest() {
   USEEXISTING = 0;
   
   if (USEEXISTING == 1) { //find task list #id using task list titles
-    tlRTTL = Tasks.Tasklists.list().getItems()
-    tlDEST = tlRTTL.filter(function(tl){return tl.title.indexOf(tlDESTtitle) >= 0 });
-    tlRTTL = tlRTTL.filter(function(tl){return tl.title.indexOf(tlRTTLtitle) >= 0 });
-    
-    if (tlDEST.length > 0)
-      tlDEST = tlDEST[0]
-    else
-      logIt(LOG_CRITICAL, 'There is no existing list %s',tlDESTtitle);
-      
-    if (tlRTTL.length > 0)
-      tlRTTL = tlRTTL[0]
-    else
-      logIt(LOG_CRITICAL, 'There is no existing list %s',prefix+tlRTTLtitle);
+    tlRTTL = getExistingList(tlRTTLtitle);
+    tlDEST = getExistingList(tlDESTtitle);
 
   } else {
     // create test task list
@@ -72,6 +61,21 @@ function runTest() {
   // remove test task lists
 
   
+}
+
+// ********************************************************************
+
+function getExistingList(title){
+  var tl = Tasks.Tasklists.list().getItems()
+  tl = tl.filter(function(tl){return tl.title.indexOf(title) >= 0 });
+    
+  if (tl.length > 0)
+    tl = tl[0]
+  else
+    logIt(LOG_CRITICAL, 'There is no existing list %s',title);
+
+  return tl;
+
 }
 
 // ********************************************************************
@@ -239,5 +243,21 @@ function testSliding(){
   removeDuplicateTasks(tl.id, new Date());
   
 }
+
+// ********************************************************************
+function testProcessedTasks(){
+  var tl = getExistingList("~R My repeating tasks");
+  var tasks = getProcessedTasks(tl.id);
+  
+  Logger.log(tasks);
+  
+}
+
+// ********************************************************************
+function testDate(){
+  Logger.log(new Date("Wed Jul 28 1993"));
+
+}
+
 
 

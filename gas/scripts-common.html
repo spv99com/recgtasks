@@ -1,4 +1,6 @@
-﻿//--------------------------------------------------
+﻿<script>
+
+//--------------------------------------------------
 function date2rfc3339(dt, tzo) {
   // Google requires task due date in rfc3339 format, BUT ignores the time part of it,
   // so it does shift tasks to another day in case of using toISOString() function
@@ -29,9 +31,11 @@ function tzOffsetString(dt) {
     dt = new Date();
     
   h = dt.getTimezoneOffset()/60;
-  n = (h >= 0) ? "-" : "+";
+  n = (h >= 0) ? "-":"+";
   h = Math.floor(Math.abs(h));
   m = Math.abs(dt.getTimezoneOffset() % 60);
   
   return (n+pad(h)+":"+pad(m));
 }
+
+</script>

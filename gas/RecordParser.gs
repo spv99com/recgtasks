@@ -216,7 +216,7 @@ Record_Parser.prototype.proc_date = function(x, dcx){
 Record_Parser.prototype.doParse = function(input_line, dcx){
 // method used to start parsing
 //   input_line - string containing input to be parsed
-//   dcx - data context object - object to be used to stored parsed values
+//   dcx - data context object - object to be used to store parsed values
 // for now syntaxt is initialized for recurrency patterns only
 // TODO: implement record type recognition (definitely not needed for recurrent tasks :-)
   

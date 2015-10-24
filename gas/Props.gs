@@ -20,18 +20,20 @@ function getUserProps() {
   var p = PropertiesService.getUserProperties();
   var allOK = true;
   
-  var dftRangeLength = "21";
-  var dftDateFormat = "1";
+  var dftListPrefix = "~R";  // default RTTL prefix
+  var dftRangeLength = "21"; // 3 weeks by default
+  var dftDateFormat = "2";   // US date format by default
   var dftLogLevel = "03";
+  var dftWeekStart = "S";    // week starts on Sunday by default
 
   // read user specific properties and initialize them if needed
   var newp = {
     destTaskListId: p.getProperty("destTaskListId") || (allOK = false) || Tasks.Tasklists.list().items[0].id,
-    dateRangeLength: p.getProperty("dateRangeLength") || (allOK = false) || dftRangeLength, //3 weeks by default
-    recListPrefix: p.getProperty("recListPrefix") ||  (allOK = false) || "~R",
-    dateFormat: p.getProperty("dateFormat") || (allOK = false) || dftDateFormat, //"old" by default
+    dateRangeLength: p.getProperty("dateRangeLength") || (allOK = false) || dftRangeLength,
+    recListPrefix: p.getProperty("recListPrefix") ||  (allOK = false) || dftListPrefix,
+    dateFormat: p.getProperty("dateFormat") || (allOK = false) || dftDateFormat, 
     logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || dftLogLevel,
-    weekStartsOn: p.getProperty("weekStartsOn") || (allOK = false) || "S", //Sunday by default
+    weekStartsOn: p.getProperty("weekStartsOn") || (allOK = false) || dftWeekStart,
     ignoreDeleted: p.getProperty("ignoreDeleted") || (allOK = false) || "Y", 
     slideOverdue: p.getProperty("slideOverdue") || (allOK = false) || "N" 
   };

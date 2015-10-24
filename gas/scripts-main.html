@@ -1,38 +1,44 @@
 ﻿<script>
 
+//---------------------------------------------------------------------------------
 /**
  * Manully starts immediate processing of recurrent tasks
  */
 function runNow() {
-  $('#btnRunNowStatus').text('Running...');
-  $('#btnRunNow').prop('disabled',true);
+  console.log("Task processing started.");
+  $('.btnRunNowStatus').text('Running...');
+  $('.btnRunNow').prop('disabled',true);
   google.script.run.withSuccessHandler(runNowDone)
       .withFailureHandler(runNowError)
       .processRecurrentLists();
 }
-  
+
+//---------------------------------------------------------------------------------
 function runNowDone(res) {
-  $('#btnRunNowStatus').text(res||'Finished.');
-  $('#btnRunNow').prop('disabled',false);
+  $('.btnRunNowStatus').text(res||'Finished.');
+  $('.btnRunNow').prop('disabled',false);
   getRuntimeDetails();
 }
 
+//---------------------------------------------------------------------------------
 /**
  * Logs an error message and shows an alert to the user.
  */
 function runNowError(error) {
   console.log(error);
-  $('#btnRunNowStatus').text('Finished with errors. See JavaScript console.');
-  $('#btnRunNow').prop('disabled',false);
+  $('.btnRunNowStatus').text('Finished with errors. See JavaScript console.');
+  $('.btnRunNow').prop('disabled',false);
   getRuntimeDetails();
 }
 
+//---------------------------------------------------------------------------------
 function showLog() {
   hideAllSections();
   $('#sectionLogFile').show();
   getLogFile();
 }
 
+//---------------------------------------------------------------------------------
 function getLogFile() {
   $('#logfile').html('<p>... wait please... loading log file...</p>');
   google.script.run
@@ -41,6 +47,7 @@ function getLogFile() {
         .getLog();
 }
 
+//---------------------------------------------------------------------------------
 /**
  * Installs time based Google Apps trigger, which will periodically process recurrent tasks
  */
@@ -50,12 +57,14 @@ function installTriggers() {
       .initTriggers();
 
 }
-  
+
+//---------------------------------------------------------------------------------
 function instTrigError(error) {
   console.log(error);
   window.alert('An error has occurred while instaling triggers, please try again.');
 }
 
+//---------------------------------------------------------------------------------
 /**
  * Get runtime details
  */
@@ -65,6 +74,7 @@ function getRuntimeDetails() {
 
 }
 
+//---------------------------------------------------------------------------------
 function showExecutionDetails(a) {
   var d = new Date();
   $('#execStarted').text('unknown');
@@ -80,6 +90,7 @@ function showExecutionDetails(a) {
   }
 }
 
+//---------------------------------------------------------------------------------
 function createExampleList() {
   google.script.run.withSuccessHandler(newListCreated)
       .withFailureHandler(function (err){console.log(err);window.alert('ERROR creating example list.',i);})
@@ -87,6 +98,7 @@ function createExampleList() {
   return false;
 }
 
+//---------------------------------------------------------------------------------
 function newListCreated(result){
   window.alert('New Task List Created.');
   loadTaskLists(showRTTLcount);

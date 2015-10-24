@@ -5,8 +5,8 @@
   this.weekly = {days_of_week:[false, false, false, false, false, false, false]}; //[0] = Sunday, ... [6] = Saturday
   this.monthly = {day:-1};
   this.yearly = {month:-1, day:-1};
-  this.recStart = new Date(2000, 0, 1);
-  this.recEnd = new Date(2999, 11, 31);
+  this.recStart = {date: new Date(2000, 0, 1)};
+  this.recEnd = {date: new Date(2999, 11, 31)};
   
   this.locFmt = new LocaleFmt();
   

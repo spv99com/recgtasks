@@ -171,13 +171,14 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rS, rE) {
   //params:
   //   task - task
   //   rangeStart, rangeEnd - start and end date for data range to be considered
-
+  
   var rangeStart = new Date(rS.getTime());
   var rangeEnd = new Date(rE.getTime());
 
   var d = (rangeStart.getTime() - task.recDef.recStart.date.getTime()) / 86400000; //difference in miliseconds to days
   d = Math.floor(d % task.recDef.frequency); // number of days since last calculated occurence rounded to WHOLE days
   var m;
+  var t;
   
   if (rangeEnd > task.recDef.recEnd.date) 
     rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
@@ -390,6 +391,7 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
   
   var y, m, d, i;
   var task;
+  var count = 0;
   
   // save/insert all tasks from dayTasks array to specified Google tasks list
   for (m = 0; m < 12; m++){
@@ -400,7 +402,9 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
         logIt(LOG_EXTINFO, '  > Day Tasks %s, %s', this.dayTasks[m][d].length, this.dayTasks[m][d]);
         for (i = 0; i < this.dayTasks[m][d].length; i++) {
           task = Tasks.Tasks.insert(this.dayTasks[m][d][i], taskListId);
+          count++;
           logIt(LOG_EXTINFO, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
+          Utilities.sleep(gTaskQTime); // artificial pause to manage API quota          
         }
       } else 
         logIt(LOG_DEV, '  > Nothing to save for %s', ((d)|0));

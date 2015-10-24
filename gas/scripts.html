@@ -10,50 +10,46 @@ $(function() {
   initNavBar();
      
   $('#frmSettings').submit(function(e) { saveSettings(); return false });
-  $('#btnRunNow').bind('click', runNow);
-  $('#btnShowLog').bind('click', showLog);
-  $('#btnShowMain').bind('click', showMain);
-  $('#navBarItmOverview').bind('click', showMain);
-  $('#navBarItmManage').bind('click', showManage);
-  $('#navBarItmSettings').bind('click', showSettings);
-  $('.linkExample').bind('click', createExampleList);
-  $('#noTaskListsPanel').hide();
-    
-  $('#tasklist').bind('change', loadTasks);
+  $('.btnRunNow').on('click', runNow);
+  $('#btnShowLog').on('click', showLog);
+  $('#btnShowMain').on('click', showMain);
+  $('#navBarItmOverview').on('click', showMain);
+  $('#navBarItmManage').on('click', showManage);
+  $('#navBarItmSettings').on('click', showSettings);
+  $('.linkExample').on('click', createExampleList);
     
   installTriggers();
   loadSettings();
-    
+  
   showMain();
 
 });
 
+//---------------------------------------------------------------------------------
 function initNavBar(){
-
   hideAllSections();
   $('#navBarItmOverview').css("background","url(https://sites.google.com/site/recgtasks/images/navbar-main.png)");
   $('#navBarItmManage').css("background","url(https://sites.google.com/site/recgtasks/images/navbar-manage.png)");
   $('#navBarItmSettings').css("background","url(https://sites.google.com/site/recgtasks/images/navbar-settings.png)");
-
 }
 
- 
+//--------------------------------------------------------------------------------- 
 function hideAllSections(){
   $('.section').hide();
   $('.navBarItemSelected').addClass("navBarItem");
   $('.navBarItem').removeClass("navBarItemSelected");
 }
 
-
+//---------------------------------------------------------------------------------
 function showMain() {
   hideAllSections();
   $('#navBarItmOverview').addClass("navBarItemSelected");
   $('#navBarItmOverview').removeClass("navBarItem");
   $('#sectionMain').show();
-  getRuntimeDetails()
+  getRuntimeDetails();
 }
 
-
+//---------------------------------------------------------------------------------
 function showSettings() {
   hideAllSections();
   $('#sectionSettings').show();
@@ -64,8 +60,10 @@ function showSettings() {
   
 }
 
+//---------------------------------------------------------------------------------
 function showManage() {
   hideAllSections();
+  initManage();
   $('#sectionManage').show();
   $('#navBarItmManage').addClass("navBarItemSelected");
   $('#navBarItmManage').removeClass("navBarItem");
@@ -74,6 +72,7 @@ function showManage() {
   
 }
 
+//---------------------------------------------------------------------------------
 function showErrorWindow(error, msg) {
     console.log(msg);
     console.log(error);

@@ -1,5 +1,82 @@
 ﻿<script>
 
+function initManage(){
+
+  // reload tasks on change of the task list
+  $('#tasklist').on('change', loadTasks);
+  
+  // modify recurrence builder dialog on recurrence type change
+  $('#recType').on('change', changeRecType);
+  
+  // initialize datepicker objects
+  $("#recStartDate").datepicker();
+  $("#recEndDate").datepicker();
+  $("#recDialog").dialog({
+      autoOpen: false,
+      resizable: false,
+      dialogClass:"recDialog",
+      height:450,
+      width:440,
+      modal: true,
+      buttons: {
+        Apply: function() {
+          commitUpdatedTask();
+          $( this ).dialog( "close" );
+        },
+        Cancel: function() {
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+  $("#recDialog").dialog("close");
+  
+  // set first day of week 
+  $(".datepick").datepicker( "option", "firstDay", $('#weekStart').val() == "S" ? 0 : 1 );
+  
+  // set date format
+  var fmt="yy-mm-dd";
+  switch ($('#dateFmt').val()){
+    case "2": fmt="mm/dd/yy"; break;
+    case "3": fmt="dd/mm/yy"; break;
+  };
+  $(".datepick").datepicker( "option", "dateFormat", fmt);
+  
+  $("#clrRecStart").on("click",$("#recStartDate"), clearField);
+  $("#clrRecEnd").on("click",$("#recEndDate"), clearField); 
+  
+  // initialize dropdown values
+  init31($('#recFreq'));
+  init31($('#repOnDoM'));
+  initMonths($("#repOnMoY"));
+   
+}
+
+//---------------------------------------------------------------------------------
+
+function initMonths(select){
+  var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  select.empty();
+  for (var i=0;i<12;i++){
+    var option = $('<option>')
+        .attr('value', i)
+        .text(months[i]);
+    select.append(option);
+  };
+}
+
+//---------------------------------------------------------------------------------
+
+function init31(select){
+  select.empty();
+  for (var i=1;i<32;i++){
+    var option = $('<option>')
+        .attr('value', i)
+        .text(i);
+    select.append(option);
+  };
+}
+
+//---------------------------------------------------------------------------------
 /**
  * Show the returned task lists in the dropdown box.
  * @param {Array.<Object>} taskLists The task lists to show.
@@ -28,7 +105,7 @@ function showTaskLists_Manage(taskLists) {
 
 }
 
-
+//---------------------------------------------------------------------------------
 /**
  * Load the tasks in the currently selected task list.
  */
@@ -36,28 +113,215 @@ function loadTasks() {
   $('#tasks').text('Loading...');
   var taskListId = $('#tasklist').val();
   google.script.run.withSuccessHandler(showTasks)
-      .getTasks(taskListId);
+      .getProcessedTasks(taskListId);
 }
 
+//---------------------------------------------------------------------------------
 /**
  * Show the returned tasks on the page.
  * @param {Array.<Object>} tasks The tasks to show.
  */
+
 function showTasks(tasks) {
   var list = $('#tasks').empty();
   if (tasks.length > 0) {
     tasks.forEach(function(task) {
-      var row = $('<tr>');
-      var item = $('<td  class="task">');
-      var title = $('<span>').text(task.title);
-      item.append(title);
-      row.append(item);
-      list.append(row);
+      var tr = $('<tr>');
+      var td = $('<td  class="taskRow">');
+      
+      // --- task title
+      var c = $('<div class="taskItem" style="width:50%">').text(task.title);
+      td.append(c);
+      
+      // --- recurrence pattern
+      c = $('<div class="taskItem" style="width:45%">');
+      
+      if (task.recPattern == null)
+        var linktxt = "<< click to define >>";
+      else
+        linktxt = task.recPattern;
+        
+      c.append($('<a id="tid-'+task.id+'" href="">').text(linktxt));
+      
+      td.append(c);
+      
+      // --- icon delete
+      c = $('<div class="taskItem" style="width:5%">');
+      c.append($('<a href="">').append($('<img src="https://sites.google.com/site/recgtasks/images/icon-delete-20px-grey.png" alt="del" class="inline-icon icon-delete" id="del-'+task.id+'" >')));
+     
+      td.append(c);
+      
+      tr.append(td);
+      list.append(tr);
+      $("#tid-"+task.id).on("click",task,editTask);
     });
   } else {
     list.text('No tasks');
   }
+  $('#tasks').append($('<a id="creNewTask" href="">').text("<< Click to add new task >>"));
+  // assign event for creating new task
+  $('#creNewTask').on('click', {title:"** New task **"}, createNewTask);
+  $('.icon-delete').on('click', deleteTask);
+  
 }
 
+//---------------------------------------------------------------------------------
+function changeRecType(){
+  var rt = $('#recType').val();
+  var htmlSelectMonth = '<select id="recMoY"></select>';
+  
+  $("#rowDoW").hide();
+  $("#rowDoM").hide();
+  $("#txtMoY").hide();
+  $("#repOnMoY").hide();
+  switch (rt) {
+    case "D":
+      $("#recFreqWord").text("days");
+      break;
+    case "W":
+      $("#recFreqWord").text("weeks");
+      $("#rowDoW").show();
+      break;
+    case "M":
+      $("#recFreqWord").text("months");
+      $("#rowDoM").show();
+      $("#txtMoY").show();
+      break;
+    case "Y":
+      $("#recFreqWord").text("years");
+      $("#rowDoM").show();
+      $("#repOnMoY").show();
+      break;
+  }
+
+}
+
+//---------------------------------------------------------------------------------
+function editTask(e){
+
+  setTaskDefaults();
+
+  console.log(e.data);
+
+  // initialize dialog fields
+  $("#recTT").val(e.data.title);
+  if (e.data.notes) {
+    e.data.notes = e.data.notes.replace(/^\*E.*$/mg,"");
+    e.data.notes = e.data.notes.replace(/\n\n/g,"\n");
+    $("#recTNotes").val(e.data.notes);
+  }  
+  $("#recTid").val(e.data.id);
+  
+  
+  if (e.data.recPattern){
+    $("#recType").val(e.data.recType);
+    $("#recFreq").val(e.data.recFreq);
+    e.data.recW_dow.forEach(function(i,idx){ $("#recW"+idx).prop('checked', i); });
+    $("#repOnDoM").val(e.data.recM_day);
+    if (e.data.recType == "Y") $("#repOnDoM").val(e.data.recY_day);
+    $("#repOnMoY").val(e.data.recY_month);
+    
+    if (e.data.recStart) $("#recStartDate").datepicker("setDate", new Date(e.data.recStart));
+    if (e.data.recEnd) $("#recEndDate").datepicker("setDate", new Date(e.data.recEnd));
+      
+  } 
+  
+  changeRecType();
+  
+  $("#recDialog").dialog("open");
+  
+  return false; //has to return false to avoid opening link in a new window 
+}
+
+//---------------------------------------------------------------------------------
+
+function setTaskDefaults(){
+  $("#recType").val("D");
+  $("#recFreq").val(1);
+
+  // initialize day of week selection with the current day
+  var dow = (new Date()).getDay();
+  dow = "#recW"+dow;
+  $(dow).prop('checked', true);
+  
+  //initialize day of month selection with the current day
+  var dom = (new Date()).getDate();
+  $("#repOnDoM").val(dom);
+  
+  //initialize month of year selection with the current month
+  var moy = (new Date()).getMonth();
+  $("#repOnMoY").val(moy);
+  
+  // insert Sunday checkbox before Monday or after Saturday based on user settings
+  var strSunday = '<input type="checkbox" id="recW0" title="Sunday">S';
+  if ($('#weekStart').val() == "S")
+    $("#Sun0").html(strSunday)
+  else
+    $("#Sun7").html(strSunday);
+  
+  $("#recStartDate").datepicker("setDate", "");
+  $("#recEndDate").datepicker("setDate", "");
+
+
+}
+
+//---------------------------------------------------------------------------------
+function commitUpdatedTask(){
+  var t = {};
+  
+  t.title = $("#recTT").val();
+  t.notes = $("#recTNotes").val();
+  t.id = $("#recTid").val();
+  t.recType = $("#recType").val();
+  t.recFreq = $("#recFreq").val();
+  
+  t.recW_dow = [];
+  for (var i = 0; i<7; i++){
+    t.recW_dow.push($("#recW"+i).prop('checked'));
+  };
+  
+  t.recM_day = $("#repOnDoM").val();
+  t.recY_day = $("#repOnDoM").val(); //they use the same input field
+  t.recY_month = $("#repOnMoY").val();
+  t.recStart_ms = $("#recStartDate").datepicker("getDate");
+  if (t.recStart_ms) t.recStart_ms = t.recStart_ms.toDateString(); 
+  t.recEnd_ms = $("#recEndDate").datepicker("getDate");
+  if (t.recEnd_ms) t.recEnd_ms = t.recEnd_ms.toDateString(); 
+
+  console.log(t);
+
+  google.script.run.withSuccessHandler(loadTasks)
+      .updateRecTask($('#tasklist').val(), t);
+      
+  return false; //has to return false to avoid opening link in a new window 
+
+}
+
+//---------------------------------------------------------------------------------
+
+function createNewTask(e){
+  
+  google.script.run.withSuccessHandler(loadTasks)
+      .createTask($('#tasklist').val(), e.data.title, e.data.notes);
+  
+  return false; //has to return false to avoid opening link in a new window 
+
+}
+
+//---------------------------------------------------------------------------------
+
+function clearField(e){
+  $(e.data.selector).val(null);
+}
+
+//---------------------------------------------------------------------------------
+
+function deleteTask(e){
+  console.log("delete task id #"+e.target.id.substr(4));
+  google.script.run.withSuccessHandler(loadTasks)
+    .deleteTask($('#tasklist').val(), e.target.id.substr(4))
+    
+  return false;
+}
 
 </script>

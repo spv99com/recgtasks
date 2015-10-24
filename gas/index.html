@@ -46,7 +46,7 @@
 
 <div id="sectionMain" class="section">
   <h1>Recurrent Tasks</h1>
-  <h1 class="subtitle"> for Google Tasks&trade; (v1.5.4)</h1>
+  <h1 class="subtitle"> for Google Tasks&trade; (v1.6)</h1>
   <p>
     This application enables you using repeating/recurrent tasks in  
     <a href="https://mail.google.com/tasks/canvas" target="_blank">Google Tasks&trade;</a>,
@@ -93,8 +93,8 @@
     <tr style="vertical-align:top">
       <td/>
       <td>
-        <button type="button" id="btnRunNow">Process recurrent tasks now</button> 
-        <span id="btnRunNowStatus"> ... click button to run </span>
+        <button type="button" class="btnRunNow">Process recurrent tasks now</button> 
+        <span class="btnRunNowStatus"> ... click button to run </span>
         <p/>
       </td>
     </tr>
@@ -120,7 +120,7 @@
 
 <!-- ********** SHOW LOG FILE -->
 
-<div id="sectionLogFile" class="section" >
+<div id="sectionLogFile" class="section" style="display:none">
   <h1>Recurrent Tasks</h1>
   <h1 class="subtitle"> for Google Tasks&trade;</h1>
   <h2>Execution Log</h2>
@@ -132,11 +132,12 @@
 
 <!-- ********** MANAGE TASKS -->
 
-<div id="sectionManage" class="section">
+<div id="sectionManage" class="section" style="display:none">
   <h1>Recurrent Tasks</h1>
   <h1 class="subtitle"> for Google Tasks&trade;</h1>
   <h2>Manage Tasks</h2>
   <p> Select recurrent task list template (RTTL) and add/modify/remove recurrent task template.</p>
+  <p> Once done, click <button type="button" class="btnRunNow">Process recurrent tasks now</button> to apply. Status: (<span class="btnRunNowStatus"> ... not started ... </span>)</p>
 
   <div style="padding-bottom:10pt">
     <label for="tasklist">Select a task list: </label>
@@ -145,7 +146,7 @@
     </select>
   </div>
   
-  <div id="noTaskListsPanel" style="padding-bottom:10pt">
+  <div id="noTaskListsPanel" style="padding-bottom:10pt" style="display:none">
     <p style="color:red"> No RTTL task list found. <a class="linkExample" href="">Click here</a> to create example task list containing templates of recurrent tasks. </p>
   </div>
 
@@ -156,9 +157,79 @@
 
 </div>
 
+<!-- ********** DIALOG FOR DEFINING RECURRENCE PATTERN -->
+
+<div id="recDialog" class="dialog" style="display:none">
+  <h2>Recurrent Task</h2>
+  <input type="text" id="recTT" title="Task title" size=36>
+  <textarea id="recTNotes" rows=4 cols=37 style="margin-top:5px"></textarea>
+  <input type="text" id="recTid" style="display:none">
+  <table>
+    <tr>
+      <th>Repeat Task</th>
+      <td>
+        <select id="recType">
+          <option value="D">daily</option>
+          <option value="W">weekly</option>
+          <option value="M">monthly</option>
+          <option value="Y">yearly</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>Repeat every:</th>
+      <td>
+        <select id="recFreq">
+          <option>Loading...</option>
+        </select>
+        <span id="recFreqWord">days</span>
+      </td>
+    </tr>
+    <tr id="rowDoW" style="display:none">
+      <th>Repeat on:</th>
+      <td>
+         <span id="Sun0"></span>
+         <input type="checkbox" id="recW1" title="Monday">M
+         <input type="checkbox" id="recW2" title="Tuesday">T
+         <input type="checkbox" id="recW3" title="Wednesday">W
+         <input type="checkbox" id="recW4" title="Thursday">T
+         <input type="checkbox" id="recW5" title="Friday">F
+         <input type="checkbox" id="recW6" title="Saturday">S
+         <span id="Sun7"></span>
+      </td>
+    </tr>
+    <tr id="rowDoM" style="display:none">
+      <th>Repeat on:</th>
+      <td>
+        <select id="repOnDoM">
+          <option>Loading...</option>
+        </select>
+        day of <span id="txtMoY">month</span><select id="repOnMoY">
+          <option>Loading...</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>Start date:</th>
+      <td> 
+        <input type="text" class="datepick" id="recStartDate" readonly="true">
+        <img src="https://sites.google.com/site/recgtasks/images/icon-clear-20px-grey.png" alt="clr" class="inline-icon" id="clrRecStart" >
+      </td>
+    </tr>
+    <tr>
+      <th>End date:</th>
+      <td>
+        <input type="text" class="datepick" id="recEndDate" readonly="true">
+        <img src="https://sites.google.com/site/recgtasks/images/icon-clear-20px-grey.png" alt="clr" class="inline-icon" id="clrRecEnd"  >
+      </td>
+    </tr>
+  </table>
+</div>
+
+
 <!-- ********** SETTINGS -->
 
-<div id="sectionSettings" class="section">
+<div id="sectionSettings" class="section" style="display:none">
   <h1>Recurrent Tasks</h1>
   <h1 class="subtitle"> for Google Tasks&trade;</h1>
   <h2>Settings</h2>
@@ -230,7 +301,7 @@
       <div class="settings3">Date format:</div>
       <div class="settings3">
         <select id="dateFmt">
-          <option value="1">Old: MM/DD YYYY-DD-MM</option>
+          <option value="1">Old: MM/DD YYYY-MM-DD</option>
           <option value="2"> US: MM/DD MM/DD/YYYY</option>
           <option value="3"> UK: DD/MM DD/MM/YYYY</option>
         </select>
@@ -314,6 +385,7 @@
 </div>
 <!-- ********** END OF APP -->
 
+<?!= HtmlService.createHtmlOutputFromFile('scripts-common').getContent(); ?>
 <?!= HtmlService.createHtmlOutputFromFile('scripts-gen-tasks').getContent(); ?>
 <?!= HtmlService.createHtmlOutputFromFile('scripts-settings').getContent(); ?>
 <?!= HtmlService.createHtmlOutputFromFile('scripts-manage').getContent(); ?>
