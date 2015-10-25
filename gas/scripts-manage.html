@@ -124,6 +124,8 @@ function loadTasks() {
 
 function showTasks(tasks) {
   var list = $('#tasks').empty();
+  if (tasks.length > 10) //should the task list be too long, let there be two "buttons" for creating new task
+    $('#tasks').append($('<a class="creNewTask" href="">').text("<< Click to add new task >>"));
   if (tasks.length > 0) {
     tasks.forEach(function(task) {
       var tr = $('<tr>');
@@ -158,9 +160,9 @@ function showTasks(tasks) {
   } else {
     list.text('No tasks');
   }
-  $('#tasks').append($('<a id="creNewTask" href="">').text("<< Click to add new task >>"));
+  $('#tasks').append($('<a class="creNewTask" href="">').text("<< Click to add new task >>"));
   // assign event for creating new task
-  $('#creNewTask').on('click', {title:"** New task **"}, createNewTask);
+  $('.creNewTask').on('click', {title:"** New task **"}, createNewTask);
   $('.icon-delete').on('click', deleteTask);
   
 }
