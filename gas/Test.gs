@@ -259,5 +259,38 @@ function testDate(){
 
 }
 
+// ********************************************************************
+// testing compatibility issues with property values saved by older versions of script
+function testLoadProps(){
+  var p = PropertiesService.getUserProperties();
+  var allOK = true;
+  
+  // read user specific properties and initialize them if needed
+  var newp = {
+    destTaskListId: p.getProperty("destTaskListId"),
+    dateRangeLength: p.getProperty("dateRangeLength"),
+    recListPrefix: p.getProperty("recListPrefix"),
+    dateFormat: p.getProperty("dateFormat"), 
+    logVerboseLevel: p.getProperty("logVerboseLevel"),
+    weekStartsOn: p.getProperty("weekStartsOn"),
+    ignoreDeleted: p.getProperty("ignoreDeleted"), 
+    slideOverdue: p.getProperty("slideOverdue") 
+  };
+  
+  logIt(LOG_DEV, "Props loaded %s",JSON.stringify(newp));
+  
+  //-------------
+  
+  logIt(LOG_DEV, "Setting test values");
+  
+  newp.logVerboseLevel = "9";
+  newp.dateFormat = "1.0"
+  p.setProperties(newp, false); //then write them and keep all other properties (if any)
+  
+  //--------------
+  getUserProps();
+
+
+}
 
 

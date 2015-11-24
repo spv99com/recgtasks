@@ -41,25 +41,30 @@ function getUserProps() {
   logIt(LOG_DEV, "Props loaded %s",JSON.stringify(newp));
   
   // check values
-  if (newp.dateRangeLength.toString().search(/^14|21|28|42|56$/) == -1) { 
+  if (newp.dateRangeLength.toString().search(/^(?:14|21|28|42|56)$/) == -1) { 
     newp.dateRangeLength = dftRangeLength;
+    logIt(LOG_DEV, "Date range defaulted to %s",newp.dateRangeLength);
     allOK = false;
   }
   
-  if (!newp.dateFormat.toString().search(/^1|2|3$/) == -1 ) { 
+  // handling of property value saved in old format
+  if (newp.dateFormat.toString().search(/^(?:1|2|3)$/) == -1 ) { 
     newp.dateFormat = dftDateFormat;
+    logIt(LOG_DEV, "Date format defaulted to %s",newp.dateFormat);
     allOK = false;
   }
   
-  if (!newp.logVerboseLevel.toString().search(/^01|02|03|04|10$/) == -1) {
+  // handling of property values saved in old format
+  if (newp.logVerboseLevel.toString().search(/^(?:01|02|03|04|10)$/) == -1) {
     newp.logVerboseLevel = dftLogLevel;
+    logIt(LOG_DEV, "Log verbose level defaulted to %s",newp.logVerboseLevel);
     allOK = false;
   }
 
   //if not all properties were written in the property store
   if (!allOK) {
     p.setProperties(newp, true); //then write them and delete all other properties (if any)
-    logIt(LOG_CRITICAL,'User properties initialized.');
+    logIt(LOG_CRITICAL,'User properties re-initialized. %s', JSON.stringify(newp));
   }
   
   return newp

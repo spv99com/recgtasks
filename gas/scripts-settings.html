@@ -1,6 +1,16 @@
 ﻿<script>
 
 function saveSettings() {
+  console.log("Going to save props: "+JSON.stringify({
+       recListPrefix: $('#rttl-prefix').val(),
+       destTaskListId: $('#dest-tasklist').val(),
+       logVerboseLevel: $('#log-level').val(),
+       dateRangeLength: $('#dest-range').val(),
+       weekStartsOn: $('#weekStart').val(),
+       dateFormat:$('#dateFmt').val(),
+       ignoreDeleted:$('#ignoreDeleted').val(),
+       slideOverdue:$('#slideOverdue').val()
+    }));
   google.script.run.withSuccessHandler(function() {  
     $('#frmSaveStatus').text('Settings saved.');
     $('#frmSaveStatus').css( "display", "inline" ).fadeOut( 2000 );
