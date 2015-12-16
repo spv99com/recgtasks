@@ -31,7 +31,7 @@ function runTest() {
   up.recListPrefix = prefix;
   up.destTaskListId = tlDEST.id;
   up.logVerboseLevel = "10";
-  up.dateRangeLength = "350";
+  up.dateRangeLength = "450";
   up.dateFormat = "2";
   up.weekStartsOn = "S";
   
@@ -181,6 +181,20 @@ function createTestTasks(userProps, dst, ds, de) {
   t = "[#08] "+r.recType+(r.frequency|0)+" 8 (all)";
   createTask(dst, t, n);
   count += 3;
+  
+  // *** DAILY from the today+2 for 10 days
+  r.recType = "D";
+  r.frequency = 1;
+  r.recStart = new Date();
+  r.recStart.setHours(0,0,0,0);
+  r.recStart.setDate(r.recStart.getDate()+2)
+  r.recEnd = new Date(r.recStart.getTime()+86399999); //23:59:59.999
+  r.recEnd.setDate(r.recEnd.getDate()+10);
+  n = r.toString()+"\nSecond line of notes";
+  t = "[#09] "+r.recType+(r.frequency|0)+" 10 days";
+  createTask(dst, t, n);
+  count += 10; //created 10 tasks
+  
   
 
 }

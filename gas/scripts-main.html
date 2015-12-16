@@ -52,17 +52,42 @@ function getLogFile() {
  * Installs time based Google Apps trigger, which will periodically process recurrent tasks
  */
 function installTriggers() {
-  google.script.run.withSuccessHandler(function (){console.log("Clock based trigger for recurrent tasks processing initialized...");})
+  google.script.run.withSuccessHandler(function (){console.log("Clock based trigger for recurrent tasks processing initialized."); checkTriggers()})
       .withFailureHandler(instTrigError)
       .initTriggers();
-
 }
 
 //---------------------------------------------------------------------------------
 function instTrigError(error) {
   console.log(error);
-  window.alert('An error has occurred while instaling triggers, please try again.');
+  window.alert('An error has occurred while working with triggers, please try again.');
 }
+
+//---------------------------------------------------------------------------------
+
+function checkTriggers() {
+  google.script.run.withSuccessHandler(function (e){console.log(e,"triggers installed."); if (e == 0){$('#noTrigger').show();} else { $('#noTrigger').hide();};} )
+      .withFailureHandler(instTrigError)
+      .getTriggers();
+}
+
+//---------------------------------------------------------------------------------
+
+function uninstallTriggers() {
+  google.script.run.withSuccessHandler(uninstMsg)
+      .withFailureHandler(instTrigError)
+      .removeAllTriggers();
+}
+
+//---------------------------------------------------------------------------------
+function uninstMsg(e) {
+  console.log(e,"RecGTasks triggers have been uninstalled.");
+  $('#frmUninstallStatus').text('Triggers ('+e+') uninstalled.');
+  $('#frmUninstallStatus').css( "display", "inline" ).fadeOut( 2000 );
+  $('#noTrigger').show();
+}
+
+
 
 //---------------------------------------------------------------------------------
 /**
@@ -105,5 +130,13 @@ function newListCreated(result){
   loadTaskLists(showTaskLists_Manage);
   loadTaskLists(showTaskLists_Settings);
 }
+
+//---------------------------------------------------------------------------------
+function checkAuthorization() {
+  google.script.run.withSuccessHandler(function (e){console.log(e?"script is authorized":"script is NOT authorized"); if (e){$('#notAuthorized').hide();} else { $('#notAuthorized').show();};} )
+      .withFailureHandler(function(e){console.log(e)})
+      .isScriptAuthorized();
+}
+
 
 </script>

@@ -46,7 +46,7 @@
 
 <div id="sectionMain" class="section">
   <h1>Recurrent Tasks</h1>
-  <h1 class="subtitle"> for Google Tasks&trade; (v1.6.2)</h1>
+  <h1 class="subtitle"> for Google Tasks&trade; (v1.7.0)</h1>
   <p>
     This application enables you using repeating/recurrent tasks in  
     <a href="https://mail.google.com/tasks/canvas" target="_blank">Google Tasks&trade;</a>,
@@ -67,6 +67,28 @@
     of a task list containing recurrent task templates. After that you can tweak them and run processing 
     of recurrent tasks manually (see bellow) and see results for yourself.
   </p>
+  <div id="notAuthorized" style="background-color:Orange;padding:10px;display:none;">
+    <p>
+      Application is not authorized to work with your Google account (e.g. calendar).
+    </p>
+    <p>
+      If you do not wish to use this app anymore, please, follow steps described in section "Uninstall" below.
+    </p>
+  </div>
+  <p/>
+  <div id="noTrigger" style="background-color:Orange;padding:10px;display:none;">
+    <p>
+      Application IS STOPPED. 
+    </p>
+    <p>
+      Google Apps Script clock-based trigger is not activated/installed. Trigger is required in order for application to run every hour
+      and "calculate" repeating tasks.
+    </p>
+    <p>
+      If you would like to use this app, please, activate/install trigger by clicking this button <button type="button" id="btnInstTrigger">Install Trigger</button> <span id="txtInstalled"></span>
+    </p>
+  </div>
+
 
   <table>
     <tr style="vertical-align:top">
@@ -115,6 +137,24 @@
         <button type="button" id="btnShowLog">Show Log</button>
       </td>
     </tr>
+    <tr style="vertical-align:top">
+      <td> <img src="https://sites.google.com/site/recgtasks/images/uninstall.png" alt="uninstall"> </td>
+      <td>
+        <h2>Uninstall</h2>
+        <p>
+        If you would like to stop automatic execution of this app, then you can uninstall application triggers from here.
+        This step is also required if you would like to stop using this app completely.
+        </p>
+        <p style="font-style: italic;">
+        You still might be asked to grant authorization, so app can unistall triggers. After granting authorization Google will
+        send you an email with instructions how to revoke authorization again. <br> 
+        We are sorry about this "stupid" approach, but Google is unable to remove triggers while unistalling app in Chrome.
+        </p>
+        <p>
+        <button type="button" id="btnUninstall">Uninstall Triggers</button> <span id="frmUninstallStatus"> </span>
+        </p>
+      </td>
+    </tr>    
   </table>
 </div>
 

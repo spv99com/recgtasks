@@ -35,3 +35,10 @@ function tzOffsetString(dt) {
   
   return (n+pad(h)+":"+pad(m));
 }
+
+//----------------------------------------------------
+
+function isScriptAuthorized() {
+  var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
+  return (authInfo.getAuthorizationStatus() != ScriptApp.AuthorizationStatus.REQUIRED);
+}

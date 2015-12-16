@@ -17,8 +17,10 @@ $(function() {
   $('#navBarItmManage').on('click', showManage);
   $('#navBarItmSettings').on('click', showSettings);
   $('.linkExample').on('click', createExampleList);
+  $('#btnUninstall').on('click', uninstallTriggers);
+  $('#btnInstTrigger').on('click', installTriggers);
     
-  installTriggers();
+  checkTriggers();
   loadSettings();
   
   showMain();

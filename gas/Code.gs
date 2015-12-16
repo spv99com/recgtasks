@@ -34,6 +34,12 @@ var dateMax = new Date(2999, 11, 31);
 
 function processRecurrentLists(testParam) {
 
+  // Check if the actions of the trigger requires authorization that has not
+  // been granted yet; if throw exception.
+  if (!isScriptAuthorized()) {
+      throw "Trigger installed by RecGTasks app requires authorization to run. Visit http://www.recgtasks.com/app to grant authorization or to unistall."
+  }
+
   // record start of execution
   var cache = CacheService.getUserCache();
   cache.put("execStarted",Date.now(), 8000);

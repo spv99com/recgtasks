@@ -170,7 +170,7 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rS, rE) {
   //create "Every X days recurrence" task occurences
   //params:
   //   task - task
-  //   rangeStart, rangeEnd - start and end date for data range to be considered
+  //   rS, rE - start and end date for data range to be considered
   
   var rangeStart = new Date(rS.getTime());
   var rangeEnd = new Date(rE.getTime());
@@ -211,7 +211,7 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   //create "Every X weeks on specified days" task occurences
   //params:
   //   task - task
-  //   rangeStart, rangeEnd - start and end date for data range to be considered
+  //   rS, rE - start and end date for data range to be considered
   
   var rangeStart = new Date(rS.getTime());
   var rangeEnd = new Date(rE.getTime());
