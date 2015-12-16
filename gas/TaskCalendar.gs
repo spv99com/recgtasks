@@ -124,9 +124,9 @@ TaskCalendar.prototype.createTasks_DoY = function(task, rS, rE) {
   //create "Date of Year recurrence" task occurences
   //params:
   //   task - task
-  //   rangeStart, rangeEnd - start and end date for data range to be considered
+  //   rS, rE - start and end date for data range to be considered
 
-  var rangeStart = new Date(rS.getTime());
+  var rangeStart = (task.recDef.recStart.date > rS ? new Date(task.recDef.recStart.date.getTime()) : new Date(rS.getTime()));
   var rangeEnd = new Date(rE.getTime());
 
   var y = task.recDef.recStart.date.getFullYear();
@@ -172,9 +172,9 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rS, rE) {
   //   task - task
   //   rS, rE - start and end date for data range to be considered
   
-  var rangeStart = new Date(rS.getTime());
+  var rangeStart = (task.recDef.recStart.date > rS ? new Date(task.recDef.recStart.date.getTime()) : new Date(rS.getTime()));
   var rangeEnd = new Date(rE.getTime());
-
+  
   var d = (rangeStart.getTime() - task.recDef.recStart.date.getTime()) / 86400000; //difference in miliseconds to days
   d = Math.floor(d % task.recDef.frequency); // number of days since last calculated occurence rounded to WHOLE days
   var m;
@@ -213,7 +213,7 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   //   task - task
   //   rS, rE - start and end date for data range to be considered
   
-  var rangeStart = new Date(rS.getTime());
+  var rangeStart = (task.recDef.recStart.date > rS ? new Date(task.recDef.recStart.date.getTime()) : new Date(rS.getTime()));
   var rangeEnd = new Date(rE.getTime());
   
   var d = (rangeStart.getTime() - task.recDef.recStart.date.getTime()) / 86400000 / 7; //difference in miliseconds to weeks

@@ -95,7 +95,7 @@ function createTestTasks(userProps, dst, ds, de) {
   r.frequency = 1;
   r.recStart = new Date(ds.getTime());
   r.recEnd = new Date(r.recStart.getTime()+86399999); //23:59:59.999
-  r.recEnd.setDate(r.recEnd.getDate()+40);
+  r.recEnd.setDate(r.recEnd.getDate()+40-1);
   n = r.toString()+"\nSecond line of notes";
   t = "[#01] "+r.recType+(r.frequency|0)+" 40 days";
   createTask(dst, t, n);
@@ -189,7 +189,7 @@ function createTestTasks(userProps, dst, ds, de) {
   r.recStart.setHours(0,0,0,0);
   r.recStart.setDate(r.recStart.getDate()+2)
   r.recEnd = new Date(r.recStart.getTime()+86399999); //23:59:59.999
-  r.recEnd.setDate(r.recEnd.getDate()+10);
+  r.recEnd.setDate(r.recEnd.getDate()+10-1);
   n = r.toString()+"\nSecond line of notes";
   t = "[#09] "+r.recType+(r.frequency|0)+" 10 days";
   createTask(dst, t, n);
