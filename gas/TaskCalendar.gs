@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Jozef Sovcik. All Rights Reserved.
+﻿// Copyright (c) 2015-2016 Jozef Sovcik. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -83,19 +83,20 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rS, rE) {
   //   task - task
   //   rangeStart, rangeEnd - start and end date for data range to be considered
 
-  var rangeStart = new Date(rS.getTime());
+  var rangeStart = (task.recDef.recStart.date > rS ? new Date(task.recDef.recStart.date.getTime()) : new Date(rS.getTime()));
   var rangeEnd = new Date(rE.getTime());
 
   var y = rangeStart.getFullYear();
-  var m = rangeStart.getMonth();
+  
+  // the first month of occurence is the month when occurence started
+  var m = task.recDef.recStart.date.getMonth();
   var d = this.alignMonthDays(m, task.recDef.monthly.day);
   var t;
   
   if (rangeEnd > task.recDef.recEnd.date) 
     rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
   
-  var dt = new Date(rangeStart.getTime());
-  dt.setDate(d);
+  var dt = new Date(y, m, d, 0, 0, 0, 0);
   
   while (dt < rangeStart) {
     m += task.recDef.frequency;
@@ -213,10 +214,17 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   //   task - task
   //   rS, rE - start and end date for data range to be considered
   
+  var weekMS = 7 * 86400000; // milliseconds in a week
+  
+  // make sure recStart is the first day of week
+  task.recDef.recStart.date.setDate(task.recDef.recStart.date.getDate()-task.recDef.recStart.date.getDay());
+  if (this.localeWeekStartsOn == "M") //if week starts on Monday, then let's move to Monday
+    task.recDef.recStart.date.setDate(task.recDef.recStart.date.getDate() + 1);
+  
   var rangeStart = (task.recDef.recStart.date > rS ? new Date(task.recDef.recStart.date.getTime()) : new Date(rS.getTime()));
   var rangeEnd = new Date(rE.getTime());
   
-  var d = (rangeStart.getTime() - task.recDef.recStart.date.getTime()) / 86400000 / 7; //difference in miliseconds to weeks
+  var d = (rangeStart.getTime() - task.recDef.recStart.date.getTime()) / weekMS; //difference in miliseconds to weeks
   d = Math.floor(d % task.recDef.frequency); // number of weeks since last calculated occurence rounded to WHOLE weeks
   var m;
   var w;
@@ -231,21 +239,21 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   dt.setDate(dt.getDate() - dt.getDay()); // the last Sunday (beginning of the week)
   
   if (this.localeWeekStartsOn == "M") //if week starts on Monday, then let's move to Monday
-    dt.setDate(dt.getDate() + 1); 
+    dt.setDate(dt.getDate() + 1);
   //logIt(LOG_DEV, '    >>> DoW#2 begining of week is %s', this.localeWeekStartsOn);
   //logIt(LOG_DEV, '    >>> DoW#2 begining of week %s', dt);
   
-  dt.setDate(dt.getDate() - (d*7) ); // move weeks back to the past to when recurrence start was set
+  dt.setDate(dt.getDate() - (d*7)); // move weeks back to the past to when recurrence start was set
   //logIt(LOG_DEV, '    >>> DoW#3 start %s', dt);
   
-  eow.setDate(dt.getDate() + 7);
+  eow.setTime(dt.getTime() + weekMS ); 
   
   if (eow < rangeStart) // if outside the range, then add one occurence
-      dt.setDate(dt.getDate() + (task.recDef.frequency*7));
+      dt.setDate(dt.getDate() + (task.recDef.frequency * 7));
   
   while (dt <= rangeEnd) {
-    //logIt(LOG_DEV, '    >>> DoW#4 dt %s', dt);
-    eow.setDate(dt.getDate() + 7);
+    logIt(LOG_DEV, '    >>> DoW#4 dt %s', dt);
+    eow.setTime(dt.getTime() + weekMS );
     
     for (i=0;i<7;i++) {
       
@@ -362,6 +370,10 @@ TaskCalendar.prototype.createTasks = function(rTask, rangeStart, rangeEnd) {
   var p1, p2
   
   logIt(LOG_DEV, '    >> Processing %s',rTask.title);
+  
+  if (rTask.recDef.frequency > 1 && rTask.recDef.recStart.date == null)
+    logIt(LOG_WARN, '    >> Start date for task having frequency > 1 not specified - task deadline might be calculated wrongly');
+    
   if (rTask.recDef.recStart.date <= rangeEnd && rTask.recDef.recEnd.date >= rangeStart) {
     switch (rTask.recDef.recType) {
       case "D":

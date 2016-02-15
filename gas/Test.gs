@@ -10,8 +10,9 @@ function runTest() {
   var tlRTTLtitle = TEST_TL_PREFIX+"-RTTL";
   var tlDEST, tlRTTL;
   var prefix = "$R!";
-  var dateStart = new Date(2014,11,1,0,0,0); //start of testing period
+  var dateStart = new Date(2014,11,4,0,0,0); //start of testing period
   var dateEnd = new Date(dateStart.getTime()); //end of testing period
+  
   
 
   USEEXISTING = 0;
@@ -31,23 +32,32 @@ function runTest() {
   up.recListPrefix = prefix;
   up.destTaskListId = tlDEST.id;
   up.logVerboseLevel = "10";
-  up.dateRangeLength = "450";
-  up.dateFormat = "2";
+  up.dateRangeLength = "350";
+  up.dateFormat = "2"; // US date format MM/DD/YYYY
   up.weekStartsOn = "S";
   
   dateEnd.setDate(dateEnd.getDate()+parseInt(up.dateRangeLength));
-  if (!USEEXISTING)
+  if (!USEEXISTING) {
+    // create generic test tasks
     createTestTasks(up, tlRTTL.getId(), dateStart, dateEnd);
+    // create test tasks for issue #28
+    createTestTasks_i28(up, tlRTTL.getId(), dateStart, dateEnd);
+  }    
    
   processRecurrentLists(
     {userProps:up, 
     dateStart: dateStart, 
     dateEnd: dateEnd
     });
-  
-  for (i=0;i<1;i++){  
-    dateStart.setDate(dateStart.getDate()+1);
-    dateEnd.setDate(dateEnd.getDate()+1);
+
+
+  var repeatProcessingCount = 0; // repeat processing X times
+  var repeatProcessingSkipDays = 7; // days to skip with each processing
+  var i = 0;
+
+  for (i=0;i<repeatProcessingCount;i++){  
+    dateStart.setDate(dateStart.getDate()+repeatProcessingSkipDays);
+    dateEnd.setDate(dateEnd.getDate()+repeatProcessingSkipDays);
     Utilities.sleep(2000); //because of requests/second quota
     processRecurrentLists(
       {userProps:up, 
@@ -77,6 +87,40 @@ function getExistingList(title){
   return tl;
 
 }
+
+// ********************************************************************
+function createTestTasks_i28(userProps, dst, ds, de) {
+  // test tasks for issue #28
+
+  var r = new Record_RGT();
+  r.locFmt.setWeekStart(userProps.weekStartsOn);
+  r.locFmt.setDateFmt(userProps.dateFormat);
+  
+  var t,n;
+
+  // *** MONTHLY every 3 month on 15th
+  r.recType = "M";
+  r.frequency = 3;
+  r.monthly.day = 2;
+  r.recStart = new Date(ds.getTime())
+  r.recEnd = null; 
+  n = r.toString()+"\nSecond line of notes";
+  t = "[#i18-01] "+r.recType+(r.frequency|0)+" 2";
+  createTask(dst, t, n);
+
+  // *** WEEKLY every 2 month on Monday, Thursday
+  r.recType = "W";
+  r.frequency = 2;
+  r.weekly.days_of_week = [false, true, false, false, true, false, false];
+  r.recStart = new Date(ds.getTime())
+  r.recEnd = null; 
+  n = r.toString()+"\nSecond line of notes";
+  t = "[#i18-02] "+r.recType+(r.frequency|0)+" 2 on Mon/Thu";
+  createTask(dst, t, n);
+
+
+}
+
 
 // ********************************************************************
 function createTestTasks(userProps, dst, ds, de) {
@@ -136,7 +180,7 @@ function createTestTasks(userProps, dst, ds, de) {
   count += 10;
   
 
-  // *** MONTHLY every 1 month on 20 the first 100 days
+  // *** MONTHLY every 1 month on 20th the first 100 days
   r.recType = "M";
   r.frequency = 1;
   r.monthly.day = 20;
@@ -148,9 +192,9 @@ function createTestTasks(userProps, dst, ds, de) {
   createTask(dst, t, n);
   count += 3;
 
-  // *** MONTHLY every 1 month on 31 whole period
+  // *** MONTHLY every 2 month on 31st whole period
   r.recType = "M";
-  r.frequency = 1;
+  r.frequency = 2;
   r.monthly.day = 31; //this is going to test month alignment too => 31 is the last day of a month, so in February it should create instance on 28th
   r.recStart = null;
   r.recEnd = null;
