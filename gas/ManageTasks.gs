@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Jozef Sovcik. All Rights Reserved.
+﻿// Copyright (c) 2015-2016 Jozef Sovcik. All Rights Reserved.
 //
 // Portions Copyright 2013 Google Inc. All Rights Reserved.
 //
