@@ -32,6 +32,16 @@ function TaskCalendar() {
   // how many day there are in each calendar month?
   this.monthDays = [31,28,31,30,31,30,31,31,30,31,30,31];
   
+  // leap year handling
+  var d = new Date();
+  // check if 200 days in the future is already leap year 
+  // (as there is only 12 months considered in this algorithm this should be sufficient)
+  // makes no sense checking if the current year is leap year as calculating days in December 
+  // would result in wrong calculation of the coming February  
+  d.setDate(d.getDate()+200); 
+  if (leapYear(d.getFullYear()))
+    this.monthDays[1] = 29;
+  
   // caching time zone offset string for faster processing    
   this.TZoffset = tzOffsetString();
   

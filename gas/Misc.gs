@@ -56,3 +56,10 @@ function isScriptAuthorized() {
   var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
   return (authInfo.getAuthorizationStatus() != ScriptApp.AuthorizationStatus.REQUIRED);
 }
+
+//----------------------------------------------------
+
+function leapYear(year) {
+  // returns true for leap year
+  return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+}

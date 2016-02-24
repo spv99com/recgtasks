@@ -10,7 +10,7 @@ function runTest() {
   var tlRTTLtitle = TEST_TL_PREFIX+"-RTTL";
   var tlDEST, tlRTTL;
   var prefix = "$R!";
-  var dateStart = new Date(2014,11,4,0,0,0); //start of testing period
+  var dateStart = new Date(2015,11,4,0,0,0); //start of testing period
   var dateEnd = new Date(dateStart.getTime()); //end of testing period
   
   
@@ -32,7 +32,7 @@ function runTest() {
   up.recListPrefix = prefix;
   up.destTaskListId = tlDEST.id;
   up.logVerboseLevel = "10";
-  up.dateRangeLength = "350";
+  up.dateRangeLength = "100";
   up.dateFormat = "2"; // US date format MM/DD/YYYY
   up.weekStartsOn = "S";
   
@@ -42,6 +42,8 @@ function runTest() {
     createTestTasks(up, tlRTTL.getId(), dateStart, dateEnd);
     // create test tasks for issue #28
     createTestTasks_i28(up, tlRTTL.getId(), dateStart, dateEnd);
+    // create test tasks for issue #28
+    createTestTasks_i29(up, tlRTTL.getId(), dateStart, dateEnd);
   }    
    
   processRecurrentLists(
@@ -116,6 +118,40 @@ function createTestTasks_i28(userProps, dst, ds, de) {
   r.recEnd = null; 
   n = r.toString()+"\nSecond line of notes";
   t = "[#i18-02] "+r.recType+(r.frequency|0)+" 2 on Mon/Thu";
+  createTask(dst, t, n);
+
+
+}
+
+
+// ********************************************************************
+function createTestTasks_i29(userProps, dst, ds, de) {
+  // test tasks for issue #29 - leap year 
+
+  var r = new Record_RGT();
+  r.locFmt.setWeekStart(userProps.weekStartsOn);
+  r.locFmt.setDateFmt(userProps.dateFormat);
+  
+  var t,n;
+
+  // *** MONTHLY every 1 month on 29th
+  r.recType = "M";
+  r.frequency = 1;
+  r.monthly.day = 29;
+  r.recStart = new Date(ds.getTime())
+  r.recEnd = null; 
+  n = r.toString()+"\nSecond line of notes";
+  t = "[#i29-01] "+r.recType+(r.frequency|0)+" 2";
+  createTask(dst, t, n);
+
+  // *** WEEKLY every week on Monday, Thursday, starting on Feb 29, 2016
+  r.recType = "W";
+  r.frequency = 1;
+  r.weekly.days_of_week = [false, true, false, false, true, false, false];
+  r.recStart = new Date(2016,1,29);  // February 29,2016 (which is a leap year)
+  r.recEnd = new Date(2016,3,31);
+  n = r.toString()+"\nSecond line of notes";
+  t = "[#i29-02] "+r.recType+(r.frequency|0)+" 1 on Mon/Thu";
   createTask(dst, t, n);
 
 
