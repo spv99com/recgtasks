@@ -29,6 +29,11 @@ var gTaskQTime = 200;  // 200ms sleep = max 5 Task API requests/user/second
 var dateMin = new Date(2000, 0, 1);
 var dateMax = new Date(2999, 11, 31);
 
+var appTimeZone = "GMT"; 
+var userTimeZone = "GMT"; // default value - possible values http://joda-time.sourceforge.net/timezones.html
+var appToday = new Date();
+var userToday = new Date();
+
 //*****************************************
 //*****************************************
 
@@ -37,7 +42,7 @@ function processRecurrentLists(testParam) {
   // Check if the actions of the trigger requires authorization that has not
   // been granted yet; if throw exception.
   if (!isScriptAuthorized()) {
-      throw "Trigger installed by RecGTasks app requires authorization to run. Visit http://www.recgtasks.com/app to grant authorization or to unistall."
+        throw "RecGTasks app requires additional authorization to run. Visit http://www.recgtasks.com/app to review and grant required authorization."
   }
 
   // record start of execution
@@ -47,6 +52,10 @@ function processRecurrentLists(testParam) {
   // read user preferecies for this user & script
   var userProps = getUserProps();
   logLevel = userProps.logVerboseLevel;
+  userTimeZone = userProps.userTMZ;
+
+  // calculate TODAY for user running the script
+  userToday = new Date(Utilities.formatDate(appToday, userTimeZone, "yyyy-MM-dd'T'00:00:00.000'Z'"));
 
   // starting date for calculation is TODAY
   var dateStart = new Date();
@@ -69,6 +78,9 @@ function processRecurrentLists(testParam) {
   
   logIt(LOG_DEV, "Executing script as "+Session.getActiveUser().getEmail());
   
+  logIt(LOG_DEV, "App Today: %s", appToday);
+  logIt(LOG_DEV, "User Time Zone: %s", userTimeZone);
+  logIt(LOG_DEV, "User Today: %s", userToday);
   logIt(LOG_DEV, "Date Start: %s", dateStart);
   logIt(LOG_DEV, "Date End: %s", dateEnd);
   logIt(LOG_DEV, "Settings: %s", JSON.stringify(userProps));
@@ -159,7 +171,7 @@ function processRecurrentLists(testParam) {
   
   // if default task list does exist and sliding of overdue tasks enabled, then slide them to TODAY
   if (defaultTaskList && userProps.slideOverdue == "Y") {
-    slideTasks(defaultTaskList.id, new Date());
+    slideTasks(defaultTaskList.id, userToday);
     
     //if sliding caused any duplication, then remove duplicates
     removeDuplicateTasks(defaultTaskList.id, new Date());

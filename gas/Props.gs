@@ -35,7 +35,8 @@ function getUserProps() {
     logVerboseLevel: p.getProperty("logVerboseLevel") || (allOK = false) || dftLogLevel,
     weekStartsOn: p.getProperty("weekStartsOn") || (allOK = false) || dftWeekStart,
     ignoreDeleted: p.getProperty("ignoreDeleted") || (allOK = false) || "Y", 
-    slideOverdue: p.getProperty("slideOverdue") || (allOK = false) || "N" 
+    slideOverdue: p.getProperty("slideOverdue") || (allOK = false) || "N",
+    userTMZ: p.getProperty("userTMZ") || (allOK = false) || "GMT"
   };
   
   logIt(LOG_DEV, "Props loaded %s",JSON.stringify(newp));

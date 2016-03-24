@@ -46,7 +46,7 @@
 
 <div id="sectionMain" class="section">
   <h1>Recurrent Tasks</h1>
-  <h1 class="subtitle"> for Google Tasks&trade; (v1.7.3)</h1>
+  <h1 class="subtitle"> for Google Tasks&trade; (v1.8.0)</h1>
   <p>
     This application enables you using repeating/recurrent tasks in  
     <a href="https://mail.google.com/tasks/canvas" target="_blank">Google Tasks&trade;</a>,
@@ -368,7 +368,7 @@
       </div>
       <div class="settings3"><br/></div>
     </div>
-    
+
     <div class="setting help-settings">
       "Week Starts On" impacts how tasks repeating weekly are evaluated as 1-7 stands for Sunday-Saturday if week starts on Sunday,
       but 1-7 stands for Monday-Sunday if week starts on Monday.
@@ -376,6 +376,35 @@
       Please, modify this only if you have only few recurring tasks 
       or you are ready to perform manual task clensing afterwards.</p>
     </div>
+
+
+    <div class="setting">
+      <div class="settings3">Time Zone</div>
+      <div class="settings3">
+        <select id="userTMZ">
+          <option value="GMT">GMT</option>
+          <option value="Europe/London">Europe/London</option>
+          <option value="Europe/Berlin">Europe/Berlin</option>
+          <option value="Europe/Athens">Europe/Athens</option>
+          <option value="Europe/Moscow">Europe/Moscow</option>
+          <option value="US/Eastern">US/Eastern</option>
+          <option value="US/Central">US/Central</option>
+          <option value="US/Pacific">US/Pacific</option>
+          <option value="US/Hawaii">US/Hawaii</option>
+          <option value="Australia/Perth">Australia/Perth</option>
+          <option value="Australia/Darwin">Australia/Darwin</option>
+          <option value="Australia/Sydney">Australia/Sydney</option>
+          <option value="Pacific/Auckland">Pacific/Auckland</option>
+        </select>
+      </div>
+      <div class="settings3"><br/></div>
+    </div>
+
+    <div class="setting help-settings">
+      "Time Zone" is used when calculating your local date and time for e.g. sliding the tasks correctly.
+      Default server time is GMT.
+    </div>
+
 
     <div class="setting">
       <div class="settings3">Ignore Deleted Tasks</div>

@@ -387,4 +387,39 @@ function testLoadProps(){
 
 }
 
+//*********************************************************************
+function testTZconversion(){
+  var d = new Date();
+  var tz = "Etc/GMT+12";
+  //tz = "Pacific/Marquesas";
+  //tz = "America/Los_Angeles";
+  //tz = "Australia/Sydney";
+  
+  throw ("test exception");
+  
+  try {
+    
+    
+    tz = ctz;
+  } catch (e) {
+    Logger.log(e.message);
+    throw("defaulting to "+tz);
+    
+  }
+  
+  var fd, fdG;
+  fdG = Utilities.formatDate(d, "GMT", "yyyy-MM-dd'T'00:00:00.000'Z'");
+  fd = Utilities.formatDate(d, tz, "yyyy-MM-dd'T'00:00:00.000'Z'");
+  var d = new Date(fdG);
+  var d2 = new Date(fd);
+  var l = d2 >= d;
+  fd = Utilities.formatDate(d, tz, "yyyy-MM-dd'T'HH:mm:ssXXX");
+  Logger.log(fd);
+  
+
+}
+
+
+
+
 
