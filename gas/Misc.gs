@@ -63,3 +63,8 @@ function leapYear(year) {
   // returns true for leap year
   return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
 }
+
+//----------------------------------------------------
+function getUserDetails() {
+  return ({ua:Session.getActiveUser().getEmail()});
+}

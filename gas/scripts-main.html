@@ -152,5 +152,14 @@ function checkAuthorization() {
       .isScriptAuthorized();
 }
 
+//---------------------------------------------------------------------------------
+function getUserAccount() {
+  google.script.run.withSuccessHandler(function (e){$('#usrAccnt').text(e.ua||'*** unknown ***');})
+      .withFailureHandler(function(e){console.log(e)})
+      .getUserDetails();
+
+}
+
+
 
 </script>
