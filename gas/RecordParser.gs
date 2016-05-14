@@ -302,7 +302,7 @@ Record_Parser.prototype.doParse_prim = function(mdcx){
     // if input buffer is not empty, but no syntax element left try optional attributes
     if (this.aBuffer.length != 0 && this.syntax.length == 0) {
       b = this.aBuffer[this.aBuffer.length-1];
-      logIt(LOG_DEV, '    >> trying optional parameters for input %s ', this.aBuffer);
+      //logIt(LOG_DEV, '    >> trying optional parameters for input %s ', this.aBuffer);
       i = 0;
       do {
         if (b.search(this.optional[i][0]) == 0) {       // if optional matches
