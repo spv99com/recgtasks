@@ -228,7 +228,9 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   
   // make sure recStart is the first day of week
   task.recDef.recStart.date.setDate(task.recDef.recStart.date.getDate()-task.recDef.recStart.date.getDay());
-  if (this.localeWeekStartsOn == "M") //if week starts on Monday, then let's move to Monday
+  
+  //if week starts on Monday, then let's move to Monday
+  if (this.localeWeekStartsOn == "M") 
     task.recDef.recStart.date.setDate(task.recDef.recStart.date.getDate() + 1);
   
   var rangeStart = (task.recDef.recStart.date > rS ? new Date(task.recDef.recStart.date.getTime()) : new Date(rS.getTime()));
@@ -241,29 +243,36 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   
   var dt = new Date(rangeStart.getTime());
   dt.setHours(0,0,0,0);
-  var eow = new Date();
+  logIt(LOG_DEV, '    >>> DoW#00 dt %s', dt);
   
+  var eow = new Date(); // end of week
+  
+  logIt(LOG_DEV, '    >>> DoW#10 RangeEnd %s', rangeEnd);
   if (rangeEnd > task.recDef.recEnd.date) 
     rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
+  logIt(LOG_DEV, '    >>> DoW#15 RangeEnd %s', rangeEnd);    
   
   dt.setDate(dt.getDate() - dt.getDay()); // the last Sunday (beginning of the week)
   
   if (this.localeWeekStartsOn == "M") //if week starts on Monday, then let's move to Monday
     dt.setDate(dt.getDate() + 1);
   //logIt(LOG_DEV, '    >>> DoW#2 begining of week is %s', this.localeWeekStartsOn);
-  //logIt(LOG_DEV, '    >>> DoW#2 begining of week %s', dt);
+  logIt(LOG_DEV, '    >>> DoW#20 begining of week %s', dt);
   
   dt.setDate(dt.getDate() - (d*7)); // move weeks back to the past to when recurrence start was set
-  //logIt(LOG_DEV, '    >>> DoW#3 start %s', dt);
+  logIt(LOG_DEV, '    >>> DoW#21 start %s', dt);
   
-  eow.setTime(dt.getTime() + weekMS ); 
+  eow.setTime(dt.getTime() + weekMS-1 ); // end of week is beginning of week plus milliseconds of one week
+  logIt(LOG_DEV, '    >>> DoW#30 eow %s', eow);
   
   if (eow < rangeStart) // if outside the range, then add one occurence
       dt.setDate(dt.getDate() + (task.recDef.frequency * 7));
+  logIt(LOG_DEV, '    >>> DoW#40 start %s', dt);      
+  
   
   while (dt <= rangeEnd) {
-    logIt(LOG_DEV, '    >>> DoW#4 dt %s', dt);
-    eow.setTime(dt.getTime() + weekMS );
+    logIt(LOG_DEV, '    >>> DoW#60 dt %s', dt);
+    eow.setTime(dt.getTime() + weekMS-1 );
     
     for (i=0;i<7;i++) {
       
@@ -345,7 +354,7 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
         logIt(LOG_WARN,'    >> Status: %s, %s', parser.err.code, parser.err.text);
       } else {
         
-        logIt(LOG_DEV, '    >> parsed "%s"', JSON.stringify(t.recDef));
+        //logIt(LOG_DEV, '    >> parsed "%s"', JSON.stringify(t.recDef));
         
         // if no recurrency start date defined, then let it be January 1st, 2000
         if (t.recDef.recStart.date == null) 
@@ -420,16 +429,16 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
     logIt(LOG_EXTINFO, '  > Saving month %s', ((m+1)|0));     
     for (d = 1; d <= this.monthDays[m]; d++) {
       if  (this.dayTasks[m][d].length > 0) {
-        logIt(LOG_EXTINFO, '  > Saving day %s', ((d)|0));
-        logIt(LOG_EXTINFO, '  > Day Tasks %s, %s', this.dayTasks[m][d].length, this.dayTasks[m][d]);
+        logIt(LOG_EXTINFO, '  > Day %s has %s tasks, %s', (d|0), this.dayTasks[m][d].length);
         for (i = 0; i < this.dayTasks[m][d].length; i++) {
           task = Tasks.Tasks.insert(this.dayTasks[m][d][i], taskListId);
           count++;
-          logIt(LOG_EXTINFO, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
+          logIt(LOG_DEV, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
           Utilities.sleep(gTaskQTime); // artificial pause to manage API quota          
         }
-      } else 
-        logIt(LOG_DEV, '  > Nothing to save for %s', ((d)|0));
+      } else {
+        //logIt(LOG_DEV, '  > Nothing to save for %s', ((d)|0));
+      }
       
     }
   }
@@ -447,7 +456,7 @@ TaskCalendar.prototype.removeDuplicatesFromArray = function(gTasks) {
       var title = gTasks[i].title;
       var dt = new Date(gTasks[i].due); //TIMEZONE?
       if (dt) {
-        logIt(LOG_DEV, '  >> Removing duplicates for %s, %s, %s, %s', title, dt, gTasks[i].due,gTasks[i].deleted );
+        //logIt(LOG_DEV, '  >> Removing duplicates for %s, %s, %s, %s', title, dt, gTasks[i].due,gTasks[i].deleted );
         this.removeDuplicatesFromDayTasks(title, dt); //remove tasks from specific date
       }
     }
@@ -462,12 +471,17 @@ TaskCalendar.prototype.removeDuplicatesFromDayTasks = function(title, dt) {
   var m = dt.getMonth();
   var d = dt.getDate();
   var f = 0;
+  var l = this.dayTasks[m][d].length; // number of entries for that day before deduplication
   
-  logIt(LOG_DEV, '  >>> List for %s/%s contains %s entries',m+1,d,this.dayTasks[m][d].length);
-  logIt(LOG_DEV, '  >>> Entries %s',this.dayTasks[m][d]);
+  //logIt(LOG_DEV, '  >>> List for %s/%s contains %s entries',m+1,d,this.dayTasks[m][d].length);
+  //logIt(LOG_DEV, '  >>> Entries %s',this.dayTasks[m][d]);
 
-if (this.dayTasks[m][d].length > 0)
+  if (this.dayTasks[m][d].length > 0){
     this.dayTasks[m][d] = this.dayTasks[m][d].filter(function(itm){ return itm.title != title });
+    
+    if (l > this.dayTasks[m][d].length)
+      logIt(LOG_DEV, '  >>> Removed %s duplicates from month/day %s/%s',l-this.dayTasks[m][d].length, m, d);    
+  }
     
   //for (var i=0;i < this.dayTasks[m][d].length; i++) {
   //  if (this.dayTasks[m][d][i].title == title){ // && (this.dayTasks[m][d][i].due2msec == dt.getTime()) 3.9.15 removed condition for duetime
@@ -476,7 +490,6 @@ if (this.dayTasks[m][d].length > 0)
   //  }
   //}
   
-  // logIt(LOG_DEV, '  >>> Removed %s duplicates',f);
-  logIt(LOG_DEV, '  >>> New entries %s',this.dayTasks[m][d]);
+  //logIt(LOG_DEV, '  >>> New entries %s',this.dayTasks[m][d]);
   
 }

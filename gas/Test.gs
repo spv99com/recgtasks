@@ -32,18 +32,22 @@ function runTest() {
   up.recListPrefix = prefix;
   up.destTaskListId = tlDEST.id;
   up.logVerboseLevel = "10";
-  up.dateRangeLength = "100";
+  up.dateRangeLength = "21";
   up.dateFormat = "2"; // US date format MM/DD/YYYY
   up.weekStartsOn = "S";
   
   dateEnd.setDate(dateEnd.getDate()+parseInt(up.dateRangeLength));
+  
   if (!USEEXISTING) {
     // create generic test tasks
     createTestTasks(up, tlRTTL.getId(), dateStart, dateEnd);
     // create test tasks for issue #28
-    createTestTasks_i28(up, tlRTTL.getId(), dateStart, dateEnd);
+    //createTestTasks_i28(up, tlRTTL.getId(), dateStart, dateEnd);
     // create test tasks for issue #28
-    createTestTasks_i29(up, tlRTTL.getId(), dateStart, dateEnd);
+    //createTestTasks_i29(up, tlRTTL.getId(), dateStart, dateEnd);
+    // create test tasks for issue #35
+    createTestTasks_i35(up, tlRTTL.getId(), dateStart, dateEnd);
+    
   }    
    
   processRecurrentLists(
@@ -53,8 +57,8 @@ function runTest() {
     });
 
 
-  var repeatProcessingCount = 0; // repeat processing X times
-  var repeatProcessingSkipDays = 7; // days to skip with each processing
+  var repeatProcessingCount = 3; // repeat processing X times
+  var repeatProcessingSkipDays = 3; // days to skip with each processing
   var i = 0;
 
   for (i=0;i<repeatProcessingCount;i++){  
@@ -157,6 +161,29 @@ function createTestTasks_i29(userProps, dst, ds, de) {
 
 }
 
+
+// ********************************************************************
+function createTestTasks_i35(userProps, dst, ds, de) {
+  // test tasks for issue #35 - bi-weekly task is repeated every week
+
+  var r = new Record_RGT();
+  r.locFmt.setWeekStart(userProps.weekStartsOn);
+  r.locFmt.setDateFmt(userProps.dateFormat);
+  
+  var t,n;
+
+  // *** WEEKLY every second week on Wednesday starting on Mar 2, 2016
+  r.recType = "W";
+  r.frequency = 2;
+  r.weekly.days_of_week = [false, false, false, true, false, false, false];
+  r.recStart = new Date(2016,2,2);  // February 29,2016 (which is a leap year)
+  //r.recEnd = new Date(2016,4,31);
+  n = r.toString()+"\nSecond line of notes";
+  t = "[#i35-01] "+r.recType+(r.frequency|0)+" 2 on Wed";
+  createTask(dst, t, n);
+
+
+}
 
 // ********************************************************************
 function createTestTasks(userProps, dst, ds, de) {
