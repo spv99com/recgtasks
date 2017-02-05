@@ -98,8 +98,9 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rS, rE) {
 
   var y = rangeStart.getFullYear();
   
-  // the first month of occurence is the month when occurence started
-  var m = task.recDef.recStart.date.getMonth();
+  // if recurrence started in the previous years, then the first month of occurence is now
+  // if recurrence started this year, then take first month from recurrence start date
+  var m = (task.recDef.recStart.date.getFullYear() < y)? rangeStart.getMonth():task.recDef.recStart.date.getMonth();
   var d = this.alignMonthDays(m, task.recDef.monthly.day);
   var t;
   
@@ -107,12 +108,14 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rS, rE) {
     rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
   
   var dt = new Date(y, m, d, 0, 0, 0, 0);
+  logIt(LOG_DEV, '    >>> First occurence will be on %s', dt);
   
   while (dt < rangeStart) {
     m += task.recDef.frequency;
     d = this.alignMonthDays(m % 12, task.recDef.monthly.day);    
     dt = new Date(y, m, d, 0, 0, 0, 0);
   }
+  logIt(LOG_DEV, '    >>> First occurence after adjustment is on %s', dt);
   
   while (dt <= rangeEnd) {
     t = this.copyTask(task);
@@ -150,17 +153,21 @@ TaskCalendar.prototype.createTasks_DoY = function(task, rS, rE) {
   
   var dt = new Date(rangeStart.getTime());
   dt.setTime(task.recDef.recStart.date.getTime());
+  logIt(LOG_DEV, '    >>> First occurence will be on %s', dt);
   
   if (dt < rangeStart) 
-    dt.setDate(this.alignMonthDays(task.recDef.yearly.month % 12, task.recDef.yearly.day)); 
+    dt.setDate(this.alignMonthDays(task.recDef.yearly.month % 12, task.recDef.yearly.day));
+  logIt(LOG_DEV, '    >>> First occurence adj#1 on %s', dt);  
   
   if (dt < rangeStart)
     dt.setMonth(task.recDef.yearly.month % 12);
+  logIt(LOG_DEV, '    >>> First occurence adj#2 on %s', dt);      
   
   while (dt < rangeStart) {
     y += task.recDef.frequency;
     dt.setFullYear(y);
   }
+  logIt(LOG_DEV, '    >>> First occurence adj#3 on %s', dt);  
   
   while (dt <= rangeEnd) {
     t = this.copyTask(task);
@@ -196,10 +203,14 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rS, rE) {
   
   var dt = new Date(rangeStart.getTime());
   dt.setHours(0,0,0,0);
+  logIt(LOG_DEV, '    >>> First occurence will be on %s', dt);
   
   dt.setDate(dt.getDate() - d); // date of the previous occurence
+  logIt(LOG_DEV, '    >>> First occurence adj#1 on %s', dt);  
+  
   if (dt < rangeStart) // if outside the range, then add one occurence
     dt.setDate(dt.getDate() + task.recDef.frequency);
+  logIt(LOG_DEV, '    >>> First occurence adj#2 on %s', dt);
   
   while (dt <= rangeEnd) {
     t = this.copyTask(task);
@@ -234,16 +245,18 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
     task.recDef.recStart.date.setDate(task.recDef.recStart.date.getDate() + 1);
   
   var rangeStart = (task.recDef.recStart.date > rS ? new Date(task.recDef.recStart.date.getTime()) : new Date(rS.getTime()));
+  logIt(LOG_DEV, '    >>> DoW#00 rangeStart, recStart: %s,%s', rangeStart, task.recDef.recStart.date);
   var rangeEnd = new Date(rE.getTime());
   
   var d = (rangeStart.getTime() - task.recDef.recStart.date.getTime()) / weekMS; //difference in miliseconds to weeks
+  logIt(LOG_DEV, '    >>> DoW#01 d, floor(d), frequency: %s,%s,%s', d, Math.floor(d % task.recDef.frequency), d % task.recDef.frequency);
   d = Math.floor(d % task.recDef.frequency); // number of weeks since last calculated occurence rounded to WHOLE weeks
   var m;
   var w;
   
   var dt = new Date(rangeStart.getTime());
   dt.setHours(0,0,0,0);
-  logIt(LOG_DEV, '    >>> DoW#00 dt %s', dt);
+  logIt(LOG_DEV, '    >>> First occurence will be on %s', dt);
   
   var eow = new Date(); // end of week
   
@@ -253,21 +266,21 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   logIt(LOG_DEV, '    >>> DoW#15 RangeEnd %s', rangeEnd);    
   
   dt.setDate(dt.getDate() - dt.getDay()); // the last Sunday (beginning of the week)
+  logIt(LOG_DEV, '    >>> First occurence adj#1 on %s', dt);
   
   if (this.localeWeekStartsOn == "M") //if week starts on Monday, then let's move to Monday
     dt.setDate(dt.getDate() + 1);
-  //logIt(LOG_DEV, '    >>> DoW#2 begining of week is %s', this.localeWeekStartsOn);
-  logIt(LOG_DEV, '    >>> DoW#20 begining of week %s', dt);
+  logIt(LOG_DEV, '    >>> First occurence adj#2 on %s', dt);  
   
   dt.setDate(dt.getDate() - (d*7)); // move weeks back to the past to when recurrence start was set
-  logIt(LOG_DEV, '    >>> DoW#21 start %s', dt);
+  logIt(LOG_DEV, '    >>> First occurence adj#3 on %s', dt);
   
   eow.setTime(dt.getTime() + weekMS-1 ); // end of week is beginning of week plus milliseconds of one week
   logIt(LOG_DEV, '    >>> DoW#30 eow %s', eow);
   
   if (eow < rangeStart) // if outside the range, then add one occurence
       dt.setDate(dt.getDate() + (task.recDef.frequency * 7));
-  logIt(LOG_DEV, '    >>> DoW#40 start %s', dt);      
+  logIt(LOG_DEV, '    >>> First occurence adj#4 on %s', dt);
   
   
   while (dt <= rangeEnd) {
