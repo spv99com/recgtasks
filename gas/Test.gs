@@ -108,8 +108,8 @@ function createTestTasks_i28(userProps, dst, ds, de) {
   r.recType = "M";
   r.frequency = 3;
   r.monthly.day = 2;
-  r.recStart = new Date(ds.getTime())
-  r.recEnd = null; 
+  r.recStart.date = new Date(ds.getTime())
+  r.recEnd.date = null; 
   n = r.toString()+"\nSecond line of notes";
   t = "[#i18-01] "+r.recType+(r.frequency|0)+" 2";
   createTask(dst, t, n);
@@ -118,8 +118,8 @@ function createTestTasks_i28(userProps, dst, ds, de) {
   r.recType = "W";
   r.frequency = 2;
   r.weekly.days_of_week = [false, true, false, false, true, false, false];
-  r.recStart = new Date(ds.getTime())
-  r.recEnd = null; 
+  r.recStart.date = new Date(ds.getTime())
+  r.recEnd.date = null; 
   n = r.toString()+"\nSecond line of notes";
   t = "[#i18-02] "+r.recType+(r.frequency|0)+" 2 on Mon/Thu";
   createTask(dst, t, n);
@@ -142,8 +142,8 @@ function createTestTasks_i29(userProps, dst, ds, de) {
   r.recType = "M";
   r.frequency = 1;
   r.monthly.day = 29;
-  r.recStart = new Date(ds.getTime())
-  r.recEnd = null; 
+  r.recStart.date = new Date(ds.getTime())
+  r.recEnd.date = null; 
   n = r.toString()+"\nSecond line of notes";
   t = "[#i29-01] "+r.recType+(r.frequency|0)+" 2";
   createTask(dst, t, n);
@@ -152,8 +152,8 @@ function createTestTasks_i29(userProps, dst, ds, de) {
   r.recType = "W";
   r.frequency = 1;
   r.weekly.days_of_week = [false, true, false, false, true, false, false];
-  r.recStart = new Date(2016,1,29);  // February 29,2016 (which is a leap year)
-  r.recEnd = new Date(2016,3,31);
+  r.recStart.date = new Date(2016,1,29);  // February 29,2016 (which is a leap year)
+  r.recEnd.date = new Date(2016,3,31);
   n = r.toString()+"\nSecond line of notes";
   t = "[#i29-02] "+r.recType+(r.frequency|0)+" 1 on Mon/Thu";
   createTask(dst, t, n);
@@ -165,6 +165,8 @@ function createTestTasks_i29(userProps, dst, ds, de) {
 // ********************************************************************
 function createTestTasks_i35(userProps, dst, ds, de) {
   // test tasks for issue #35 - bi-weekly task is repeated every week
+  // actually the issue was with calculating the start of recurrence for tasks having start date in the future
+  // following two tasks should repeat alternatively - never on the same day
 
   var r = new Record_RGT();
   r.locFmt.setWeekStart(userProps.weekStartsOn);
@@ -172,16 +174,23 @@ function createTestTasks_i35(userProps, dst, ds, de) {
   
   var t,n;
 
-  // *** WEEKLY every second week on Wednesday starting on Mar 2, 2016
+  // *** WEEKLY every second week on Wednesday starting on December 4, 2015
   r.recType = "W";
   r.frequency = 2;
   r.weekly.days_of_week = [false, false, false, true, false, false, false];
-  r.recStart = new Date(2016,2,2);  // February 29,2016 (which is a leap year)
-  //r.recEnd = new Date(2016,4,31);
+  r.recStart.date = new Date(2015,11,1);  // Dec 1, 2015
   n = r.toString()+"\nSecond line of notes";
   t = "[#i35-01] "+r.recType+(r.frequency|0)+" 2 on Wed";
   createTask(dst, t, n);
 
+  // *** WEEKLY every second week on Wednesday starting on December 11, 2015
+  r.recType = "W";
+  r.frequency = 2;
+  r.weekly.days_of_week = [false, false, false, true, false, false, false];
+  r.recStart.date = new Date(2015,11,11);  // December 11, 2015
+  n = r.toString()+"\nSecond line of notes";
+  t = "[#i35-02] "+r.recType+(r.frequency|0)+" 2 on Wed";
+  createTask(dst, t, n);
 
 }
 
@@ -200,9 +209,9 @@ function createTestTasks(userProps, dst, ds, de) {
   // *** DAILY the first 40 days
   r.recType = "D";
   r.frequency = 1;
-  r.recStart = new Date(ds.getTime());
-  r.recEnd = new Date(r.recStart.getTime()+86399999); //23:59:59.999
-  r.recEnd.setDate(r.recEnd.getDate()+40-1);
+  r.recStart.date = new Date(ds.getTime());
+  r.recEnd.date = new Date(r.recStart.date.getTime()+86399999); //23:59:59.999
+  r.recEnd.date.setDate(r.recEnd.date.getDate()+40-1);
   n = r.toString()+"\nSecond line of notes";
   t = "[#01] "+r.recType+(r.frequency|0)+" 40 days";
   createTask(dst, t, n);
@@ -211,9 +220,9 @@ function createTestTasks(userProps, dst, ds, de) {
   // *** DAILY every 3 day the first 40 days
   r.recType = "D";
   r.frequency = 4;
-  r.recStart = new Date(ds.getTime());
-  r.recEnd = new Date(r.recStart.getTime()+86399999); 
-  r.recEnd.setDate(r.recEnd.getDate()+40);
+  r.recStart.date = new Date(ds.getTime());
+  r.recEnd.date = new Date(r.recStart.date.getTime()+86399999); 
+  r.recEnd.date.setDate(r.recEnd.date.getDate()+40);
   n = r.toString()+"\nSecond line of notes";
   t = "[#02] "+r.recType+(r.frequency|0)+" (40 days)";
   createTask(dst, t, n);
@@ -223,9 +232,9 @@ function createTestTasks(userProps, dst, ds, de) {
   r.recType = "W";
   r.frequency = 1;
   r.weekly.days_of_week = [false, true, false, false, true, false, false];
-  r.recStart = new Date(ds.getTime());
-  r.recEnd = new Date(r.recStart.getTime()+86399999); 
-  r.recEnd.setDate(r.recEnd.getDate()+40);
+  r.recStart.date = new Date(ds.getTime());
+  r.recEnd.date = new Date(r.recStart.date.getTime()+86399999); 
+  r.recEnd.date.setDate(r.recEnd.date.getDate()+40);
   n = r.toString()+"\nSecond line of notes";
   t = "[#03] "+r.recType+(r.frequency|0)+" Mo,Th (40 days)";
   createTask(dst, t, n);
@@ -235,8 +244,8 @@ function createTestTasks(userProps, dst, ds, de) {
   r.recType = "W";
   r.frequency = 3;
   r.weekly.days_of_week = [false, false, true, false, false, false, false];
-  r.recStart = null;
-  r.recEnd = null; 
+  r.recStart.date = null;
+  r.recEnd.date = null; 
   n = r.toString()+"\nSecond line of notes";
   t = "[#04] "+r.recType+(r.frequency|0)+" Tue (all)";
   createTask(dst, t, n);
@@ -247,9 +256,9 @@ function createTestTasks(userProps, dst, ds, de) {
   r.recType = "M";
   r.frequency = 1;
   r.monthly.day = 20;
-  r.recStart = new Date(ds.getTime())
-  r.recEnd = new Date(r.recStart.getTime()+86399999); 
-  r.recEnd.setDate(r.recEnd.getDate()+100);
+  r.recStart.date = new Date(ds.getTime())
+  r.recEnd.date = new Date(r.recStart.date.getTime()+86399999); 
+  r.recEnd.date.setDate(r.recEnd.date.getDate()+100);
   n = r.toString()+"\nSecond line of notes";
   t = "[#05] "+r.recType+(r.frequency|0)+" 20 (100 days)";
   createTask(dst, t, n);
@@ -259,8 +268,8 @@ function createTestTasks(userProps, dst, ds, de) {
   r.recType = "M";
   r.frequency = 2;
   r.monthly.day = 31; //this is going to test month alignment too => 31 is the last day of a month, so in February it should create instance on 28th
-  r.recStart = null;
-  r.recEnd = null;
+  r.recStart.date = null;
+  r.recEnd.date = null;
   n = r.toString()+"\nSecond line of notes";
   t = "[#06] "+r.recType+(r.frequency|0)+" 31 (all)";
   createTask(dst, t, n);
@@ -271,8 +280,8 @@ function createTestTasks(userProps, dst, ds, de) {
   r.frequency = 1;
   r.yearly.day = 20;
   r.yearly.month = 5; //months are 0-11
-  r.recStart = null;
-  r.recEnd = null;
+  r.recStart.date = null;
+  r.recEnd.date = null;
   n = r.toString()+"\nSecond line of notes";
   t = "[#07] "+r.recType+(r.frequency|0)+" June 20 (all)";
   createTask(dst, t, n);
@@ -282,8 +291,8 @@ function createTestTasks(userProps, dst, ds, de) {
   r.recType = "M";
   r.frequency = 1;
   r.monthly.day = 8; 
-  r.recStart = null;
-  r.recEnd = null;
+  r.recStart.date = null;
+  r.recEnd.date = null;
   n = r.toString()+"\nSecond line of notes";
   t = "[#08] "+r.recType+(r.frequency|0)+" 8 (all)";
   createTask(dst, t, n);
@@ -292,11 +301,11 @@ function createTestTasks(userProps, dst, ds, de) {
   // *** DAILY from the today+2 for 10 days
   r.recType = "D";
   r.frequency = 1;
-  r.recStart = new Date();
-  r.recStart.setHours(0,0,0,0);
-  r.recStart.setDate(r.recStart.getDate()+2)
-  r.recEnd = new Date(r.recStart.getTime()+86399999); //23:59:59.999
-  r.recEnd.setDate(r.recEnd.getDate()+10-1);
+  r.recStart.date = new Date();
+  r.recStart.date.setHours(0,0,0,0);
+  r.recStart.date.setDate(r.recStart.date.getDate()+2)
+  r.recEnd.date = new Date(r.recStart.date.getTime()+86399999); //23:59:59.999
+  r.recEnd.date.setDate(r.recEnd.date.getDate()+10-1);
   n = r.toString()+"\nSecond line of notes";
   t = "[#09] "+r.recType+(r.frequency|0)+" 10 days";
   createTask(dst, t, n);

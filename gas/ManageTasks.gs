@@ -168,8 +168,8 @@ function updateRecTask(taskListId, t){
 
   r.recType = t.recType;
   r.frequency = t.recFreq;
-  r.recStart = ((t.recStart_ms) ? new Date(t.recStart_ms):null);
-  r.recEnd = ((t.recEnd_ms) ? new Date(t.recEnd_ms):null);
+  r.recStart.date = ((t.recStart_ms) ? new Date(t.recStart_ms):null);
+  r.recEnd.date = ((t.recEnd_ms) ? new Date(t.recEnd_ms):null);
   r.weekly.days_of_week = t.recW_dow;
   r.monthly.day = t.recM_day;
   r.yearly.month = t.recY_month;
@@ -207,16 +207,16 @@ function createExampleList(title) {
   r.recType = "W";
   r.frequency = 1;
   r.weekly.days_of_week = [false, true, false, false, true, false, false];
-  r.recStart = null;
-  r.recEnd = null;
+  r.recStart.date = null;
+  r.recEnd.date = null;
   s = r.toString();
   createTask(id, "Buy milk", "Buy milk every week on Monday & Thursday\n"+s);
 
   r.recType = "M";
   r.frequency = 1;
   r.monthly.day = 20;
-  r.recStart = null;
-  r.recEnd = null;  
+  r.recStart.date = null;
+  r.recEnd.date = null;  
   s = r.toString();
   createTask(id, "Pay kindergarten", "Pay kindergarten every month on 20th\n"+s);
 
@@ -224,23 +224,23 @@ function createExampleList(title) {
   r.frequency = 1;
   r.yearly.day = 14;
   r.yearly.month = 3; //months are 0-11
-  r.recStart = null;
-  r.recEnd = null;  
+  r.recStart.date = null;
+  r.recEnd.date = null;  
   s = r.toString();
   createTask(id, "Pay taxes", "Every April 14th\n"+s);
   
   r.recType = "W";
   r.frequency = 2;
   r.weekly.days_of_week = [false, false, false, false, false, false, true];
-  r.recStart = null;
-  r.recEnd = null;  
+  r.recStart.date = null;
+  r.recEnd.date = null;  
   s = r.toString();
   createTask(id, "Water plants", "Every second Saturday\n"+s);
 
   r.recType = "D";
   r.frequency = 5;
-  r.recStart = new Date(d.getFullYear(),8,1); 
-  r.recEnd = new Date(d.getFullYear(),11,30); 
+  r.recStart.date = new Date(d.getFullYear(),8,1); 
+  r.recEnd.date = new Date(d.getFullYear(),11,30); 
   s = r.toString();
   createTask(id, "Do jogging", "Do it every 5th day during Sep-Dec\n"+s);
   
