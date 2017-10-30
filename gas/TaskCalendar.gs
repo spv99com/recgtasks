@@ -155,12 +155,10 @@ TaskCalendar.prototype.createTasks_DoY = function(task, rS, rE) {
   dt.setTime(task.recDef.recStart.date.getTime());
   logIt(LOG_DEV, '    >>> First occurence will be on %s', dt);
   
-  if (dt < rangeStart) 
-    dt.setDate(this.alignMonthDays(task.recDef.yearly.month % 12, task.recDef.yearly.day));
+  dt.setDate(this.alignMonthDays(task.recDef.yearly.month % 12, task.recDef.yearly.day));
   logIt(LOG_DEV, '    >>> First occurence adj#1 on %s', dt);  
   
-  if (dt < rangeStart)
-    dt.setMonth(task.recDef.yearly.month % 12);
+  dt.setMonth(task.recDef.yearly.month % 12);
   logIt(LOG_DEV, '    >>> First occurence adj#2 on %s', dt);      
   
   while (dt < rangeStart) {
