@@ -42,7 +42,7 @@ function getUserProps() {
   logIt(LOG_DEV, "Props loaded %s",JSON.stringify(newp));
   
   // check values
-  if (newp.dateRangeLength.toString().search(/^(?:14|21|28|42|56)$/) == -1) { 
+  if (newp.dateRangeLength.toString().search(/^(?:00|14|21|28|42|56)$/) == -1) { 
     newp.dateRangeLength = dftRangeLength;
     logIt(LOG_DEV, "Date range defaulted to %s",newp.dateRangeLength);
     allOK = false;
