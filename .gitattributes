@@ -17,4 +17,4 @@
 *.RTF	 diff=astextplain
 
 # Google apps script
-*.gs  diff=astextplain
+*.gs  text
