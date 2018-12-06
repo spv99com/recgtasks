@@ -39,6 +39,7 @@ function createTriggers(tmz) {
   // If no timezone specified, script timezone is used (GMT)
   ScriptApp.newTrigger(triggerFunction)
       .timeBased()
+      .everyDays(1)
       .inTimezone(tmz)
       .atHour(1)
       .create();
@@ -54,7 +55,7 @@ function getTriggerDetails () {
 function removeAllTriggers() {
   var t = ScriptApp.getProjectTriggers();
   for (var i=0;i<t.length;i++){
-    ScriptApp.deleteTrigger(t[i]) 
+    ScriptApp.deleteTrigger(t[i]);
   };
   return t.length;
 }

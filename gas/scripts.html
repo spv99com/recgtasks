@@ -22,6 +22,8 @@
 // When the page loads.
 $(function() {
   initNavBar();
+  loadSettings();
+  getUserAccount(); 
      
   $('#frmSettings').submit(function(e) { saveSettings(); return false });
   $('.btnRunNow').on('click', runNow);
@@ -32,10 +34,8 @@ $(function() {
   $('#navBarItmSettings').on('click', showSettings);
   $('.linkExample').on('click', createExampleList);
   $('#btnUninstall').on('click', uninstallTriggers);
-  $('#btnInstTrigger').on('click', installTriggers);
+  $('#btnInstTrigger').on('click', function(){installTriggers($('#userTMZ').val());});
     
-  loadSettings();
-  getUserAccount();
   
   showMain();
 
