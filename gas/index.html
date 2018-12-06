@@ -71,11 +71,11 @@
     All you need to do is:
   </p>
   <ol>
-      <li>Make sure settings of this app are right for you (e.g. date format &amp; first day of week). 
+      <li>Make sure settings of this app are right for you (e.g. time-zone, &amp; date format &amp; first day of week). 
           You can change them anytime, but such change can create e.g. task duplicates. </li>
       <li>Create new, special, task list - which will contain recurrent tasks definitions.</li>
       <li>Create few recurrent tasks (in that special task list) - recurrence pattern is stored in the task notes.</li>
-      <li>Wait 60 minutes, or run recurrent task processing manually (see below).</li>
+      <li>Run recurrent task processing manually (see below) or wait till tomorrow morning.</li>
   </ol>
   <p>    
     Alternatively, you can <a class="linkExample" href="">click here</a> to create an example 
@@ -93,11 +93,10 @@
   <p/>
   <div id="noTrigger" style="background-color:Orange;padding:10px;display:none;">
     <p>
-      Application IS STOPPED. 
+      Application IS STOPPED.
     </p>
     <p>
-      Google Apps Script clock-based trigger is not activated/installed. Trigger is required in order for application to run every hour
-      and "calculate" repeating tasks.
+      Google Apps Script clock-based trigger is not activated/installed. Trigger is required in order for application to run every day at 1am and "calculate" repeating tasks.
     </p>
     <p>
       If you would like to use this app, please, activate/install trigger by clicking this button <button type="button" id="btnInstTrigger">Install Trigger</button> <span id="txtInstalled"></span>
@@ -122,7 +121,7 @@
       <td>
         <h2>Manual Run</h2>
         <p>
-          Normal tasks are generated from recurrent tasks templates automatically every 60 minutes, 
+          Normal tasks are generated from recurrent tasks templates automatically every day at 1am, 
           but you can start the process manually by clicking button below.
         </p>
   
