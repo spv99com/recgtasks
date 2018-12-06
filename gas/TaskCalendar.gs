@@ -104,11 +104,13 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rS, rE) {
   var rangeStart = (task.recDef.recStart.date > rS ? new Date(task.recDef.recStart.date.getTime()) : new Date(rS.getTime()));
   var rangeEnd = new Date(rE.getTime());
 
-  var y = rangeStart.getFullYear();
+  //var y = rangeStart.getFullYear();
+  var y = task.recDef.recStart.date.getFullYear();
   
   // if recurrence started in the previous years, then the first month of occurence is now
   // if recurrence started this year, then take first month from recurrence start date
-  var m = (task.recDef.recStart.date.getFullYear() < y)? rangeStart.getMonth():task.recDef.recStart.date.getMonth();
+  //var m = (task.recDef.recStart.date.getFullYear() < y)? rangeStart.getMonth():task.recDef.recStart.date.getMonth();
+  var m = task.recDef.recStart.date.getMonth();
   var d = this.alignMonthDays(m, task.recDef.monthly.day);
   var t;
   
