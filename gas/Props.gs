@@ -57,7 +57,7 @@ function getUserProps() {
   }
   
   // handling of property values saved in old format
-  if (newp.logVerboseLevel.toString().search(/^(?:01|02|03|04|10)$/) == -1) {
+  if (newp.logVerboseLevel.toString().search(/^(?:01|02|03|04|10|20)$/) == -1) {
     newp.logVerboseLevel = dftLogLevel;
     logIt(LOG_DEV, "Log verbose level defaulted to %s",newp.logVerboseLevel);
     allOK = false;

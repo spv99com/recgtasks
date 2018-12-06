@@ -19,6 +19,7 @@ LOG_WARN = "02";
 LOG_INFO = "03";
 LOG_EXTINFO = "04";
 LOG_DEV = "10";
+LOG_TRACE = "20";
 
 var logLevel = LOG_WARN;
 var logs = ["execLog1", "execLog2", "execLog3", "execLog4", "execLog5"];
@@ -33,6 +34,8 @@ function logIt(l,fmt,v1, v2, v3, v4, v5, v6) {
     case LOG_WARN: prefix = "[W] "; break;
     case LOG_INFO: prefix = "[I] "; break;
     case LOG_EXTINFO: prefix = "[O] "; break;
+    case LOG_DEV: prefix = "[D] "; break;
+    case LOG_TRACE: prefix = "[T] "; break;
   }
   
   Logger.log(prefix+fmt+"<br>", v1, v2, v3, v4, v5, v6);

@@ -63,6 +63,12 @@ TaskCalendar.prototype.appendPattern = function(a) {
   this.appendRecPattern = a;
 }
 
+//--------------------------------------------------
+TaskCalendar.prototype.setLogLevel = function(a) {
+  this.logLevel = a;
+}
+
+
 
 //--------------------------------------------------
 TaskCalendar.prototype.copyTask = function(task) {
@@ -113,19 +119,30 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rS, rE) {
   var m = task.recDef.recStart.date.getMonth();
   var d = this.alignMonthDays(m, task.recDef.monthly.day);
   var t;
+  var tlog = "";
+  if (this.logLevel >= LOG_TRACE){
+    tlog = "\nDebug:";
+  }
   
   if (rangeEnd > task.recDef.recEnd.date) 
     rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
   
   var dt = new Date(y, m, d, 0, 0, 0, 0);
-  logIt(LOG_DEV, '    >>> First occurence will be on %s', dt);
+  logIt(LOG_DEV, '    >>> First occurence will be on m=%s, dt=%s', m, dt);
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\n1st m="+m+" dt="+dt.toISOString();
+  }
   
   while (dt < rangeStart) {
     m += task.recDef.frequency;
     d = this.alignMonthDays(m % 12, task.recDef.monthly.day);    
     dt = new Date(y, m, d, 0, 0, 0, 0);
   }
-  logIt(LOG_DEV, '    >>> First occurence after adjustment is on %s', dt);
+  logIt(LOG_DEV, '    >>> First occurence after adjustment is on m=%s, dt=%s', m, dt);
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\n1adj m="+m+" dt="+dt.toISOString();
+  }
+  
   
   while (dt <= rangeEnd) {
     t = this.copyTask(task);
@@ -133,6 +150,11 @@ TaskCalendar.prototype.createTasks_DoM = function(task, rS, rE) {
     t.due2msec = dt.getTime(); //secondary due date kept for further internal processing
     
     logIt(LOG_DEV, '    >>> Creating instance %s ** %s/%s', dt, m, d);
+    if (this.logLevel >= LOG_TRACE){
+      tlog += "\ninst m="+m+" dt="+t.due;
+    }
+    
+    t.notes += tlog;
     this.dayTasks[m % 12][d].push(t); //append to the end 
     
     m += task.recDef.frequency;
@@ -157,6 +179,11 @@ TaskCalendar.prototype.createTasks_DoY = function(task, rS, rE) {
   var m = task.recDef.yearly.month % 12;
   var d = this.alignMonthDays(m, task.recDef.yearly.day);
   var t;
+  var tlog = "";
+  if (this.logLevel >= LOG_TRACE){
+    tlog = "\nDebug:";
+  }
+
   
   if (rangeEnd > task.recDef.recEnd.date) 
     rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
@@ -164,25 +191,44 @@ TaskCalendar.prototype.createTasks_DoY = function(task, rS, rE) {
   var dt = new Date(rangeStart.getTime());
   dt.setTime(task.recDef.recStart.date.getTime());
   logIt(LOG_DEV, '    >>> First occurence will be on %s', dt);
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\n1st dt="+dt.toISOString();
+  }
   
   dt.setDate(this.alignMonthDays(task.recDef.yearly.month % 12, task.recDef.yearly.day));
   logIt(LOG_DEV, '    >>> First occurence adj#1 on %s', dt);  
-  
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\n1adj dt="+dt.toISOString();
+  }
+   
   dt.setMonth(task.recDef.yearly.month % 12);
   logIt(LOG_DEV, '    >>> First occurence adj#2 on %s', dt);      
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\n2adj dt="+dt.toISOString();
+  }
   
   while (dt < rangeStart) {
     y += task.recDef.frequency;
     dt.setFullYear(y);
   }
   logIt(LOG_DEV, '    >>> First occurence adj#3 on %s', dt);  
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\n3adj dt="+dt.toISOString();
+  }
+  
   
   while (dt <= rangeEnd) {
     t = this.copyTask(task);
     t.due = date2rfc3339(dt, this.TZoffset); //Google Tasks require due date to be written in rfc3339 format
     t.due2msec = dt.getTime(); //secondary due date kept for further internal processing
     
+    if (this.logLevel >= LOG_TRACE){
+      tlog += "\ninst m="+m+" dt="+t.due;
+    }
+    
+    t.notes += tlog;
     logIt(LOG_DEV, '    >>> Creating instance %s ** %s/%s', dt, m, d);
+    
     this.dayTasks[m][d].push(t); //append to the end 
     
     y += task.recDef.frequency;
@@ -205,6 +251,10 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rS, rE) {
   d = Math.floor(d % task.recDef.frequency); // number of days since last calculated occurence rounded to WHOLE days
   var m;
   var t;
+  var tlog = "";
+  if (this.logLevel >= LOG_TRACE){
+    tlog = "\nDebug:";
+  }  
   
   if (rangeEnd > task.recDef.recEnd.date) 
     rangeEnd = task.recDef.recEnd.date; // do not calculate behind the recurrence validity end
@@ -212,13 +262,23 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rS, rE) {
   var dt = new Date(rangeStart.getTime());
   dt.setHours(0,0,0,0);
   logIt(LOG_DEV, '    >>> First occurence will be on %s', dt);
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\n1st dt="+dt.toISOString();
+  }  
   
   dt.setDate(dt.getDate() - d); // date of the previous occurence
   logIt(LOG_DEV, '    >>> First occurence adj#1 on %s', dt);  
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\nadj1 dt="+dt.toISOString();
+  }  
   
   if (dt < rangeStart) // if outside the range, then add one occurence
     dt.setDate(dt.getDate() + task.recDef.frequency);
   logIt(LOG_DEV, '    >>> First occurence adj#2 on %s', dt);
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\nadj2 dt="+dt.toISOString();
+  }  
+  
   
   while (dt <= rangeEnd) {
     t = this.copyTask(task);
@@ -228,6 +288,11 @@ TaskCalendar.prototype.createTasks_DAY = function(task, rS, rE) {
     d = dt.getDate();
     m = dt.getMonth();
     
+    if (this.logLevel >= LOG_TRACE){
+      tlog += "\ninst dt="+t.due;
+    }
+    
+    t.notes += tlog;
     logIt(LOG_DEV, '    >>> Creating instance %s ** %s ** %s/%s', dt, t.due, m, d);
     this.dayTasks[m][d].push(t); //append to the end 
     
@@ -244,6 +309,11 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   //   rS, rE - start and end date for data range to be considered
   
   var weekMS = 7 * 86400000; // milliseconds in a week
+  
+  var tlog = "";
+  if (this.logLevel >= LOG_TRACE){
+    tlog = "\nDebug:";
+  }
   
   // make sure recStart is the first day of week
   task.recDef.recStart.date.setDate(task.recDef.recStart.date.getDate()-task.recDef.recStart.date.getDay());
@@ -265,6 +335,9 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   var dt = new Date(rangeStart.getTime());
   dt.setHours(0,0,0,0);
   logIt(LOG_DEV, '    >>> First occurence will be on %s', dt);
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\n1st dt="+dt.toISOString();
+  }  
   
   var eow = new Date(); // end of week
   
@@ -275,13 +348,23 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   
   dt.setDate(dt.getDate() - dt.getDay()); // the last Sunday (beginning of the week)
   logIt(LOG_DEV, '    >>> First occurence adj#1 on %s', dt);
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\nadj1 dt="+dt.toISOString();
+  }    
   
   if (this.localeWeekStartsOn == "M") //if week starts on Monday, then let's move to Monday
     dt.setDate(dt.getDate() + 1);
   logIt(LOG_DEV, '    >>> First occurence adj#2 on %s', dt);  
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\nadj2 dt="+dt.toISOString();
+  }    
+  
   
   dt.setDate(dt.getDate() - (d*7)); // move weeks back to the past to when recurrence start was set
   logIt(LOG_DEV, '    >>> First occurence adj#3 on %s', dt);
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\nadj3 dt="+dt.toISOString();
+  }    
   
   eow.setTime(dt.getTime() + weekMS-1 ); // end of week is beginning of week plus milliseconds of one week
   logIt(LOG_DEV, '    >>> DoW#30 eow %s', eow);
@@ -289,7 +372,9 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
   if (eow < rangeStart) // if outside the range, then add one occurence
       dt.setDate(dt.getDate() + (task.recDef.frequency * 7));
   logIt(LOG_DEV, '    >>> First occurence adj#4 on %s', dt);
-  
+  if (this.logLevel >= LOG_TRACE){
+    tlog += "\nadj4 dt="+dt.toISOString();
+  }    
   
   while (dt <= rangeEnd) {
     logIt(LOG_DEV, '    >>> DoW#60 dt %s', dt);
@@ -305,6 +390,12 @@ TaskCalendar.prototype.createTasks_DoW = function(task, rS, rE) {
     
           d = dt.getDate();
           m = dt.getMonth();
+          
+          if (this.logLevel >= LOG_TRACE){
+            tlog += "\ninst dt="+t.due;
+          }
+          
+          t.notes += tlog;          
     
           logIt(LOG_DEV, '    >>> Creating instance %s ** %s ** %s/%s', dt, t.due, m, d);
           this.dayTasks[m][d].push(t); //append to the end 
