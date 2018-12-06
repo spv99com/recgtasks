@@ -66,10 +66,19 @@ function getLogFile() {
 /**
  * Installs time based Google Apps trigger, which will periodically process recurrent tasks
  */
-function installTriggers() {
-  google.script.run.withSuccessHandler(function (){console.log("Clock based trigger for recurrent tasks processing initialized."); checkTriggers()})
+function installTriggers(tmz) {
+  if (!tmz) 
+    tmz="GMT";
+  console.log("Installing triggers for TMZ",tmz);
+  google.script.run
+      .withSuccessHandler(
+         function (){
+           console.log("Clock based trigger for recurrent tasks processing instaled.");
+           checkTriggers();
+         }
+       )
       .withFailureHandler(instTrigError)
-      .initTriggers();
+      .initTriggers(tmz);
 }
 
 //---------------------------------------------------------------------------------
@@ -101,6 +110,19 @@ function uninstallTriggers() {
       .withFailureHandler(instTrigError)
       .removeAllTriggers();
 }
+
+//---------------------------------------------------------------------------------
+function reInstallTriggers(tmz){
+  google.script.run
+      .withSuccessHandler(
+          function(rmCount){
+              console.log(rmCount, "triggers have been uninstalled");
+              if (rmCount > 0)
+                installTriggers(tmz);
+              else
+                console.log(-1,"Triggers will not be re-installed as they haven't been installed before.\nPerform manual installation from the Main page.");
+          }
+       )
       .withFailureHandler(instTrigError)
       .removeAllTriggers();
 }

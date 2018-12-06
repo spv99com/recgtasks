@@ -15,14 +15,14 @@
 var triggerFunction = "processRecurrentLists";  //trigger callback function name
 
 //---------------------------------------------
-function initTriggers () {
+function initTriggers (tmz) {
   if (TESTMODE == 1) 
-    logIt(LOG_CRITICAL,'TESTMODE - No trigger will be installed.');
+    logIt(LOG_CRITICAL,'TESTMODE - No trigger will be installed for timezone %s.',tmz);
   else
     //if list of project triggers does not contain any trigger having callback function name the same as we use
     if (getTriggers() == 0) {
-      logIt(LOG_CRITICAL,'No trigger for "'+triggerFunction+'" found. Installing trigger.');
-      createTriggers();
+      logIt(LOG_CRITICAL,'No trigger for "'+triggerFunction+'" found. Installing trigger for time zone %s.',tmz);
+      createTriggers(tmz);
     }
     else 
       logIt(LOG_DEV, 'Trigger installed already.');
@@ -34,9 +34,9 @@ function getTriggers() {
 }
 
 //---------------------------------------------
-function createTriggers() {
-  // Trigger every 1 hour.
-  // Running every one hour is needed because trigger/script is unaware of user's timezone
+function createTriggers(tmz) {
+  // Trigger running at 1am depending on timezone specified in settings
+  // If no timezone specified, script timezone is used (GMT)
   ScriptApp.newTrigger(triggerFunction)
       .timeBased()
       .everyHours(1)

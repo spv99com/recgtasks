@@ -32,6 +32,8 @@ function saveSettings() {
       function() {  
         $('#frmSaveStatus').text('Settings saved.');
         $('#frmSaveStatus').css( "display", "inline" ).fadeOut( 2000 );
+        console.log("Settings saved.");
+        reInstallTriggers($('#userTMZ').val());
       }
     )
     .withFailureHandler(
