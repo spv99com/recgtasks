@@ -27,14 +27,19 @@ function saveSettings() {
        userTMZ:$('#userTMZ').val(),
        appendRecPattern:$('#appendRecPattern').val()
     }));
-  google.script.run.withSuccessHandler(function() {  
-    $('#frmSaveStatus').text('Settings saved.');
-    $('#frmSaveStatus').css( "display", "inline" ).fadeOut( 2000 );
-    console.log("Settings saved.")
-  }).withFailureHandler(function(error) { 
-    console.log(error);
-    $('#frmSaveStatus').text('Save failed.');
-  }).setUserProps({
+  google.script.run
+    .withSuccessHandler(
+      function() {  
+        $('#frmSaveStatus').text('Settings saved.');
+        $('#frmSaveStatus').css( "display", "inline" ).fadeOut( 2000 );
+      }
+    )
+    .withFailureHandler(
+      function(error) { 
+        console.log(error);
+        $('#frmSaveStatus').text('Save failed.');
+      }
+    ).setUserProps({
        recListPrefix: $('#rttl-prefix').val(),
        destTaskListId: $('#dest-tasklist').val(),
        logVerboseLevel: $('#log-level').val(),
@@ -49,19 +54,23 @@ function saveSettings() {
 }
 
 function loadSettings() {
-  google.script.run.withSuccessHandler(function(userProps) {
-    $('#rttl-prefix').val(userProps.recListPrefix);
-    $('#dest-tasklist').val(userProps.destTaskListId);
-    $('#log-level').val(userProps.logVerboseLevel);
-    $('#dest-range').val(userProps.dateRangeLength);
-    $('#weekStart').val(userProps.weekStartsOn);
-    $('#dateFmt').val(userProps.dateFormat);
-    $('#ignoreDeleted').val(userProps.ignoreDeleted);
-    $('#slideOverdue').val(userProps.slideOverdue);
-    $('#userTMZ').val(userProps.userTMZ);
-    $('#appendRecPattern').val(userProps.appendRecPattern);
-    console.log("Loaded props: "+JSON.stringify(userProps));
-  }).withFailureHandler(function(error){ console.log(error)} )
+  google.script.run
+    .withSuccessHandler(
+      function(userProps) {
+        $('#rttl-prefix').val(userProps.recListPrefix);
+        $('#dest-tasklist').val(userProps.destTaskListId);
+        $('#log-level').val(userProps.logVerboseLevel);
+        $('#dest-range').val(userProps.dateRangeLength);
+        $('#weekStart').val(userProps.weekStartsOn);
+        $('#dateFmt').val(userProps.dateFormat);
+        $('#ignoreDeleted').val(userProps.ignoreDeleted);
+        $('#slideOverdue').val(userProps.slideOverdue);
+        $('#userTMZ').val(userProps.userTMZ);
+        $('#appendRecPattern').val(userProps.appendRecPattern);
+        console.log("Loaded props: "+JSON.stringify(userProps));
+      }
+     )
+    .withFailureHandler(function(error){ console.log(error)} )
     .getUserProps();
 }
 
