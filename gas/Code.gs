@@ -53,6 +53,10 @@ function processRecurrentLists(testParam) {
   var userProps = getUserProps();
   logLevel = userProps.logVerboseLevel;
   userTimeZone = userProps.userTMZ;
+  
+  // temporary code - for upgrading all triggers to once per day at 1am
+  removeAllTriggers();  // removing hourly trigger
+  initTriggers (userTimeZone);  // create daily trigger
 
   // calculate TODAY for user running the script
   userToday = new Date(Utilities.formatDate(appToday, userTimeZone, "yyyy-MM-dd'T'00:00:00.000'Z'"));
