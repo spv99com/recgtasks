@@ -39,7 +39,8 @@ function createTriggers(tmz) {
   // If no timezone specified, script timezone is used (GMT)
   ScriptApp.newTrigger(triggerFunction)
       .timeBased()
-      .everyHours(1)
+      .inTimezone(tmz)
+      .atHour(1)
       .create();
 }
 
