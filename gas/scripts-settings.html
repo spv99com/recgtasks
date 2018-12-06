@@ -24,7 +24,8 @@ function saveSettings() {
        dateFormat:$('#dateFmt').val(),
        ignoreDeleted:$('#ignoreDeleted').val(),
        slideOverdue:$('#slideOverdue').val(),
-       userTMZ:$('#userTMZ').val()
+       userTMZ:$('#userTMZ').val(),
+       appendRecPattern:$('#appendRecPattern').val()
     }));
   google.script.run.withSuccessHandler(function() {  
     $('#frmSaveStatus').text('Settings saved.');
@@ -42,7 +43,8 @@ function saveSettings() {
        dateFormat:$('#dateFmt').val(),
        ignoreDeleted:$('#ignoreDeleted').val(),
        slideOverdue:$('#slideOverdue').val(),
-       userTMZ:$('#userTMZ').val()
+       userTMZ:$('#userTMZ').val(),
+       appendRecPattern:$('#appendRecPattern').val()
     });
 }
 
@@ -57,6 +59,7 @@ function loadSettings() {
     $('#ignoreDeleted').val(userProps.ignoreDeleted);
     $('#slideOverdue').val(userProps.slideOverdue);
     $('#userTMZ').val(userProps.userTMZ);
+    $('#appendRecPattern').val(userProps.appendRecPattern);
     console.log("Loaded props: "+JSON.stringify(userProps));
   }).withFailureHandler(function(error){ console.log(error)} )
     .getUserProps();

@@ -47,6 +47,8 @@ function TaskCalendar() {
   
   this.localeDateFormat = "1"; // date format - default is "old"
   this.localeWeekStartsOn = "S"; //weeks starts on "Sunday" by default, but "M" for "Monday" is possible too
+  
+  this.appendRecPattern = false;
 
 }
 
@@ -55,6 +57,12 @@ TaskCalendar.prototype.setLocale = function(ws, dtfmt) {
   this.localeWeekStartsOn = ws;
   this.localeDateFormat = dtfmt;
 }
+
+//--------------------------------------------------
+TaskCalendar.prototype.appendPattern = function(a) {
+  this.appendRecPattern = a;
+}
+
 
 //--------------------------------------------------
 TaskCalendar.prototype.copyTask = function(task) {
@@ -339,10 +347,11 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
     t.notes = rTasks[i].notes;
     t.recDef.setDateFmt(this.localeDateFormat);
     t.recDef.setWeekStart(this.localeWeekStartsOn);
-      
+
     logIt(LOG_EXTINFO,'  > Task <b>"%s"</b>', t.title);
+    
       
-    n = rTasks[i].notes
+    n = t.notes;
     // scan notes lines to find one containing recurrency pattern definition
     // and parse only if recurrency definition was found
     if (n && (ii = n.search(parser.sx_recordId_RGT[0])) >= 0 ) {
@@ -355,7 +364,14 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
         t.notes += n.slice(ii+1);
         n = n.slice(0,ii);
       }
-        
+
+      if (this.appendRecPattern){
+        logIt(LOG_DEV, '    >> appending to notes "%s"', n);
+        t.notes += '\n\n'+n; //append recurrence pattern to the end of the notes
+      }
+      //logIt(LOG_DEV, '    >> appending id to notes %s',rTasks[i].id);
+      //t.notes +=  ('\n@ID:'+rTasks[i].id); //append recurrent task id to the end of task notes
+
       logIt(LOG_DEV, '    >> to be parsed #1 "%s"', n);
 
       parser.doParse(n,t.recDef); 
@@ -376,9 +392,10 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
           t.recDef.recEnd.date = new Date(3000, 0, 1);
           
         // if task validity falls inside daterange to be generated, then let's generate instances of it
-        if ((t.recDef.recStart.date <= rangeEnd) && ( rangeStart <= t.recDef.recEnd.date))
-          this.createTasks(t, rangeStart, rangeEnd)
-        else {
+        if ((t.recDef.recStart.date <= rangeEnd) && ( rangeStart <= t.recDef.recEnd.date)){
+          logIt(LOG_DEV, '  >> notes="%s"',t.notes);
+          this.createTasks(t, rangeStart, rangeEnd);
+        } else {
           logIt(LOG_DEV, '    >> out of range VS: %s VE: %s', t.recDef.recStart.date, t.recDef.recEnd.date); 
         }
       }

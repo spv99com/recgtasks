@@ -92,6 +92,7 @@ function processRecurrentLists(testParam) {
   // create Task Calendar - all recurrent tasks will be created in Task Calendar first
   var taskCal = new TaskCalendar();
   taskCal.setLocale(userProps.weekStartsOn, userProps.dateFormat);
+  taskCal.appendPattern(userProps.appendRecPattern == 'Y');
 
   
   var tasks;
