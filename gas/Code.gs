@@ -58,11 +58,11 @@ function processRecurrentLists(testParam) {
   userToday = new Date(Utilities.formatDate(appToday, userTimeZone, "yyyy-MM-dd'T'00:00:00.000'Z'"));
 
   // starting date for calculation is TODAY
-  var dateStart = new Date();
+  var dateStart = new Date(Utilities.formatDate(appToday, userTimeZone, "yyyy-MM-dd'T'00:00:00.000'Z'"))
   dateStart.setHours(0,0,0,0); //set hours/minutes/seconds to zero
   
   // set ending date for recurrent tasks processing
-  var dateEnd = new Date();
+  var dateEnd = new Date(Utilities.formatDate(appToday, userTimeZone, "yyyy-MM-dd'T'00:00:00.000'Z'"));
   dateEnd.setDate(dateStart.getDate() + parseInt(userProps.dateRangeLength)); 
   dateEnd.setHours(23,59,59,999);
 
@@ -93,6 +93,7 @@ function processRecurrentLists(testParam) {
   var taskCal = new TaskCalendar();
   taskCal.setLocale(userProps.weekStartsOn, userProps.dateFormat);
   taskCal.appendPattern(userProps.appendRecPattern == 'Y');
+  taskCal.setLogLevel(logLevel);
 
   
   var tasks;
