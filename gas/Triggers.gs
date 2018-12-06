@@ -35,7 +35,8 @@ function getTriggers() {
 
 //---------------------------------------------
 function createTriggers() {
-  // Trigger every hour.
+  // Trigger every 1 hour.
+  // Running every one hour is needed because trigger/script is unaware of user's timezone
   ScriptApp.newTrigger(triggerFunction)
       .timeBased()
       .everyHours(1)
