@@ -99,13 +99,13 @@ function processRecurrentLists(testParam) {
   var tasks;
   var result;
   var taskProps;
+  var tasklists;
 
-  try {
-    var taskLists = Tasks.Tasklists.list();
-  } catch (e) {
+  taskLists = safeReadTasklists();
+  if (!taskLists){
     result = "Internal Google Error occured: "+JSON.stringify(e);
     logIt(LOG_CRITICAL,result );
-    return result
+    return result;
   }
     
   if ("items" in taskLists) {

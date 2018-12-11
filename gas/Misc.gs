@@ -68,3 +68,66 @@ function leapYear(year) {
 function getUserDetails() {
   return ({ua:Session.getActiveUser().getEmail()});
 }
+
+//----------------------------------------------------
+function safeReadTasklists(){
+  var retry=true;
+  var retryCount=10;
+  var result;
+  
+  while (retry && retryCount > 0){
+    try {  
+      result = Tasks.Tasklists.list();
+      retry=false;
+    } catch (e) {
+      logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+      retryCount--;
+      Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
+    }
+  }
+  
+  return result;
+
+}
+
+//----------------------------------------------------
+function safeTaskListRead(tlid,p){
+  var retry=true;
+  var retryCount=10;
+  var tasks;
+  
+  while (retry && retryCount > 0){
+    try {  
+      tasks = Tasks.Tasks.list(tlid, p);
+      retry=false;
+    } catch (e) {
+      logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+      retryCount--;
+      Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
+    }
+  }
+  
+  return tasks;
+
+}
+
+//----------------------------------------------------
+function safeTaskInsert(task, taskListId){
+  var retry=true;
+  var retryCount=10;
+  var result;
+
+  while (retry && retryCount > 0) {
+    try {
+      result = Tasks.Tasks.insert(task, taskListId);
+      retry = false;
+    } catch(e) {
+      logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+      retryCount--;
+      Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
+    }
+  }
+  
+  return result;
+
+}

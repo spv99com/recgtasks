@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2016 Jozef Sovcik. All Rights Reserved.
+﻿// Copyright (c) 2015-2018 Jozef Sovcik. All Rights Reserved.
 //
 // Portions Copyright 2013 Google Inc. All Rights Reserved.
 //
@@ -42,12 +42,10 @@ function getTasks_paged(tlid, params){
   var p = JSON.parse(JSON.stringify(params)); //clone object
   if ("fields" in p && p.fields.length > 0 && p.fields.indexOf("nextPageToken") < 0) // add field nextPageToken only if no field specified or missing
     p.fields += ",nextPageToken";
+    
+  var tasks;
   
-  try {  
-    var tasks = Tasks.Tasks.list(tlid, p);
-  } catch (e) {
-    logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
-  }
+  tasks = safeTaskListRead(tlid,p);
   
   var t = [];
   
@@ -59,11 +57,7 @@ function getTasks_paged(tlid, params){
     p.pageToken = tasks.nextPageToken; // page to read is the next page...
     Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
     
-    try {
-      tasks = Tasks.Tasks.list(tlid, p); // get the next page of results
-    } catch (e) {
-      logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
-    }
+    tasks = safeTaskListRead(tlid,p);
         
     if ("items" in tasks)
       t = t.concat(tasks.items);

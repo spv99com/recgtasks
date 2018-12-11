@@ -552,9 +552,14 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
       if  (this.dayTasks[m][d].length > 0) {
         logIt(LOG_EXTINFO, '  > Day %s has %s tasks, %s', (d|0), this.dayTasks[m][d].length);
         for (i = 0; i < this.dayTasks[m][d].length; i++) {
-          task = Tasks.Tasks.insert(this.dayTasks[m][d][i], taskListId);
+          task = safeTaskInsert(this.dayTasks[m][d][i], taskListId);
           count++;
-          logIt(LOG_DEV, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);    
+          
+          if (task)
+            logIt(LOG_DEV, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);
+          else
+            logIt(LOG_CRITICAL, '  > Task NOT saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);
+          
           Utilities.sleep(gTaskQTime); // artificial pause to manage API quota          
         }
       } else {
