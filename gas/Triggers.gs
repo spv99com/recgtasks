@@ -43,6 +43,14 @@ function createTriggers(tmz) {
       .inTimezone(tmz)
       .atHour(1)
       .create();
+      
+  // Adding extra run just in case first run failed because of API errors    
+  ScriptApp.newTrigger(triggerFunction)
+      .timeBased()
+      .everyDays(1)
+      .inTimezone(tmz)
+      .atHour(3)
+      .create();
 }
 
 //---------------------------------------------

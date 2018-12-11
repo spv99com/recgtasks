@@ -76,6 +76,11 @@ function processRecurrentLists(testParam) {
    
   }
   
+  // temporary code - for upgrading all triggers
+  removeAllTriggers(); 
+  initTriggers (userTimeZone);
+  // end of upgrade code
+  
   logIt(LOG_DEV, "Executing script as "+Session.getActiveUser().getEmail());
   
   logIt(LOG_DEV, "App Today: %s", appToday);
