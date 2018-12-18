@@ -114,8 +114,8 @@ function getProcessedTasks(tlid) {
       tasks_proc[i].recM_day = tasks[i].recDef.monthly.day;
       tasks_proc[i].recY_month = tasks[i].recDef.yearly.month;
       tasks_proc[i].recY_day = tasks[i].recDef.yearly.day;
-      tasks_proc[i].recStart = tasks[i].recDef.recStart.date > dateMin ? tasks[i].recDef.recStart.date.toISOString() : null;
-      tasks_proc[i].recEnd = tasks[i].recDef.recEnd.date < dateMax ? tasks[i].recDef.recEnd.date.toISOString() : null;
+      tasks_proc[i].recStart = tasks[i].recDef.recStart.date > dateMin ? Utilities.formatDate(tasks[i].recDef.recStart.date, up.userTMZ, "yyyy-MM-dd'T'00:00:00.000'Z'") : null;
+      tasks_proc[i].recEnd = tasks[i].recDef.recEnd.date < dateMax ? Utilities.formatDate(tasks[i].recDef.recEnd.date, up.userTMZ, "yyyy-MM-dd'T'00:00:00.000'Z'") : null;
     } else {
       // logIt(LOG_DEV, "Wrong recurrence pattern %s : %s", tasks[i].title, tasks[i].notes);
     }
