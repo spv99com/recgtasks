@@ -302,9 +302,10 @@ function commitUpdatedTask(){
   t.recY_day = $("#repOnDoM").val(); //they use the same input field
   t.recY_month = $("#repOnMoY").val();
   t.recStart_ms = $("#recStartDate").datepicker("getDate");
-  if (t.recStart_ms) t.recStart_ms = t.recStart_ms.toDateString(); 
+  if (t.recStart_ms) t.recStart_ms = date2rfc3339(t.recStart_ms, "Z");
+  //if (t.recStart_ms) t.recStart_ms = t.recStart_ms.getFullYear()+'-'+(t.recStart_ms.getMonth()<9?"0":"")+(t.recStart_ms.getMonth()+1)+'-'+(t.recStart_ms.getDate()<10?"0":"")+t.recStart_ms.getDate()+"T00:00:00.000Z"; 
   t.recEnd_ms = $("#recEndDate").datepicker("getDate");
-  if (t.recEnd_ms) t.recEnd_ms = t.recEnd_ms.toDateString(); 
+  if (t.recEnd_ms) t.recEnd_ms = date2rfc3339(t.recEnd_ms, "Z");
 
   console.log(t);
 
