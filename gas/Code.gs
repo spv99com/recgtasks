@@ -29,7 +29,7 @@ var gTaskQTime = 200;  // 200ms sleep = max 5 Task API requests/user/second
 var dateMin = new Date(2000, 0, 1);
 var dateMax = new Date(2999, 11, 31);
 
-var appTimeZone = "GMT"; 
+
 var userTimeZone = "GMT"; // default value - possible values http://joda-time.sourceforge.net/timezones.html
 var appToday = new Date();
 var userToday = new Date();
@@ -58,11 +58,11 @@ function processRecurrentLists(testParam) {
   userToday = new Date(Utilities.formatDate(appToday, userTimeZone, "yyyy-MM-dd'T'00:00:00.000'Z'"));
 
   // starting date for calculation is TODAY
-  var dateStart = new Date(Utilities.formatDate(appToday, userTimeZone, "yyyy-MM-dd'T'00:00:00.000'Z'"))
+  var dateStart = new Date(Utilities.formatDate(userToday, userTimeZone, "yyyy-MM-dd'T'00:00:00.000'Z'"))
   dateStart.setHours(0,0,0,0); //set hours/minutes/seconds to zero
   
   // set ending date for recurrent tasks processing
-  var dateEnd = new Date(Utilities.formatDate(appToday, userTimeZone, "yyyy-MM-dd'T'00:00:00.000'Z'"));
+  var dateEnd = new Date(Utilities.formatDate(userToday, userTimeZone, "yyyy-MM-dd'T'00:00:00.000'Z'"));
   dateEnd.setDate(dateStart.getDate() + parseInt(userProps.dateRangeLength)); 
   dateEnd.setHours(23,59,59,999);
 

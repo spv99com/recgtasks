@@ -114,8 +114,10 @@ function getProcessedTasks(tlid) {
       tasks_proc[i].recM_day = tasks[i].recDef.monthly.day;
       tasks_proc[i].recY_month = tasks[i].recDef.yearly.month;
       tasks_proc[i].recY_day = tasks[i].recDef.yearly.day;
-      tasks_proc[i].recStart = tasks[i].recDef.recStart.date > dateMin ? date2rfc3339(tasks[i].recDef.recStart.date, "Z") : null;
-      tasks_proc[i].recEnd = tasks[i].recDef.recEnd.date < dateMax ? date2rfc3339(tasks[i].recDef.recEnd.date,"Z") : null;
+      
+      // it is important to send date without timezone information so client can interpret it as its own timezone
+      tasks_proc[i].recStart = tasks[i].recDef.recStart.date > dateMin ? date2rfc3339(tasks[i].recDef.recStart.date, '') : null;
+      tasks_proc[i].recEnd = tasks[i].recDef.recEnd.date < dateMax ? date2rfc3339(tasks[i].recDef.recEnd.date, '') : null;
     } else {
       // logIt(LOG_DEV, "Wrong recurrence pattern %s : %s", tasks[i].title, tasks[i].notes);
     }
