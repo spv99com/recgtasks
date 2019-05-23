@@ -260,7 +260,7 @@ function slideTasks(tlid, d) {
   yd.setHours(23, 59, 59, 999);
   
   // get list of non-completed tasks which were due before last midnight
-  logIt(LOG_DEV, ">> Getting list of overdue tasks: %s", yd);
+  logIt(LOG_DEV, ">> Getting list of overdue tasks: %s", date2rfc3339(yd));
   params = {showCompleted:false, dueMax:date2rfc3339(yd)};
   tasks = getTasks_paged(tlid,params);
 

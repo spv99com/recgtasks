@@ -108,7 +108,7 @@ function processRecurrentLists(testParam) {
 
   taskLists = safeReadTasklists();
   if (!taskLists){
-    result = "Internal Google Error occured: "+JSON.stringify(e);
+    result = "Internal Google Error occured - no tasklists received";
     logIt(LOG_CRITICAL,result );
     return result;
   }
