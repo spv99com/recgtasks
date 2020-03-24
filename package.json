@@ -1,0 +1,31 @@
+{
+    "name": "recgtasks.com",
+    "productName": "recgtasks.com",
+    "version": "1.0.0",
+    "description": "Recurrent tasks for Google Tasks",
+    "main": "src/Code.js",
+    "prettier": {
+      "printWidth": 100,
+      "jsxBracketSameLine": false,
+      "singleQuote": true
+    },
+    "scripts": {
+      "build": "shx rm -rf ./dist/* &&  APP_ENV=production NODE_ENV=production webpack",
+      "build:staging": "shx rm -rf ./dist/* && APP_ENV=staging NODE_ENV=production webpack",
+      "build:dev": "shx rm -rf ./dist/* && APP_ENV=development NODE_ENV=production webpack",
+      "start": "cross-env APP_ENV=development webpack-dev-server --inline --hot",
+      "start:staging": "cross-env APP_ENV=staging webpack-dev-server",
+      "test:watch": "yarn run test -- --watch",
+      "deploy": "yarn run build && shx cp -R ./dist/* ../wwwroot/",
+      "format": "prettier --write \"src/**/*.{js?,ts?}\"",
+      "lint": "yarn run eslint -c .eslintrc-task.js -f pretty \"./src/{**/*,*}.ts*\"",
+      "test": "yarn run lint && yarn run jest"
+    },
+    "author": "Jozef Sovcik",
+    "license": "MIT",
+    "devDependencies": {
+      "eslint": "^6.8.0"
+    }
+   
+  }
+  
