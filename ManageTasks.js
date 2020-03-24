@@ -266,7 +266,12 @@ function slideTasks(tlid, d) {
 
   for (var i=0;i < tasks.length;i++){
     logIt(LOG_EXTINFO, ">> Sliding %s from %s", tasks[i].title, tasks[i].due);
-    Tasks.Tasks.patch({due:ds}, tlid, tasks[i].id);
+    try {
+      Tasks.Tasks.patch({due:ds}, tlid, tasks[i].id);
+    } catch (e) {
+      logIt(LOG_CRITICAL,"Failed sliding task error=%s", e.message);
+    }
+    
     Utilities.sleep(gTaskQTime); // artificial pause to manage API quota     
   };
 
