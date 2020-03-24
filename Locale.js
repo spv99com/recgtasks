@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2016 Jozef Sovcik. All Rights Reserved.
+// Copyright (c) 2015-2016 Jozef Sovcik. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -79,5 +79,4 @@ LocaleFmt.prototype.getFullDateStr = function(dt) {
 LocaleFmt.prototype.getMDStr = function(dt) {
   return this.fmtMD.replace(/MM/g, dt.getMonth()+1).replace(/DD/g, dt.getDate());
 }
-
 
