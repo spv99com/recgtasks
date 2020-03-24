@@ -43,8 +43,13 @@ function processRecurrentLists(testParam) {
 
   // Check if the actions of the trigger requires authorization that has not
   // been granted yet; if throw exception.
-  if (!isScriptAuthorized()) {
-        throw "RecGTasks app requires additional authorization to run. Visit http://www.recgtasks.com/app to review and grant required authorization."
+  try {
+    if (!isScriptAuthorized()) {
+          throw "RecGTasks app requires additional authorization to run. Visit http://www.recgtasks.com/app to review and grant required authorization.";
+    }
+  } catch (e) {
+    console.warn("Permissions not granted.");
+    return;
   }
 
   // record start of execution
@@ -121,7 +126,7 @@ function processRecurrentLists(testParam) {
     return result;
   }
     
-  if ("items" in taskLists) {
+  if (taskLists.items) {
     
     // identify default Task List which instances of recurrent tasks will be copied into
     for (var i = 0; i < taskLists.items.length; i++) {

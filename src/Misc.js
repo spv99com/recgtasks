@@ -66,7 +66,9 @@ function leapYear(year) {
 
 //----------------------------------------------------
 function getUserDetails() {
-  return ({ua:userEmail});
+  var ue = "not authorized";
+  if (isScriptAuthorized) ue = Session.getActiveUser().getEmail();
+  return ({ua:ue});
 }
 
 //----------------------------------------------------
@@ -83,7 +85,6 @@ function safeReadTasklists(){
       logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
       retryCount--;
       Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
-      result={};
     }
   }
   
@@ -105,7 +106,6 @@ function safeTaskListRead(tlid,p){
       logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
       retryCount--;
       Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
-      tasks = {};
     }
   }
   
