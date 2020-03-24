@@ -1,4 +1,5 @@
 {
+  "runtimeVersion": "V8",
   "timeZone": "Etc/GMT",
   "dependencies": {
     "enabledAdvancedServices": [{
