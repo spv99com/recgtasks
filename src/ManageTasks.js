@@ -46,10 +46,11 @@ function getTasks_paged(tlid, params){
   var tasks;
   
   tasks = safeTaskListRead(tlid,p);
+  if (typeof tasks != "object") return [];
   
   var t = [];
   
-  if ("items" in tasks)
+  if (tasks.items)
     t = t.concat(tasks.items);
   
   //while there is a next page
@@ -58,8 +59,9 @@ function getTasks_paged(tlid, params){
     Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
     
     tasks = safeTaskListRead(tlid,p);
+    if (typeof tasks != "object") break;
         
-    if ("items" in tasks)
+    if (tasks.items)
       t = t.concat(tasks.items);
   }
   
