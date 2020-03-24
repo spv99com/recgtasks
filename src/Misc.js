@@ -66,7 +66,7 @@ function leapYear(year) {
 
 //----------------------------------------------------
 function getUserDetails() {
-  return ({ua:Session.getActiveUser().getEmail()});
+  return ({ua:userEmail});
 }
 
 //----------------------------------------------------

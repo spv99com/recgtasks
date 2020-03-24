@@ -34,6 +34,8 @@ var userTimeZone = "GMT"; // default value - possible values http://joda-time.so
 var appToday = new Date();
 var userToday = new Date();
 
+var userEmail = "xxxxx";
+
 //*****************************************
 //*****************************************
 
@@ -80,8 +82,14 @@ function processRecurrentLists(testParam) {
   removeAllTriggers(); 
   initTriggers (userTimeZone);
   // end of upgrade code
+
+  try {
+    userEmail = Session.getActiveUser().getEmail();
+  } catch(e) {
+    logIt(LOG_WARN, "No permissions to read user's email");
+  }
   
-  logIt(LOG_DEV, "Executing script as "+Session.getActiveUser().getEmail());
+  logIt(LOG_DEV, "Executing script as %s", userEmail);
   
   logIt(LOG_DEV, "App Today: %s", appToday);
   logIt(LOG_DEV, "User Time Zone: %s", userTimeZone);
