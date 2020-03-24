@@ -558,7 +558,7 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
           if (task)
             logIt(LOG_DEV, '  > Task saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);
           else
-            logIt(LOG_CRITICAL, '  > Task NOT saved: %s/%s %s ** %s', ((m+1)|0),(d|0),task.title, task.due);
+            logIt(LOG_CRITICAL, '  > Task NOT saved: %s/%s %s ** %s', ((m+1)|0),(d|0),this.dayTasks[m][d][i].title, this.dayTasks[m][d][i].due);
           
           Utilities.sleep(gTaskQTime); // artificial pause to manage API quota          
         }
