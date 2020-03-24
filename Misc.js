@@ -104,6 +104,7 @@ function safeTaskListRead(tlid,p){
       logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
       retryCount--;
       Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
+      tasks = {};
     }
   }
   
