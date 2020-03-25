@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2018 Jozef Sovcik. All Rights Reserved.
+// Copyright (c) 2015-2018 Jozef Sovcik. All Rights Reserved.
 //
 // Portions Copyright 2013 Google Inc. All Rights Reserved.
 //
@@ -46,10 +46,11 @@ function getTasks_paged(tlid, params){
   var tasks;
   
   tasks = safeTaskListRead(tlid,p);
+  if (!tasks) return [];
   
   var t = [];
   
-  if ("items" in tasks)
+  if (tasks.items)
     t = t.concat(tasks.items);
   
   //while there is a next page
@@ -58,8 +59,9 @@ function getTasks_paged(tlid, params){
     Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
     
     tasks = safeTaskListRead(tlid,p);
+    if (!tasks) break;
         
-    if ("items" in tasks)
+    if (tasks.items)
       t = t.concat(tasks.items);
   }
   
@@ -266,7 +268,12 @@ function slideTasks(tlid, d) {
 
   for (var i=0;i < tasks.length;i++){
     logIt(LOG_EXTINFO, ">> Sliding %s from %s", tasks[i].title, tasks[i].due);
-    Tasks.Tasks.patch({due:ds}, tlid, tasks[i].id);
+    try {
+      Tasks.Tasks.patch({due:ds}, tlid, tasks[i].id);
+    } catch (e) {
+      logIt(LOG_CRITICAL,"Failed sliding task error=%s", e.message);
+    }
+    
     Utilities.sleep(gTaskQTime); // artificial pause to manage API quota     
   };
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2018 Jozef Sovcik. All Rights Reserved.
+// Copyright (c) 2015-2018 Jozef Sovcik. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,6 +34,8 @@ var userTimeZone = "GMT"; // default value - possible values http://joda-time.so
 var appToday = new Date();
 var userToday = new Date();
 
+var userEmail = "xxxxx";
+
 //*****************************************
 //*****************************************
 
@@ -41,8 +43,13 @@ function processRecurrentLists(testParam) {
 
   // Check if the actions of the trigger requires authorization that has not
   // been granted yet; if throw exception.
-  if (!isScriptAuthorized()) {
-        throw "RecGTasks app requires additional authorization to run. Visit http://www.recgtasks.com/app to review and grant required authorization."
+  try {
+    if (!isScriptAuthorized()) {
+          throw "RecGTasks app requires additional authorization to run. Visit http://www.recgtasks.com/app to review and grant required authorization.";
+    }
+  } catch (e) {
+    console.warn("Permissions not granted.");
+    return;
   }
 
   // record start of execution
@@ -80,8 +87,14 @@ function processRecurrentLists(testParam) {
   removeAllTriggers(); 
   initTriggers (userTimeZone);
   // end of upgrade code
+
+  try {
+    userEmail = Session.getActiveUser().getEmail();
+  } catch(e) {
+    logIt(LOG_WARN, "No permissions to read user's email");
+  }
   
-  logIt(LOG_DEV, "Executing script as "+Session.getActiveUser().getEmail());
+  logIt(LOG_DEV, "Executing script as %s", userEmail);
   
   logIt(LOG_DEV, "App Today: %s", appToday);
   logIt(LOG_DEV, "User Time Zone: %s", userTimeZone);
@@ -113,7 +126,7 @@ function processRecurrentLists(testParam) {
     return result;
   }
     
-  if ("items" in taskLists) {
+  if (taskLists.items) {
     
     // identify default Task List which instances of recurrent tasks will be copied into
     for (var i = 0; i < taskLists.items.length; i++) {
@@ -192,5 +205,4 @@ function processRecurrentLists(testParam) {
   return result;
 }
   
-
 

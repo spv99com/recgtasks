@@ -1,4 +1,4 @@
-﻿{
+{
   "timeZone": "Etc/GMT",
   "dependencies": {
     "enabledAdvancedServices": [{
@@ -11,5 +11,6 @@
     "access": "ANYONE",
     "executeAs": "USER_ACCESSING"
   },
-  "exceptionLogging": "STACKDRIVER"
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "DEPRECATED_ES5"
 }

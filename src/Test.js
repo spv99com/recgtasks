@@ -1,4 +1,4 @@
-﻿var TESTMODE = 0; //DO NOT DELETE THIS LINE
+var TESTMODE = 0; //DO NOT DELETE THIS LINE
 
 var TEST_TL_PREFIX = "#!#TEST";
 
@@ -454,7 +454,6 @@ function testTZconversion(){
   
 
 }
-
 
 
 

@@ -1,0 +1,4 @@
+#!/bin/sh
+testDeploymentId="AKfycbzM1aKUaN_A0-eaVzQVbafJXReAM08XO-gOzAN0A6yBfxHH4qPpIqav0QxnwBMdlZGv"
+publishDeploymentId="AKfycbx0V3opzYFQJHcCzZyohQZex-_oE9gIsV1vhzSxKomur0ruxtc"
+HEAD="AKfycbwJVLEjbv3DY2tZ46CqtEldu5hQ-q1PFXrW754w3XI"
