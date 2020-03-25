@@ -48,7 +48,7 @@ function processRecurrentLists(testParam) {
           throw "RecGTasks app requires additional authorization to run. Visit http://www.recgtasks.com/app to review and grant required authorization.";
     }
   } catch (e) {
-    console.warn("Permissions not granted.");
+    console.warn(e);
     return;
   }
 
@@ -93,7 +93,7 @@ function processRecurrentLists(testParam) {
   } catch(e) {
     logIt(LOG_WARN, "No permissions to read user's email");
   }
-  
+ 
   logIt(LOG_DEV, "Executing script as %s", userEmail);
   
   logIt(LOG_DEV, "App Today: %s", appToday);

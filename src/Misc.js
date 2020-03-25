@@ -53,8 +53,13 @@ function tzOffsetString(dt) {
 //----------------------------------------------------
 
 function isScriptAuthorized() {
-  var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
-  return (authInfo.getAuthorizationStatus() != ScriptApp.AuthorizationStatus.REQUIRED);
+  try {
+    var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
+    return (authInfo.getAuthorizationStatus() != ScriptApp.AuthorizationStatus.REQUIRED);
+  } catch (e) {
+    console.err(e);
+    return false;
+  }
 }
 
 //----------------------------------------------------
