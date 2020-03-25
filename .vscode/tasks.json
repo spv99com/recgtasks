@@ -4,13 +4,21 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "deploy",
+            "label": "build",
             "type": "shell",
-            "command": "clasp push && clasp deploy",
-            "problemMatcher": [],
-            "options": {
-                "cwd": "src"
-            }
+            "command": "bash ./build.sh"
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": "bash ./rundev.sh"
+        },
+        {
+            "label": "publish",
+            "type": "shell",
+            "command": "bash ./publish.sh"
         }
+
+
     ]
 }
