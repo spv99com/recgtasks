@@ -294,7 +294,8 @@ function removeDuplicateTasks(tlid, d){
   td1.setHours(0,0,0,000);
   // end of date
   td2 = new Date(d.getTime());
-  td2.setHours(23,59,59,999);
+  td2.setDate(td2.getDate()+1);
+  td2.setHours(0,0,0,0);
 
   // get the list of tasks for specified date
   logIt(LOG_DEV, ">> Getting list of tasks date: %s, %s", td1, td2);
