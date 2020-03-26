@@ -258,8 +258,7 @@ function slideTasks(tlid, d) {
 
   // calculate last midnight
   yd = new Date(d.getTime());
-  yd.setDate(yd.getDate()-1);
-  yd.setHours(23, 59, 59, 999);
+  yd.setHours(0, 0, 0, 0);
   
   // get list of non-completed tasks which were due before last midnight
   logIt(LOG_DEV, ">> Getting list of overdue tasks: %s", date2rfc3339(yd));
