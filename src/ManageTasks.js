@@ -202,7 +202,7 @@ function createExampleList(title) {
   var s; 
   
   var d = new Date();
-  var id = createTaskList(userProps.recListPrefix+" "+title).getId();
+  var id = createTaskList(title).getId();
   
   r.recType = "W";
   r.frequency = 1;

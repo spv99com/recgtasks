@@ -16,7 +16,6 @@
 
 function saveSettings() {
   console.log("Going to save props: "+JSON.stringify({
-       recListPrefix: $('#rttl-prefix').val(),
        destTaskListId: $('#dest-tasklist').val(),
        logVerboseLevel: $('#log-level').val(),
        dateRangeLength: $('#dest-range').val(),
@@ -42,7 +41,6 @@ function saveSettings() {
         $('#frmSaveStatus').text('Save failed.');
       }
     ).setUserProps({
-       recListPrefix: $('#rttl-prefix').val(),
        destTaskListId: $('#dest-tasklist').val(),
        logVerboseLevel: $('#log-level').val(),
        dateRangeLength: $('#dest-range').val(),
@@ -59,7 +57,6 @@ function loadSettings() {
   google.script.run
     .withSuccessHandler(
       function(userProps) {
-        $('#rttl-prefix').val(userProps.recListPrefix);
         $('#dest-tasklist').val(userProps.destTaskListId);
         $('#log-level').val(userProps.logVerboseLevel);
         $('#dest-range').val(userProps.dateRangeLength);
@@ -92,13 +89,7 @@ function loadSettings() {
       select.append(option);
     });
     loadSettings();
-    loadTaskLists(showRTTLcount);
+    loadTaskLists();
   }
-
-function showRTTLcount(tl) {
-  var prefix = $('#rttl-prefix').val();
-  var count = tl.filter(function(i){return 0 == i.name.indexOf(prefix)}).length
-  $('#rttl-count').text(count);
-}
 
 </script>

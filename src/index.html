@@ -47,7 +47,7 @@
     <tr>
       <td>
         <h1>Recurrent Tasks</h1>
-        <h1 class="subtitle"> for Google Tasks&trade; <span id=recgversion>(v2.0.0@125)</span></h1>
+        <h1 class="subtitle"> for Google Tasks&trade; <span id=recgversion>(v2.0.0@126)</span></h1>
       </td>
       <td>
         <p style="text-align:right;color: darkgray;vertical-align:top" >
@@ -186,7 +186,8 @@
 
 <div id="sectionManage" class="section" style="display:none">
   <h2>Manage Tasks</h2>
-  <p> Select recurrent task list template (RTTL) and add/modify/remove recurrent task template.</p>
+  <p> Select task list and add/modify/remove recurrent task template.</p>
+  <p><a class="linkExample" href="">Click here</a> to create example task list containing templates of recurrent tasks. </p>
   <p> Once done, click <button type="button" class="btnRunNow">Process recurrent tasks now</button> to apply. Status: (<span class="btnRunNowStatus"> ... not started ... </span>)</p>
 
   <div style="padding-bottom:10pt">
@@ -197,7 +198,7 @@
   </div>
   
   <div id="noTaskListsPanel" style="padding-bottom:10pt" style="display:none">
-    <p style="color:red"> No RTTL task list found. <a class="linkExample" href="">Click here</a> to create example task list containing templates of recurrent tasks. </p>
+    <p style="color:red"> No task list found. <a class="linkExample" href="">Click here</a> to create example task list containing templates of recurrent tasks. </p>
   </div>
 
   <div class="taskTableHeader"> <h2>Tasks</h2></div>
@@ -283,18 +284,7 @@
   <h2>Settings</h2>
   <p> Configure application settings.</p>
 
-  <form name="settings" id="frmSettings" >
-    <div class="setting">
-      <div class="settings3">RTTL Name Prefix:</div>
-      <div class="settings3"><input type="text" name="rttl-prefix" id="rttl-prefix" /> </div>
-      <div class="settings3"><span id="rttl-count">?</span> existing list(s).</div>
-    </div>      
-    
-    <div class="setting help-settings">
-      "RTTL prefix" is used to distinguish recurrent task lists (those used for storing recurrent tasks) from normal task lists.
-      Every task list which would contain recurrent tasks should have title prefixed with this prefix.
-    </div>
-    
+  <form name="settings" id="frmSettings" >  
     <div class="setting">
       <div class="settings3">Destination Task List:</div>
       <div class="settings3">
@@ -308,7 +298,6 @@
     <div class="setting help-settings">
       "Destination Task List" is a task list into which app is going to crete tasks based on recurrent task templates.
        This may be your daily used task list. Or you can just keep them in their respective lists.<br/>
-      <span style="color:red"> It should NOT be any of RTTL task lists.</span>
     </div>
 
     <div class="setting">

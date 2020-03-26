@@ -149,23 +149,17 @@ function processRecurrentLists(testParam) {
       taskCal.setLogLevel(logLevel);
     }
 
-    if (taskLists.items[i].title.indexOf(userProps.recListPrefix) == 0) {
-      logIt(LOG_INFO, 'Tasks will be created in "%s" id=%s', destTaskList.title, destTaskList.id);
+    logIt(LOG_INFO, 'Tasks will be created in "%s" id=%s', destTaskList.title, destTaskList.id);
       
-      // load tasks from Google Tasks recurrent task list
-      tasks = getTasks_paged(taskLists.items[i].id, {
-        showCompleted:false // RTTL templates flagged as completed will not be processed
-        //fields: "items(id,title,notes,due)" //to limit amount of data transported
-      });
-      if (tasks){
-        tasks = tasks.filter(t=>!t.due); // process only tasks with no due date - it is assumed task templates to have no due date
-        // create instances of recurrent tasks in task calendar
-        taskCal.processRecTasks(tasks, dateStart, dateEnd);
-      }
-
-      
-    } else {
-      logIt(LOG_INFO, 'Ignoring list - not RTTL.', taskLists.items[i].title);
+    // load tasks from Google Tasks recurrent task list
+    tasks = getTasks_paged(taskLists.items[i].id, {
+      showCompleted:false // tasks flagged as completed will not be processed
+      //fields: "items(id,title,notes,due)" //to limit amount of data transported
+    });
+    if (tasks){
+      tasks = tasks.filter(t=>!t.due); // process only tasks with no due date - it is assumed task templates to have no due date
+      // create instances of recurrent tasks in task calendar
+      taskCal.processRecTasks(tasks, dateStart, dateEnd);
     }
 
     // if saving to original lists or processed the last list to default list
