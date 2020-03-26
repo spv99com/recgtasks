@@ -151,7 +151,7 @@ function deleteTask(taskListId, tid) {
   try {
     Tasks.Tasks.patch({deleted:true}, taskListId, tid);
   } catch (e) {
-    logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+    logIt(LOG_CRITICAL, "Failed deleting task %s. err=%s", tid, JSON.stringify(e));
   }
 }
 
@@ -180,9 +180,9 @@ function updateRecTask(taskListId, t){
   
   logIt(LOG_EXTINFO, ">> Updating task %s", t.id);
   try {
-  Tasks.Tasks.patch({title:r.title, notes:s}, taskListId, t.id);
+    Tasks.Tasks.patch({title:r.title, notes:s}, taskListId, t.id);
   } catch (e) {
-    logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+    logIt(LOG_CRITICAL, "Failed updating task %s. err=%s", r.title, JSON.stringify(e));
   }
 
 }

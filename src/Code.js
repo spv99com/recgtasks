@@ -42,15 +42,8 @@ var userEmail = "xxxxx";
 function processRecurrentLists(testParam) {
 
   // Check if the actions of the trigger requires authorization that has not
-  // been granted yet; if throw exception.
-  try {
-    if (!isScriptAuthorized()) {
-          throw "RecGTasks app requires additional authorization to run. Visit http://www.recgtasks.com/app to review and grant required authorization.";
-    }
-  } catch (e) {
-    console.warn(e);
-    return;
-  }
+  // been granted yet; if not, then end - nothing to do.
+  if (!isScriptAuthorized()) return;
 
   // record start of execution
   var cache = CacheService.getUserCache();
@@ -92,6 +85,7 @@ function processRecurrentLists(testParam) {
     userEmail = Session.getActiveUser().getEmail();
   } catch(e) {
     logIt(LOG_WARN, "No permissions to read user's email");
+    userEmail = "-not authorized-";
   }
  
   logIt(LOG_DEV, "Executing script as %s", userEmail);
