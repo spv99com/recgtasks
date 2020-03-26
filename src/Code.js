@@ -99,19 +99,13 @@ function processRecurrentLists(testParam) {
   
   logIt(LOG_DEV, "Installed triggers: ");
   ScriptApp.getProjectTriggers().forEach(function (i) { logIt(LOG_DEV, "  >  %s, %s, %s, %s", i.getUniqueId(), i.getEventType(), i.getHandlerFunction(), i.getTriggerSource()) });
-  
-  
-  // create Task Calendar - all recurrent tasks will be created in Task Calendar first
-  var taskCal = new TaskCalendar();
-  taskCal.setLocale(userProps.weekStartsOn, userProps.dateFormat);
-  taskCal.appendPattern(userProps.appendRecPattern == 'Y');
-  taskCal.setLogLevel(logLevel);
-
-  
+   
   var tasks;
   var result;
   var taskProps;
   var tasklists;
+  var defaultTaskList = {id:0};
+  var destTaskList = {};
 
   taskLists = safeReadTasklists();
   if (!taskLists){
@@ -120,37 +114,62 @@ function processRecurrentLists(testParam) {
     return result;
   }
     
-  if (taskLists.items) {
+  if (!taskLists.items) {
+    result = 'No task lists found.';
+    logIt(LOG_CRITICAL, result);
+    return result;
+  }
     
-    // identify default Task List which instances of recurrent tasks will be copied into
-    for (var i = 0; i < taskLists.items.length; i++) {
-      if (taskLists.items[i].id == userProps.destTaskListId) 
-        var defaultTaskList = taskLists.items[i];
+  // identify default Task List which instances of recurrent tasks will be copied into
+  for (var i = 0; i < taskLists.items.length; i++) {
+    if (taskLists.items[i].id == userProps.destTaskListId){
+      defaultTaskList.id = taskLists.items[i].id;
+      defaultTaskList.title = taskLists.items[i].title;
     }
-    
-    if (defaultTaskList) {
+  }
+
+  destTaskList.id = defaultTaskList.id;
+  destTaskList.title = defaultTaskList.title;
+  
+  // process all Tasks lists and create instances of tasks from Recurrent task lists (those having the right prefix in task list name)
+  for (i = 0; i < taskLists.items.length; i++) {
+    logIt(LOG_INFO, '<b>Processing list "%s" id=%s</b>', taskLists.items[i].title, taskLists.items[i].id);
+
+    // if no default list specified, then destination list is the original list itself
+    if (defaultTaskList.id == 0){ 
+      destTaskList.id = taskLists.items[i].id;
+      destTaskList.title = taskLists.items[i].title;
+    }
+
+    if (i == 0 || defaultTaskList.id == 0){
+      // create Task Calendar - all recurrent tasks will be created in Task Calendar first
+      var taskCal = new TaskCalendar();
+      taskCal.setLocale(userProps.weekStartsOn, userProps.dateFormat);
+      taskCal.appendPattern(userProps.appendRecPattern == 'Y');
+      taskCal.setLogLevel(logLevel);
+    }
+
+    if (taskLists.items[i].title.indexOf(userProps.recListPrefix) == 0) {
+      logIt(LOG_INFO, 'Tasks will be created in "%s" id=%s', destTaskList.title, destTaskList.id);
       
-      // process all Tasks lists and create instances of tasks from Recurrent task lists (those having the right prefix in task list name)
-      for (i = 0; i < taskLists.items.length; i++) {
-        if (taskLists.items[i].title.indexOf(userProps.recListPrefix) == 0 
-            && taskLists.items[i].id != defaultTaskList.id ) {
-          logIt(LOG_INFO, '<b>Processing RTTL "%s" to list "%s"</b>', taskLists.items[i].title, defaultTaskList.title);
-          
-          // load tasks from Google Tasks recurrent task list
-          tasks = getTasks_paged(taskLists.items[i].id, {
-            showCompleted:false // RTTL templates flagged as completed will not be processed
-            //fields: "items(id,title,notes,due)" //to limit amount of data transported
-          });
+      // load tasks from Google Tasks recurrent task list
+      tasks = getTasks_paged(taskLists.items[i].id, {
+        showCompleted:false // RTTL templates flagged as completed will not be processed
+        //fields: "items(id,title,notes,due)" //to limit amount of data transported
+      });
+      if (tasks){
+        tasks = tasks.filter(t=>!t.due); // process only tasks with no due date - it is assumed task templates to have no due date
+        // create instances of recurrent tasks in task calendar
+        taskCal.processRecTasks(tasks, dateStart, dateEnd);
+      }
 
-          // create instances of recurrent tasks in task calendar
-          taskCal.processRecTasks(tasks, dateStart, dateEnd)
-          
-        } else {
-          logIt(LOG_INFO, '<b>Ignoring task list "%s" - it is not RTTL.</b>', taskLists.items[i].title);
-        }
+      
+    } else {
+      logIt(LOG_INFO, 'Ignoring list - not RTTL.', taskLists.items[i].title);
+    }
 
-      }        
-
+    // if saving to original lists or processed the last list to default list
+    if (defaultTaskList.id == 0 || i+1 >= taskLists.items.length){
       logIt(LOG_INFO, 'Fetching tasks for deduplication ', 0);
       logIt(LOG_DEV, 'Range Start %s [%s]', dateStart, dateStart.toISOString());
       logIt(LOG_DEV, 'Range End %s [%s]', dateEnd, dateEnd.toISOString());
@@ -163,33 +182,27 @@ function processRecurrentLists(testParam) {
         showDeleted:userProps.ignoreDeleted == "N",
         fields: "items(id,title,notes,due, deleted)" //to limit amount of data transported
       };
-      tasks = getTasks_paged(defaultTaskList.id, taskProps);
-
+      tasks = getTasks_paged(destTaskList.id, taskProps);
+    
       logIt(LOG_INFO, 'Removing possible duplicates for %s task instances.',tasks.length);
       // remove tasks which already exist in Google tasks from our array, so only new tasks will remain
       taskCal.removeDuplicatesFromArray(tasks);
       
       logIt(LOG_INFO, 'Saving newly created instances of tasks.');
       // save tasks from work calendar to Default task list - avoid duplicates
-      taskCal.saveAllTasks(defaultTaskList.id, dateStart, dateEnd)
+      taskCal.saveAllTasks(destTaskList.id, dateStart, dateEnd)       
       
-    } else {
-      result = 'Destination task list '+userProps.destTaskListId+' not found.';
-      logIt(LOG_CRITICAL, result);
-      
-    }  
-  } else {
-    result = 'No task lists found.';
-    logIt(LOG_CRITICAL, result);
-  }
-  
-  // if default task list does exist and sliding of overdue tasks enabled, then slide them to TODAY
-  if (defaultTaskList && userProps.slideOverdue == "Y") {
-    slideTasks(defaultTaskList.id, userToday);
-    
-    //if sliding caused any duplication, then remove duplicates
-    removeDuplicateTasks(defaultTaskList.id, new Date());
-  }
+      // if default task list does exist and sliding of overdue tasks enabled, then slide them to TODAY
+      if (userProps.slideOverdue == "Y") {
+        slideTasks(destTaskList.id, userToday);
+        
+        //if sliding caused any duplication, then remove duplicates
+        removeDuplicateTasks(destTaskList.id, new Date());
+      }      
+
+    }
+
+  }        
   
   logIt(LOG_CRITICAL, "*** Script execution completed ***");
   

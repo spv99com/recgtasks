@@ -84,6 +84,7 @@ function loadSettings() {
   function showTaskLists_Settings(taskLists) {
     var select = $('#dest-tasklist');
     select.empty();
+    select.append($('<option>').attr('value','0').text('-keep original-'));
     taskLists.forEach(function(taskList) {
       var option = $('<option>')
           .attr('value', taskList.id)
