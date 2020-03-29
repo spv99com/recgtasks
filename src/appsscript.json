@@ -12,5 +12,10 @@
     "executeAs": "USER_ACCESSING"
   },
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "DEPRECATED_ES5"
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/script.scriptapp",
+    "https://www.googleapis.com/auth/tasks",
+    "https://www.googleapis.com/auth/userinfo.email"
+  ],
+  "runtimeVersion": "V8"
 }

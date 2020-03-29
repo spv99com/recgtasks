@@ -53,8 +53,13 @@ function tzOffsetString(dt) {
 //----------------------------------------------------
 
 function isScriptAuthorized() {
-  var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
-  return (authInfo.getAuthorizationStatus() != ScriptApp.AuthorizationStatus.REQUIRED);
+  try {
+    var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
+    return (authInfo.getAuthorizationStatus() != ScriptApp.AuthorizationStatus.REQUIRED);
+  } catch (e) {
+    console.warn("[isScrAuth] RecGTasks.com Script not authorized. err=%s",e);
+    return false;
+  }
 }
 
 //----------------------------------------------------
@@ -66,8 +71,8 @@ function leapYear(year) {
 
 //----------------------------------------------------
 function getUserDetails() {
-  var ue = "not authorized";
-  if (isScriptAuthorized) ue = Session.getActiveUser().getEmail();
+  var ue = "-not authorized-";
+  if (isScriptAuthorized()) ue = Session.getActiveUser().getEmail();
   return ({ua:ue});
 }
 

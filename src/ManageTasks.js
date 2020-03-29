@@ -80,8 +80,10 @@ function getProcessedTasks(tlid) {
   var tproc = {};
   
   // get all tasks
-  var params = {fields:"items(id,title,notes)"};
+  var params = {fields:"items(id,title,notes,due)"};
   tasks = getTasks_paged(tlid, params);
+
+  tasks = tasks.filter(t=>!t.due); // ignore those having specified due date
   
   // add recurrence pattern
   var re = /^\*E.*$/m; //"m" stands for multiline flag ^,$ are then limited to a single line
@@ -151,7 +153,7 @@ function deleteTask(taskListId, tid) {
   try {
     Tasks.Tasks.patch({deleted:true}, taskListId, tid);
   } catch (e) {
-    logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+    logIt(LOG_CRITICAL, "Failed deleting task %s. err=%s", tid, JSON.stringify(e));
   }
 }
 
@@ -180,9 +182,9 @@ function updateRecTask(taskListId, t){
   
   logIt(LOG_EXTINFO, ">> Updating task %s", t.id);
   try {
-  Tasks.Tasks.patch({title:r.title, notes:s}, taskListId, t.id);
+    Tasks.Tasks.patch({title:r.title, notes:s}, taskListId, t.id);
   } catch (e) {
-    logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+    logIt(LOG_CRITICAL, "Failed updating task %s. err=%s", r.title, JSON.stringify(e));
   }
 
 }
@@ -200,7 +202,7 @@ function createExampleList(title) {
   var s; 
   
   var d = new Date();
-  var id = createTaskList(userProps.recListPrefix+" "+title).getId();
+  var id = createTaskList(title).getId();
   
   r.recType = "W";
   r.frequency = 1;
@@ -258,8 +260,7 @@ function slideTasks(tlid, d) {
 
   // calculate last midnight
   yd = new Date(d.getTime());
-  yd.setDate(yd.getDate()-1);
-  yd.setHours(23, 59, 59, 999);
+  yd.setHours(0, 0, 0, 0);
   
   // get list of non-completed tasks which were due before last midnight
   logIt(LOG_DEV, ">> Getting list of overdue tasks: %s", date2rfc3339(yd));
@@ -295,7 +296,8 @@ function removeDuplicateTasks(tlid, d){
   td1.setHours(0,0,0,000);
   // end of date
   td2 = new Date(d.getTime());
-  td2.setHours(23,59,59,999);
+  td2.setDate(td2.getDate()+1);
+  td2.setHours(0,0,0,0);
 
   // get the list of tasks for specified date
   logIt(LOG_DEV, ">> Getting list of tasks date: %s, %s", td1, td2);

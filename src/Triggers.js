@@ -62,7 +62,7 @@ function getTriggerDetails () {
 //---------------------------------------------
 function removeAllTriggers() {
   var t = ScriptApp.getProjectTriggers();
-  logIt(LOG_CRITICAL,'Removing %s triggers for "'+triggerFunction+'"',t.length);
+  logIt(LOG_CRITICAL,'Removing %s triggers for "%s"',t.length, triggerFunction);
   for (var i=0;i<t.length;i++){
     ScriptApp.deleteTrigger(t[i]);
   };

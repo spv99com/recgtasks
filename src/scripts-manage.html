@@ -97,12 +97,9 @@ function init31(select){
  */
 function showTaskLists_Manage(taskLists) {
   var select = $('#tasklist');
-  var prefix = $('#rttl-prefix').val();
   select.empty();
   $('#noTaskListsPanel').hide();
-  
-  taskLists = taskLists.filter(function(i){return i.name.indexOf(prefix) == 0}); //only RTTL lists will be displayed
-  
+   
   taskLists.forEach(function(taskList) {
     var option = $('<option>')
       .attr('value', taskList.id)
