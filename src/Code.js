@@ -185,16 +185,16 @@ function processRecurrentLists(testParam) {
       logIt(LOG_INFO, 'Saving newly created instances of tasks.');
       // save tasks from work calendar to Default task list - avoid duplicates
       taskCal.saveAllTasks(destTaskList.id, dateStart, dateEnd)       
-      
-      // if default task list does exist and sliding of overdue tasks enabled, then slide them to TODAY
-      if (userProps.slideOverdue == "Y") {
-        slideTasks(destTaskList.id, userToday);
-        
-        //if sliding caused any duplication, then remove duplicates
-        removeDuplicateTasks(destTaskList.id, new Date());
-      }      
-
+         
     }
+
+    // if default task list does exist and sliding of overdue tasks enabled, then slide them to TODAY
+    if (userProps.slideOverdue == "Y") {
+      slideTasks(taskLists.items[i].id, userToday);
+      
+      //if sliding caused any duplication, then remove duplicates
+      removeDuplicateTasks(taskLists.items[i].id, new Date());
+    }  
 
   }        
   

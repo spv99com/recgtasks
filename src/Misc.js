@@ -105,6 +105,7 @@ function safeTaskListRead(tlid,p){
   
   while (retry && retryCount > 0){
     try {  
+      logIt(LOG_DEV, "[safeTLRead] Reading list %s params=%s", tlid, JSON.stringify(p));
       tasks = Tasks.Tasks.list(tlid, p);
       retry=false;
     } catch (e) {

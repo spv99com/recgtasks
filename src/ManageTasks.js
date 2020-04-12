@@ -44,12 +44,14 @@ function getTasks_paged(tlid, params){
     p.fields += ",nextPageToken";
     
   var tasks;
-  
-  tasks = safeTaskListRead(tlid,p);
-  if (!tasks) return [];
-  
   var t = [];
-  
+
+  tasks = safeTaskListRead(tlid,p);
+  if (!tasks || !tasks.items || tasks.items.length == 0) {
+    logIt(LOG_DEV, "[getTasks] No tasks in tasklist %s", tlid);
+    return [];
+  }
+    
   if (tasks.items)
     t = t.concat(tasks.items);
   
@@ -65,6 +67,7 @@ function getTasks_paged(tlid, params){
       t = t.concat(tasks.items);
   }
   
+  logIt(LOG_DEV, "[getTasks] Returning %d tasks", t.length);
   return t;
 }
 
@@ -266,6 +269,7 @@ function slideTasks(tlid, d) {
   logIt(LOG_DEV, ">> Getting list of overdue tasks: %s", date2rfc3339(yd));
   params = {showCompleted:false, dueMax:date2rfc3339(yd)};
   tasks = getTasks_paged(tlid,params);
+  logIt(LOG_EXTINFO, ">> Found %d overdute tasks", tasks.length);
 
   for (var i=0;i < tasks.length;i++){
     logIt(LOG_EXTINFO, ">> Sliding %s from %s", tasks[i].title, tasks[i].due);
@@ -278,7 +282,7 @@ function slideTasks(tlid, d) {
     Utilities.sleep(gTaskQTime); // artificial pause to manage API quota     
   };
 
-  logIt(LOG_EXTINFO, ">> Slid %s tasks", i);
+  logIt(LOG_EXTINFO, ">> Slid %d tasks", i);
 
 }
 
