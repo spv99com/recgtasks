@@ -25,7 +25,7 @@ function doGet() {
 //TODO: remove direct saving to GTasks from TaskCal object - TaskCal should create path-update data set only and saving should occur somewhere else
 
 //*****************************************
-var gTaskQTime = 200;  // 200ms sleep = max 5 Task API requests/user/second
+var gTaskQTime = 500;  // 200ms sleep = max 5 Task API requests/user/second
 var dateMin = new Date(2000, 0, 1);
 var dateMax = new Date(2999, 11, 31);
 
@@ -76,8 +76,14 @@ function processRecurrentLists(testParam, manual) {
   }
   
   // temporary code - for upgrading all triggers
+  try {
   removeAllTriggers(); 
   initTriggers (userTimeZone);
+  } catch(e) {
+    var e='Error setting triggers. err='+err.message;
+    logIt(LOG_CRITICAL,e);
+    logExecutionResult(e);
+  }
   // end of upgrade code
 
   try {

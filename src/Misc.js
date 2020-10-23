@@ -57,7 +57,7 @@ function isScriptAuthorized() {
     var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
     return (authInfo.getAuthorizationStatus() != ScriptApp.AuthorizationStatus.REQUIRED);
   } catch (e) {
-    console.warn("[isScrAuth] RecGTasks.com Script not authorized. err=%s",e);
+    console.warn("[isScrAuth] RecGTasks.com Script not authorized. err=%s",e.message);
     return false;
   }
 }
@@ -80,7 +80,7 @@ function getUserDetails() {
 function safeReadTasklists(){
   var retry=true;
   var retryCount=10;
-  var result;
+  var result=null;
   
   while (retry && retryCount > 0){
     try {  
@@ -88,7 +88,6 @@ function safeReadTasklists(){
       retry=false;
     } catch (e) {
       logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
-      logExecutionResult("Google API Error (ReadTaskLists):"+e.message);
       retryCount--;
       Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
     }
@@ -102,7 +101,7 @@ function safeReadTasklists(){
 function safeTaskListRead(tlid,p){
   var retry=true;
   var retryCount=10;
-  var tasks;
+  var tasks=null;
   
   while (retry && retryCount > 0){
     try {  
@@ -110,8 +109,7 @@ function safeTaskListRead(tlid,p){
       tasks = Tasks.Tasks.list(tlid, p);
       retry=false;
     } catch (e) {
-      logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
-      logExecutionResult("Google API Error (TaskListRead):"+e.message);
+      logIt(LOG_CRITICAL, "Internal Google Error occured: %s", e.message);
       retryCount--;
       Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
     }
@@ -125,7 +123,7 @@ function safeTaskListRead(tlid,p){
 function safeTaskInsert(task, taskListId){
   var retry=true;
   var retryCount=10;
-  var result;
+  var result=null;
 
   while (retry && retryCount > 0) {
     try {
@@ -133,7 +131,6 @@ function safeTaskInsert(task, taskListId){
       retry = false;
     } catch(e) {
       logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
-      logExecutionResult("Google API Error (TaskInsert):"+e.message);
       retryCount--;
       Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
     }

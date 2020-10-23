@@ -18,20 +18,14 @@ var triggerFunction = "processRecurrentLists";  //trigger callback function name
 function initTriggers (tmz) {
   if (TESTMODE == 1) 
     logIt(LOG_CRITICAL,'TESTMODE - No trigger will be installed for timezone %s.',tmz);
-  else 
-    try {
+  else {
     //if list of project triggers does not contain any trigger having callback function name the same as we use
     if (getTriggers() == 0) {
       logIt(LOG_CRITICAL,'No trigger for "'+triggerFunction+'" found. Installing trigger for time zone %s.',tmz);
       createTriggers(tmz);
-    }
-    else 
-      logIt(LOG_DEV, 'Trigger installed already.');
-  } catch (err) {
-    var e='Error setting triggers. err='+err.message;
-    logIt(LOG_CRITICAL,e);
-    logExecutionResult(e);
+    } else logIt(LOG_DEV, 'Trigger installed already.');
   }
+
 }
 
 //---------------------------------------------
