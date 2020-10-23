@@ -202,6 +202,7 @@ function processRecurrentLists(testParam) {
   logIt(LOG_CRITICAL, "*** Script execution completed ***");
   
   saveLog(Logger.getLog());
+  logExecutionEnd();
   logExecutionResult("Success.");
   
   return result;
