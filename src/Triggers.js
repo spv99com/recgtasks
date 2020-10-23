@@ -18,7 +18,8 @@ var triggerFunction = "processRecurrentLists";  //trigger callback function name
 function initTriggers (tmz) {
   if (TESTMODE == 1) 
     logIt(LOG_CRITICAL,'TESTMODE - No trigger will be installed for timezone %s.',tmz);
-  else
+  else 
+    try {
     //if list of project triggers does not contain any trigger having callback function name the same as we use
     if (getTriggers() == 0) {
       logIt(LOG_CRITICAL,'No trigger for "'+triggerFunction+'" found. Installing trigger for time zone %s.',tmz);
@@ -26,6 +27,11 @@ function initTriggers (tmz) {
     }
     else 
       logIt(LOG_DEV, 'Trigger installed already.');
+  } catch (err) {
+    var e='Error setting triggers. err='+err.message;
+    logIt(LOG_CRITICAL,e);
+    logExecutionResult(e);
+  }
 }
 
 //---------------------------------------------
@@ -55,8 +61,8 @@ function createTriggers(tmz) {
 
 //---------------------------------------------
 function getTriggerDetails () {
-  var cache = CacheService.getUserCache();
-  return [cache.get("execStarted"), cache.get("execFinished")];
+  var props = PropertiesService.getUserProperties();
+  return {start:props.getProperty("execStarted"), end:props.getProperty("execFinished"), logExists:getLog().length>0, result:props.getProperty("execResult")};
 }
 
 //---------------------------------------------

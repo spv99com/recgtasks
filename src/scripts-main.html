@@ -41,8 +41,9 @@ function runNowDone(res) {
  */
 function runNowError(error) {
   console.log(error);
-  $('.btnRunNowStatus').text('Finished with errors. See JavaScript console.');
+  $('.btnRunNowStatus').text('Finished with errors.');
   $('.btnRunNow').prop('disabled',false);
+  logExecutionResult("Error="+error);
   getRuntimeDetails();
 }
 
@@ -148,19 +149,21 @@ function getRuntimeDetails() {
 }
 
 //---------------------------------------------------------------------------------
-function showExecutionDetails(a) {
+function showExecutionDetails(details) {
   var d = new Date();
   $('#execStarted').text('unknown');
   $('#execFinished').text('unknown');
   $('#btnShowLog').prop('disabled',true);
-  if (a[0]) {
-    $('#btnShowLog').prop('disabled',false);
-    d.setTime(parseInt(a[0]));
+  if (details.logExists) $('#btnShowLog').prop('disabled',false);
+  if (details.start) {
+    d.setTime(parseInt(details.start));
     $('#execStarted').text(d);
-    d.setTime(parseInt(a[1]));
-    $('#execFinished').text(d);
-    
   }
+  if (details.end) {
+    d.setTime(parseInt(details.end));
+    $('#execFinished').text(d);
+  }
+  if (details.result) $('#execResult').text(details.result);
 }
 
 //---------------------------------------------------------------------------------

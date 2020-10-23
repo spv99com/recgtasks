@@ -45,10 +45,11 @@ function getLog(){
   var body = "";
   var cache = CacheService.getUserCache();
   logs.forEach(function(itm, idx){var c = cache.get(itm); c != null ? body += c : body+="";});
-  return "<h3>*** Log beginning ***</h3>" + body + "<h3>*** Log end ***</h3>";
+  return body.length>0?"<h3>*** Log beginning ***</h3>" + body + "<h3>*** Log end ***</h3>":"";
 }
 
-function saveLog(cache, log){
+function saveLog(log){
+  var cache = CacheService.getUserCache();
   var i = 0;
   
   cache.removeAll(logs)
@@ -57,4 +58,19 @@ function saveLog(cache, log){
     log = log.substr(80000);
     i++
   }
+}
+
+function logExecutionStart(){
+  var props = PropertiesService.getUserProperties();
+  props.setProperty("execStarted",Date.now().toString());
+}
+
+function logExecutionEnd(){
+  var props = PropertiesService.getUserProperties();
+  props.setProperty("execFinished",Date.now().toString());
+}
+
+function logExecutionResult(result){
+  var props = PropertiesService.getUserProperties();
+  props.setProperty("execResult",result);
 }

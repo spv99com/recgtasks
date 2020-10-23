@@ -46,8 +46,7 @@ function processRecurrentLists(testParam) {
   if (!isScriptAuthorized()) return;
 
   // record start of execution
-  var cache = CacheService.getUserCache();
-  cache.put("execStarted",Date.now(), 8000);
+  logExecutionStart();
 
   // read user preferecies for this user & script
   var userProps = getUserProps();
@@ -111,12 +110,14 @@ function processRecurrentLists(testParam) {
   if (!taskLists){
     result = "Internal Google Error occured - no tasklists received";
     logIt(LOG_CRITICAL,result );
+    logExecutionResult(result);
     return result;
   }
     
   if (!taskLists.items) {
     result = 'No task lists found.';
     logIt(LOG_CRITICAL, result);
+    logExecutionResult(result);
     return result;
   }
     
@@ -200,8 +201,8 @@ function processRecurrentLists(testParam) {
   
   logIt(LOG_CRITICAL, "*** Script execution completed ***");
   
-  saveLog(cache, Logger.getLog());
-  cache.put("execFinished",Date.now(), 8000);
+  saveLog(Logger.getLog());
+  logExecutionResult("Success.");
   
   return result;
 }

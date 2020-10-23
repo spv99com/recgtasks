@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Jozef Sovcik. All Rights Reserved.
+// Copyright (c) 2015-2020 Jozef Sovcik. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -88,6 +88,7 @@ function safeReadTasklists(){
       retry=false;
     } catch (e) {
       logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+      logExecutionResult("Google API Error (ReadTaskLists):"+e.message);
       retryCount--;
       Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
     }
@@ -110,6 +111,7 @@ function safeTaskListRead(tlid,p){
       retry=false;
     } catch (e) {
       logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+      logExecutionResult("Google API Error (TaskListRead):"+e.message);
       retryCount--;
       Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
     }
@@ -131,6 +133,7 @@ function safeTaskInsert(task, taskListId){
       retry = false;
     } catch(e) {
       logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));
+      logExecutionResult("Google API Error (TaskInsert):"+e.message);
       retryCount--;
       Utilities.sleep(gTaskQTime); // artificial pause to manage API quota
     }
