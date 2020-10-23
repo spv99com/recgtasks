@@ -62,7 +62,13 @@ function createTriggers(tmz) {
 //---------------------------------------------
 function getTriggerDetails () {
   var props = PropertiesService.getUserProperties();
-  return {start:props.getProperty("execStarted"), end:props.getProperty("execFinished"), logExists:getLog().length>0, result:props.getProperty("execResult")};
+  return {
+    type:props.getProperty("execType"), 
+    start:props.getProperty("execStarted"), 
+    end:props.getProperty("execFinished"), 
+    logExists:getLog().length>0, 
+    result:props.getProperty("execResult")
+  };
 }
 
 //---------------------------------------------

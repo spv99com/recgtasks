@@ -60,11 +60,12 @@ function saveLog(log){
   }
 }
 
-function logExecutionStart(){
+function logExecutionStart(manual){
   var props = PropertiesService.getUserProperties();
   props.setProperty("execStarted",Date.now().toString());
   props.setProperty("execFinished",0);
   props.setProperty("execResult","Not finished...");
+  props.setProperty("execType",manual?"Manual":"Automatic");
 }
 
 function logExecutionEnd(){

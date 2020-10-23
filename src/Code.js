@@ -39,14 +39,14 @@ var userEmail = "xxxxx";
 //*****************************************
 //*****************************************
 
-function processRecurrentLists(testParam) {
+function processRecurrentLists(testParam, manual) {
 
   // Check if the actions of the trigger requires authorization that has not
   // been granted yet; if not, then end - nothing to do.
   if (!isScriptAuthorized()) return;
 
   // record start of execution
-  logExecutionStart();
+  logExecutionStart(manual);
 
   // read user preferecies for this user & script
   var userProps = getUserProps();

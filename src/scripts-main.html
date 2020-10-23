@@ -25,7 +25,7 @@ function runNow() {
   google.script.run
       .withSuccessHandler(runNowDone)
       .withFailureHandler(runNowError)
-      .processRecurrentLists();
+      .processRecurrentLists(null,true);
 }
 
 //---------------------------------------------------------------------------------
@@ -151,6 +151,7 @@ function getRuntimeDetails() {
 //---------------------------------------------------------------------------------
 function showExecutionDetails(details) {
   var d = new Date();
+  $('#execType').text('unknown');
   $('#execStarted').text('unknown');
   $('#execFinished').text('unknown');
   $('#btnShowLog').prop('disabled',true);
@@ -164,6 +165,7 @@ function showExecutionDetails(details) {
     $('#execFinished').text(d);
   }
   if (details.result) $('#execResult').text(details.result);
+  if (details.type) $('#execType').text(details.type);
 }
 
 //---------------------------------------------------------------------------------
