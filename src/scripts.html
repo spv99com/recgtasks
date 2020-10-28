@@ -35,6 +35,7 @@ $(function() {
   $('.linkExample').on('click', createExampleList);
   $('#btnUninstall').on('click', uninstallTriggers);
   $('#btnInstTrigger').on('click', function(){installTriggers($('#userTMZ').val());});
+  $('#btnInst5MinTrigger').on('click', function(){installDebugTrigger();});
     
   
   showMain();

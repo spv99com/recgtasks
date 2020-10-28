@@ -77,8 +77,8 @@ function processRecurrentLists(testParam, manual) {
   
   // temporary code - for upgrading all triggers
   try {
-  removeAllTriggers(); 
-  initTriggers (userTimeZone);
+    removeAllTriggers(); 
+    initTriggers (userTimeZone);
   } catch(e) {
     var e='Error setting triggers. err='+err.message;
     logIt(LOG_CRITICAL,e);

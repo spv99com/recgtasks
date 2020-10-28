@@ -82,6 +82,20 @@ function installTriggers(tmz) {
       .initTriggers(tmz);
 }
 
+function installDebugTrigger() {
+  console.log("Installing debug trigger");
+  google.script.run
+      .withSuccessHandler(
+         function (){
+           window.alert('Debugging trigger running every 5 minutes installed.');
+           checkTriggers();
+         }
+       )
+      .withFailureHandler(instTrigError)
+      .createDebugTrigger();
+}
+
+
 //---------------------------------------------------------------------------------
 function instTrigError(error) {
   console.log(error);

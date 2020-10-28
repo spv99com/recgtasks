@@ -34,7 +34,7 @@ function getTriggers() {
 }
 
 //---------------------------------------------
-function createTriggers(tmz) {
+function createTriggers(tmz, debug) {
   // Trigger running at 1am depending on timezone specified in settings
   // If no timezone specified, script timezone is used (GMT)
   ScriptApp.newTrigger(triggerFunction)
@@ -50,6 +50,15 @@ function createTriggers(tmz) {
       .everyDays(1)
       .inTimezone(tmz)
       .atHour(3)
+      .create();
+}
+
+//---------------------------------------------
+function createDebugTrigger() {
+  // If no timezone specified, script timezone is used (GMT)
+  ScriptApp.newTrigger(triggerFunction)
+      .timeBased()
+      .everyMinutes(5)
       .create();
 }
 
