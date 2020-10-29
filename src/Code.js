@@ -41,12 +41,15 @@ var userEmail = "xxxxx";
 
 function processRecurrentLists(testParam, manual) {
 
-  // Check if the actions of the trigger requires authorization that has not
-  // been granted yet; if not, then end - nothing to do.
-  if (!isScriptAuthorized()) return;
-
   // record start of execution
   logExecutionStart(manual);
+
+  // Check if the actions of the trigger requires authorization that has not
+  // been granted yet; if not, then end - nothing to do.
+  if (!isScriptAuthorized()) {
+    logExecutionResult('Error: Script not authorized');
+    return;
+  }
 
   // read user preferecies for this user & script
   var userProps = getUserProps();
@@ -89,7 +92,7 @@ function processRecurrentLists(testParam, manual) {
   try {
     userEmail = Session.getActiveUser().getEmail();
   } catch(e) {
-    logIt(LOG_WARN, "No permissions to read user's email");
+    logIt(LOG_WARN, "No permissions to read user's email address");
     userEmail = "-not authorized-";
   }
  
