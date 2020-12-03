@@ -5,7 +5,7 @@ function isUpgradeNeeded(currentBuild){
     return cb != currentBuild;
 }
 
-function performUPgrade(currentBuild){
+function performUpgrade(currentBuild){
     var allOK = true;
     try {
         removeAllTriggers(); 
