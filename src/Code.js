@@ -53,7 +53,12 @@ function processRecurrentLists(testParam, manual) {
   }
 
   // record start of execution
-  logExecutionStart(manual);
+  try {
+    logExecutionStart(manual);
+  } catch (err) {
+    console.warn("RecGTasks is unable to read user properties. Please, authorize first.");
+    return;
+  }
 
   // read user preferecies for this user & script
   var userProps = getUserProps();
