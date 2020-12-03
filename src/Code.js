@@ -36,23 +36,24 @@ var userToday = new Date();
 
 var userEmail = "xxxxx";
 
-var codeBuild = '148';  // code build number automatically updated by build script
+var codeBuild = '149';  // code build number automatically updated by build script
 
 //*****************************************
 //*****************************************
 
 function processRecurrentLists(testParam, manual) {
 
-  // record start of execution
-  logExecutionStart(manual);
-
-  logExecutionResult('Error: Script not authorized'); // preemptive result code setting
+  // NO CODE HERE
 
   // Check if the actions of the trigger requires authorization that has not
   // been granted yet; if not, then end - nothing to do.
   if (!isScriptAuthorized()) {
+    console.warn("RecGTasks script is not authorized to run. Please, authorize first.");
     return;
   }
+
+  // record start of execution
+  logExecutionStart(manual);
 
   // read user preferecies for this user & script
   var userProps = getUserProps();
