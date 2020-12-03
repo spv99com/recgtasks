@@ -36,7 +36,7 @@ var userToday = new Date();
 
 var userEmail = "xxxxx";
 
-var codeBuild = "150";  // code build number automatically updated by build script
+var codeBuild = '146';  // code build number automatically updated by build script
 
 //*****************************************
 //*****************************************
