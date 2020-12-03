@@ -104,7 +104,7 @@ function processRecurrentLists(testParam, manual) {
   var tasks;
   var result;
   var taskProps;
-  var tasklists;
+  var taskLists;
   var defaultTaskList = {id:0};
   var destTaskList = {};
 
