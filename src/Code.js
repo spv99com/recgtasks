@@ -46,10 +46,11 @@ function processRecurrentLists(testParam, manual) {
   // record start of execution
   logExecutionStart(manual);
 
+  logExecutionResult('Error: Script not authorized'); // preemptive result code setting
+
   // Check if the actions of the trigger requires authorization that has not
   // been granted yet; if not, then end - nothing to do.
   if (!isScriptAuthorized()) {
-    logExecutionResult('Error: Script not authorized');
     return;
   }
 
@@ -73,18 +74,16 @@ function processRecurrentLists(testParam, manual) {
   //override for testing purposes
   if (TESTMODE == 1) {
      logIt(LOG_CRITICAL, "**** TEST MODE ENABLED ****")
-     
      userProps = testParam.userProps;
      dateStart = testParam.dateStart;
      dateEnd = testParam.dateEnd;
-   
   }
   
   if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
 
   try {
     userEmail = Session.getActiveUser().getEmail();
-  } catch(e) {
+  } catch(err) {
     logIt(LOG_WARN, "No permissions to read user's email address");
     userEmail = "-not authorized-";
   }

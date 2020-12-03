@@ -34,7 +34,7 @@ function getTriggers() {
 }
 
 //---------------------------------------------
-function createTriggers(tmz, debug) {
+function createTriggers(tmz) {
   // Trigger running at 1am depending on timezone specified in settings
   // If no timezone specified, script timezone is used (GMT)
   ScriptApp.newTrigger(triggerFunction)
