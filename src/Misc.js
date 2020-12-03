@@ -55,7 +55,7 @@ function tzOffsetString(dt) {
 function isScriptAuthorized() {
   try {
     var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
-    return (authInfo.getAuthorizationStatus() != ScriptApp.AuthorizationStatus.REQUIRED);
+    return (authInfo.getAuthorizationStatus() == ScriptApp.AuthorizationStatus.NOT_REQUIRED);
   } catch (e) {
     console.warn("[isScrAuth] RecGTasks.com Script not authorized. err=%s",e.message);
     return false;
