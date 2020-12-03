@@ -142,7 +142,7 @@ function processRecurrentLists(testParam, manual) {
   destTaskList.title = defaultTaskList.title;
   
   // process all Tasks lists and create instances of tasks from Recurrent task lists (those having the right prefix in task list name)
-  for (i = 0; i < taskLists.items.length; i++) {
+  for (var i = 0; i < taskLists.items.length; i++) {
     logIt(LOG_INFO, '<b>Processing list "%s" id=%s</b>', taskLists.items[i].title, taskLists.items[i].id);
 
     // if no default list specified, then destination list is the original list itself
