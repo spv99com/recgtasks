@@ -2,7 +2,7 @@
 # detect pending changes
 git diff --quiet --exit-code
 pendingCommit=$?
-if [ pendingCommit -eq 1 ]
+if [ $pendingCommit -eq 1 ]
 then
   echo "Git changes detected. Please, commit first."
   exit
