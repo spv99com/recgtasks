@@ -8,4 +8,4 @@ sed -i -E "s/(recgversion.*[(]v)(.*)([)].*)/\1$VERSION@$BUILD\3/g" src/index.htm
 sed -i -E "s/^var codeBuild.*;/var codeBuild = '$BUILD';/" src/Code.js
 git commit . -m "version bump $VERSION@$BUILD"
 cd src
-clasp push
+clasp push -f
