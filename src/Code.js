@@ -36,12 +36,16 @@ var userToday = new Date();
 
 var userEmail = "xxxxx";
 
-var codeBuild = '152';  // code build number automatically updated by build script
+var codeBuild = '153';  // code build number automatically updated by build script
 
 //*****************************************
 //*****************************************
 
 function processRecurrentLists(testParam, manual) {
+
+  var ln=0;
+
+  try {
 
   // NO CODE HERE
 
@@ -52,16 +56,20 @@ function processRecurrentLists(testParam, manual) {
     return;
   }
 
+  ln=1;
+
+  var userProps;
+
   // record start of execution
   try {
     logExecutionStart(manual);
+    // read user preferecies for this user & script
+    userProps = getUserProps();
   } catch (err) {
     console.warn("RecGTasks is unable to read user properties. Please, authorize first.");
     return;
   }
-
-  // read user preferecies for this user & script
-  var userProps = getUserProps();
+  
   logLevel = userProps.logVerboseLevel;
   userTimeZone = userProps.userTMZ;
 
@@ -77,6 +85,8 @@ function processRecurrentLists(testParam, manual) {
   dateEnd.setDate(dateStart.getDate() + parseInt(userProps.dateRangeLength)); 
   dateEnd.setHours(23,59,59,999);
 
+  ln=2;
+
   //override for testing purposes
   if (TESTMODE == 1) {
      logIt(LOG_CRITICAL, "**** TEST MODE ENABLED ****")
@@ -85,14 +95,18 @@ function processRecurrentLists(testParam, manual) {
      dateEnd = testParam.dateEnd;
   }
   
+  ln=3;
   if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
 
+  ln=4;
   try {
     userEmail = Session.getActiveUser().getEmail();
   } catch(err) {
     logIt(LOG_WARN, "No permissions to read user's email address");
     userEmail = "-not authorized-";
   }
+
+  ln=5;
  
   logIt(LOG_DEV, "Executing script as %s", userEmail);
   
@@ -113,7 +127,11 @@ function processRecurrentLists(testParam, manual) {
   var defaultTaskList = {id:0};
   var destTaskList = {};
 
+  ln=6;
+
   taskLists = safeReadTasklists();
+
+  ln=7;
   if (!taskLists){
     result = "Internal Google Error occured - no tasklists received";
     logIt(LOG_CRITICAL,result );
@@ -135,6 +153,8 @@ function processRecurrentLists(testParam, manual) {
       defaultTaskList.title = taskLists.items[i].title;
     }
   }
+
+  ln=8;
 
   destTaskList.id = defaultTaskList.id;
   destTaskList.title = defaultTaskList.title;
@@ -204,13 +224,21 @@ function processRecurrentLists(testParam, manual) {
       removeDuplicateTasks(taskLists.items[i].id, new Date());
     }  
 
-  }        
+  }
+
+  ln=9;
   
   logIt(LOG_CRITICAL, "*** Script execution completed ***");
   
   saveLog(Logger.getLog());
   logExecutionEnd();
   logExecutionResult("Success.");
+
+  ln=10;
+
+} catch (err) {
+  console.error("ERROR at "+ln.toString());
+}
   
   return result;
 }
