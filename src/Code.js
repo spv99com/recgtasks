@@ -36,7 +36,7 @@ var userToday = new Date();
 
 var userEmail = "xxxxx";
 
-var codeBuild = '154';  // code build number automatically updated by build script
+var codeBuild = '155';  // code build number automatically updated by build script
 
 //*****************************************
 //*****************************************
@@ -237,7 +237,7 @@ function processRecurrentLists(testParam, manual) {
   ln=10;
 
 } catch (err) {
-  console.error("ERROR at "+ln.toString());
+  throw("ERROR at "+ln.toString()+" "+err.message);
 }
   
   return result;
