@@ -43,11 +43,7 @@ var codeBuild = '158';  // code build number automatically updated by build scri
 
 function processRecurrentLists(testParam, manual) {
 
-  var ln=0;
-
-  try {
-
-  // NO CODE HERE
+  // NO CODE BEFORE AUTHORIZATION CHECK
 
   // Check if the actions of the trigger requires authorization that has not
   // been granted yet; if not, then end - nothing to do.
@@ -55,8 +51,6 @@ function processRecurrentLists(testParam, manual) {
     console.warn("RecGTasks script is not authorized to run. Please, authorize first.");
     return;
   }
-
-  ln=1;
 
   var userProps;
 
@@ -85,8 +79,6 @@ function processRecurrentLists(testParam, manual) {
   dateEnd.setDate(dateStart.getDate() + parseInt(userProps.dateRangeLength)); 
   dateEnd.setHours(23,59,59,999);
 
-  ln=2;
-
   //override for testing purposes
   if (TESTMODE == 1) {
      logIt(LOG_CRITICAL, "**** TEST MODE ENABLED ****")
@@ -95,18 +87,15 @@ function processRecurrentLists(testParam, manual) {
      dateEnd = testParam.dateEnd;
   }
   
-  ln=3;
+  // upgrade if needed
   if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
 
-  ln=4;
   try {
     userEmail = Session.getActiveUser().getEmail();
   } catch(err) {
     logIt(LOG_WARN, "No permissions to read user's email address");
     userEmail = "-not authorized-";
   }
-
-  ln=5;
  
   logIt(LOG_DEV, "Executing script as %s", userEmail);
   
@@ -127,11 +116,8 @@ function processRecurrentLists(testParam, manual) {
   var defaultTaskList = {id:0};
   var destTaskList = {};
 
-  ln=6;
-
   taskLists = safeReadTasklists();
 
-  ln=7;
   if (!taskLists){
     result = "Internal Google Error occured - no tasklists received";
     logIt(LOG_CRITICAL,result );
@@ -153,8 +139,6 @@ function processRecurrentLists(testParam, manual) {
       defaultTaskList.title = taskLists.items[i].title;
     }
   }
-
-  ln=8;
 
   destTaskList.id = defaultTaskList.id;
   destTaskList.title = defaultTaskList.title;
@@ -225,20 +209,12 @@ function processRecurrentLists(testParam, manual) {
     }  
 
   }
-
-  ln=9;
   
   logIt(LOG_CRITICAL, "*** Script execution completed ***");
   
   saveLog(Logger.getLog());
   logExecutionEnd();
   logExecutionResult("Success.");
-
-  ln=10;
-
-} catch (err) {
-  console.error("ERROR at "+ln.toString());
-}
   
   return result;
 }
