@@ -43,3 +43,4 @@
 +.apdisk
 node_modules
 src/creds.json
+src/.clasprc.json
