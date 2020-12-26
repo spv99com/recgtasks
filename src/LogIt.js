@@ -24,13 +24,13 @@ function logIt(l,fmt,v1, v2, v3, v4, v5, v6) {
     case LOG_TRACE: prefix = "[T] "; break;
   }
   
-  Logger.log(prefix+fmt+"<br>", v1 || "", v2 || "", v3 || "", v4 || "", v5 || "", v6 || "");
+  Logger.log(prefix+fmt, v1 || "", v2 || "", v3 || "", v4 || "", v5 || "", v6 || "");
 }
 
 function getLog(){
   var body = "";
   var cache = CacheService.getUserCache();
-  logs.forEach(function(itm, idx){var c = cache.get(itm); c != null ? body += c : body+="";});
+  logs.forEach(function(itm, idx){var c = cache.get(itm); c != null ? body += c.replaceAll("\n","<br>") : body+="";});
   return body.length>0?"<h3>*** Log beginning ***</h3>" + body + "<h3>*** Log end ***</h3>":"";
 }
 
