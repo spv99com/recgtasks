@@ -45,6 +45,9 @@ function processRecurrentLists(testParam, manual) {
     return;
   }
 
+  // upgrade if needed
+  if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
+
   var userProps;
 
   // record start of execution
@@ -80,9 +83,6 @@ function processRecurrentLists(testParam, manual) {
      dateEnd = testParam.dateEnd;
   }
   
-  // upgrade if needed
-  if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
-
   logIt(LOG_DEV, "Executing script as %s", userEmail);
   
   logIt(LOG_DEV, "App Today: %s", appToday);
