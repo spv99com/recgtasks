@@ -46,7 +46,7 @@ function processRecurrentLists(testParam, manual) {
   }
 
   // hashed user email will be used as log prefix allowing collating log entries from single session
-  setLogPrefix(hashFnv32a(userEmail));
+  setLogPrefix(hashFnv32a(userEmail, true));
 
   // upgrade if needed
   if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
