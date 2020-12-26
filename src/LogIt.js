@@ -1,3 +1,4 @@
+LOG_ALL = "00";
 LOG_CRITICAL = "01";
 LOG_WARN = "02";
 LOG_INFO = "03";
@@ -14,6 +15,7 @@ function logIt(l,fmt,v1, v2, v3, v4, v5, v6) {
   var prefix = "??? ";
   
   switch (l){
+    case LOG_ALL: prefix = "[A] "; break;
     case LOG_CRITICAL: prefix = "[C] ";break;
     case LOG_WARN: prefix = "[W] "; break;
     case LOG_INFO: prefix = "[I] "; break;
