@@ -6,7 +6,7 @@ function getUserProps() {
   
   var dftRangeLength = "21"; // 3 weeks by default
   var dftDateFormat = "2";   // US date format by default
-  var dftLogLevel = "03";
+  var dftLogLevel = "02";    // default log level to "Warnings"
   var dftWeekStart = "S";    // week starts on Sunday by default
 
   // read user specific properties and initialize them if needed
