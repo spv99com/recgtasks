@@ -31,10 +31,17 @@ function processRecurrentLists(testParam, manual) {
 
   // NO CODE BEFORE AUTHORIZATION CHECK
 
+  try {
+    userEmail = Session.getActiveUser().getEmail();
+  } catch(err) {
+    logIt(LOG_WARN, "No permissions to read user's email address");
+    userEmail = "-not authorized-";
+  }
+
   // Check if the actions of the trigger requires authorization that has not
   // been granted yet; if not, then end - nothing to do.
   if (!isScriptAuthorized()) {
-    console.warn("RecGTasks script is not authorized to run. Please, authorize first.");
+    logIt(LOG_CRITICAL,"RecGTasks script is not authorized to run for ", userEmail, " Please, authorize first.");
     return;
   }
 
@@ -46,7 +53,7 @@ function processRecurrentLists(testParam, manual) {
     // read user preferecies for this user & script
     userProps = getUserProps();
   } catch (err) {
-    console.warn("RecGTasks is unable to read user properties. Please, authorize first.");
+    logIt(LOG_CRITICAL,"RecGTasks is unable to read user properties. Please, authorize first.");
     return;
   }
   
@@ -67,7 +74,7 @@ function processRecurrentLists(testParam, manual) {
 
   //override for testing purposes
   if (TESTMODE == 1) {
-     logIt(LOG_CRITICAL, "**** TEST MODE ENABLED ****")
+     logIt(LOG_ALL, "**** TEST MODE ENABLED ****")
      userProps = testParam.userProps;
      dateStart = testParam.dateStart;
      dateEnd = testParam.dateEnd;
@@ -76,13 +83,6 @@ function processRecurrentLists(testParam, manual) {
   // upgrade if needed
   if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
 
-  try {
-    userEmail = Session.getActiveUser().getEmail();
-  } catch(err) {
-    logIt(LOG_WARN, "No permissions to read user's email address");
-    userEmail = "-not authorized-";
-  }
- 
   logIt(LOG_DEV, "Executing script as %s", userEmail);
   
   logIt(LOG_DEV, "App Today: %s", appToday);
@@ -114,7 +114,7 @@ function processRecurrentLists(testParam, manual) {
     
   if (!taskLists.items) {
     result = 'No task lists found.';
-    logIt(LOG_CRITICAL, result);
+    logIt(LOG_WARN, result);
     logExecutionResult(result);
     return result;
   }
