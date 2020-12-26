@@ -101,6 +101,7 @@ function processRecurrentLists(testParam, manual) {
   var taskLists;
   var defaultTaskList = {id:0};
   var destTaskList = {};
+  var taskTotal = 0;
 
   taskLists = safeReadTasklists();
 
@@ -156,6 +157,7 @@ function processRecurrentLists(testParam, manual) {
     });
     if (tasks){
       tasks = tasks.filter(t=>!t.due); // process only tasks with no due date - it is assumed task templates to have no due date
+      taskTotal += tasks.length;
       // create instances of recurrent tasks in task calendar
       taskCal.processRecTasks(tasks, dateStart, dateEnd);
     }
@@ -196,7 +198,7 @@ function processRecurrentLists(testParam, manual) {
 
   }
   
-  logIt(LOG_CRITICAL, "*** Script execution completed ***");
+  logIt(LOG_ALL, "*** Execution completed: "+userEmail+" "+taskTotal.toString()+" tasks processed");
   
   saveLog(Logger.getLog());
   logExecutionEnd();
