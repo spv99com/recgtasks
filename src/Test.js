@@ -88,7 +88,7 @@ function getExistingList(title){
   if (tl.length > 0)
     tl = tl[0]
   else
-    logIt(LOG_CRITICAL, 'There is no existing list %s',title);
+    logIt(LOG_WARN, 'There is no existing list %s',title);
 
   return tl;
 

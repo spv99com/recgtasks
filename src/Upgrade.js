@@ -10,6 +10,7 @@ function performUpgrade(currentBuild){
     try {
         removeAllTriggers(); 
         initTriggers (userTimeZone);
+        
     } catch(err) {
         var e='Error setting triggers. err='+err.message;
         logIt(LOG_CRITICAL,e);

@@ -48,7 +48,7 @@ function getUserProps() {
   //if not all properties were written in the property store
   if (!allOK) {
     p.setProperties(newp, true); //then write them and delete all other properties (if any)
-    logIt(LOG_CRITICAL,'User properties re-initialized. %s', JSON.stringify(newp));
+    logIt(LOG_WARN,'User properties re-initialized. %s', JSON.stringify(newp));
   }
   
   return newp

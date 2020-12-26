@@ -3,11 +3,11 @@ var triggerFunction = "processRecurrentLists";  //trigger callback function name
 //---------------------------------------------
 function initTriggers (tmz) {
   if (TESTMODE == 1) 
-    logIt(LOG_CRITICAL,'TESTMODE - No trigger will be installed for timezone %s.',tmz);
+    logIt(LOG_ALL,'TESTMODE - No trigger will be installed for timezone %s.',tmz);
   else {
     //if list of project triggers does not contain any trigger having callback function name the same as we use
     if (getTriggers() == 0) {
-      logIt(LOG_CRITICAL,'No trigger for "'+triggerFunction+'" found. Installing trigger for time zone %s.',tmz);
+      logIt(LOG_WARN,'No trigger for "'+triggerFunction+'" found. Installing trigger for time zone %s.',tmz);
       createTriggers(tmz);
     } else logIt(LOG_DEV, 'Trigger installed already.');
   }
@@ -63,7 +63,7 @@ function getTriggerDetails () {
 //---------------------------------------------
 function removeAllTriggers() {
   var t = ScriptApp.getProjectTriggers();
-  logIt(LOG_CRITICAL,'Removing %s triggers for "%s"',t.length, triggerFunction);
+  logIt(LOG_INFO,'Removing %s triggers for "%s"',t.length, triggerFunction);
   for (var i=0;i<t.length;i++){
     ScriptApp.deleteTrigger(t[i]);
   };
