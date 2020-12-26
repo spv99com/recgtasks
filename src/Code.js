@@ -132,7 +132,7 @@ function processRecurrentLists(testParam, manual) {
   
   // process all Tasks lists and create instances of tasks from Recurrent task lists (those having the right prefix in task list name)
   for (var i = 0; i < taskLists.items.length; i++) {
-    logIt(LOG_INFO, '<b>Processing list "%s" id=%s</b>', taskLists.items[i].title, taskLists.items[i].id);
+    logIt(LOG_INFO, 'Processing list "%s" id=%s', taskLists.items[i].title, taskLists.items[i].id);
 
     // if no default list specified, then destination list is the original list itself
     if (defaultTaskList.id == 0){ 

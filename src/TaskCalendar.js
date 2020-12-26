@@ -425,7 +425,7 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
     t.recDef.setDateFmt(this.localeDateFormat);
     t.recDef.setWeekStart(this.localeWeekStartsOn);
 
-    logIt(LOG_EXTINFO,'  > Task <b>"%s"</b>', t.title);
+    logIt(LOG_EXTINFO,'  > Task "%s"', t.title);
     
       
     n = t.notes;
