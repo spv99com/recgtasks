@@ -454,8 +454,8 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
       parser.doParse(n,t.recDef); 
 
       if (parser.err.code != parser.PARSE_OK){
-        logIt(LOG_CRITICAL,'  > Task parsing error - task ignored "%s"', t.title);
-        logIt(LOG_WARN,'    >> Status: %s, %s', parser.err.code, parser.err.text);
+        logIt(LOG_WARN,'  > Task parsing error - task ignored "%s"', t.title);
+        logIt(LOG_DEV,'    >> Status: %s, %s', parser.err.code, parser.err.text);
       } else {
         
         //logIt(LOG_DEV, '    >> parsed "%s"', JSON.stringify(t.recDef));
