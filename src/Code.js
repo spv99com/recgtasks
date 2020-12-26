@@ -34,7 +34,7 @@ function processRecurrentLists(testParam, manual) {
   // Check if the actions of the trigger requires authorization that has not
   // been granted yet; if not, then end - nothing to do.
   if (!isScriptAuthorized()) {
-    logIt(LOG_CRITICAL,"RecGTasks script is not authorized to run for ", userEmail, " Please, authorize first.");
+    //logIt(LOG_CRITICAL,"RecGTasks script is not authorized to run for ", userEmail, " Please, authorize first.");
     return;
   }
 
