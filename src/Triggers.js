@@ -7,7 +7,7 @@ function initTriggers (tmz) {
   else {
     //if list of project triggers does not contain any trigger having callback function name the same as we use
     if (getTriggers() == 0) {
-      logIt(LOG_WARN,'No trigger for "'+triggerFunction+'" found. Installing trigger for time zone %s.',tmz);
+      logIt(LOG_INFO,'No trigger for "'+triggerFunction+'" found. Installing trigger for time zone %s.',tmz);
       createTriggers(tmz);
     } else logIt(LOG_DEV, 'Trigger installed already.');
   }
