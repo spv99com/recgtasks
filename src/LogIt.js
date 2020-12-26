@@ -8,23 +8,28 @@ LOG_TRACE = "20";
 
 var logLevel = LOG_WARN;
 var logs = ["execLog1", "execLog2", "execLog3", "execLog4", "execLog5"];
+var logPrefix = "";
 
 function logIt(l,fmt,v1, v2, v3, v4, v5, v6) {
   if (l > logLevel) return;
   
-  var prefix = "??? ";
+  var prefix = " [?] ";
   
   switch (l){
-    case LOG_ALL: prefix = "[A] "; break;
-    case LOG_CRITICAL: prefix = "[C] ";break;
-    case LOG_WARN: prefix = "[W] "; break;
-    case LOG_INFO: prefix = "[I] "; break;
-    case LOG_EXTINFO: prefix = "[O] "; break;
-    case LOG_DEV: prefix = "[D] "; break;
-    case LOG_TRACE: prefix = "[T] "; break;
+    case LOG_ALL: prefix = " [A] "; break;
+    case LOG_CRITICAL: prefix = " [C] ";break;
+    case LOG_WARN: prefix = " [W] "; break;
+    case LOG_INFO: prefix = " [I] "; break;
+    case LOG_EXTINFO: prefix = " [O] "; break;
+    case LOG_DEV: prefix = " [D] "; break;
+    case LOG_TRACE: prefix = " [T] "; break;
   }
   
-  Logger.log(prefix+fmt, v1 || "", v2 || "", v3 || "", v4 || "", v5 || "", v6 || "");
+  Logger.log(logPrefix+prefix+fmt, v1 || "", v2 || "", v3 || "", v4 || "", v5 || "", v6 || "");
+}
+
+function setLogPrefix(s){
+    logPrefix = s;
 }
 
 function getLog(){

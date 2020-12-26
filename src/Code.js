@@ -45,6 +45,9 @@ function processRecurrentLists(testParam, manual) {
     userEmail = "-not authorized-";
   }
 
+  // hashed user email will be used as log prefix allowing collating log entries from single session
+  setLogPrefix(hashFnv32a(userEmail));
+
   // upgrade if needed
   if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
 
