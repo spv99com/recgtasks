@@ -159,7 +159,7 @@ function processRecurrentLists(testParam, manual) {
       //fields: "items(id,title,notes,due)" //to limit amount of data transported
     });
     if (tasks){
-      tasks = tasks.filter(t=>!t.due); // process only tasks with no due date - it is assumed task templates to have no due date
+      tasks = tasks.filter(function(t){return !t.due}); // process only tasks with no due date - it is assumed task templates to have no due date
       taskTotal += tasks.length;
       // create instances of recurrent tasks in task calendar
       taskCal.processRecTasks(tasks, dateStart, dateEnd);

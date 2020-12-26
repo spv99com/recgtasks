@@ -70,7 +70,7 @@ function getProcessedTasks(tlid) {
   var params = {fields:"items(id,title,notes,due)"};
   tasks = getTasks_paged(tlid, params);
 
-  tasks = tasks.filter(t=>!t.due); // ignore those having specified due date
+  tasks = tasks.filter(function(t){return !t.due}); // ignore those having specified due date
   
   // add recurrence pattern
   var re = /^\*E.*$/m; //"m" stands for multiline flag ^,$ are then limited to a single line
