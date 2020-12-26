@@ -31,18 +31,18 @@ function processRecurrentLists(testParam, manual) {
 
   // NO CODE BEFORE AUTHORIZATION CHECK
 
-  try {
-    userEmail = Session.getActiveUser().getEmail();
-  } catch(err) {
-    logIt(LOG_WARN, "No permissions to read user's email address");
-    userEmail = "-not authorized-";
-  }
-
   // Check if the actions of the trigger requires authorization that has not
   // been granted yet; if not, then end - nothing to do.
   if (!isScriptAuthorized()) {
     logIt(LOG_CRITICAL,"RecGTasks script is not authorized to run for ", userEmail, " Please, authorize first.");
     return;
+  }
+
+  try {
+    userEmail = Session.getActiveUser().getEmail();
+  } catch(err) {
+    logIt(LOG_WARN, "No permissions to read user's email address");
+    userEmail = "-not authorized-";
   }
 
   // upgrade if needed
