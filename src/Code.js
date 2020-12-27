@@ -1,20 +1,7 @@
-/**
- * Special function that handles HTTP GET requests to the published web app.
- * @return {HtmlOutput} The HTML page to be served.
- */
-function doGet() {
-  return HtmlService.createTemplateFromFile('index').evaluate()
-      .setTitle('Recurring Tasks')
-      .setSandboxMode(HtmlService.SandboxMode.IFRAME);
-}
-
-//TODO: remove direct saving to GTasks from TaskCal object - TaskCal should create path-update data set only and saving should occur somewhere else
-
 //*****************************************
 var gTaskQTime = 500;  // 200ms sleep = max 5 Task API requests/user/second
 var dateMin = new Date(2000, 0, 1);
 var dateMax = new Date(2999, 11, 31);
-
 
 var userTimeZone = "GMT"; // default value - possible values http://joda-time.sourceforge.net/timezones.html
 var appToday = new Date();
@@ -23,6 +10,19 @@ var userToday = new Date();
 var userEmail = "xxxxx";
 
 var codeBuild = '171';  // code build number automatically updated by build script
+
+/**
+ * Special function that handles HTTP GET requests to the published web app.
+ * @return {HtmlOutput} The HTML page to be served.
+ */
+function doGet() {
+    // upgrade if needed
+    if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
+    
+    return HtmlService.createTemplateFromFile('index').evaluate()
+        .setTitle('Recurring Tasks')
+        .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+}
 
 //*****************************************
 //*****************************************
