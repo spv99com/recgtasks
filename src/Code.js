@@ -45,8 +45,9 @@ function processRecurrentLists(testParam, manual) {
     userEmail = "-not authorized-";
   }
 
-  // hashed user email will be used as log prefix allowing collating log entries from single session
-  setLogPrefix(hashFnv32a(userEmail, true));
+  var userKey = Session.getTemporaryActiveUserKey(); // temporary user key unique, but stable for 1 month, not revealing user's identity
+  // hashed user key will be used as log prefix allowing collating log entries from single session
+  setLogPrefix(hashFnv32a(userKey, true));
 
   // upgrade if needed
   if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
