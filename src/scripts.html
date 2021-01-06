@@ -109,7 +109,6 @@ function imgUrl(s){
 }
 
 function loadImages(){
-    images.keys.forEach(img => $("#"+img).attr("src",imgUrl(img)));
+    Object.keys(images).forEach(img => $("#"+img).attr("src",imgUrl(img)));
 }
-
 </script>
