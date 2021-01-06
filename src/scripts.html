@@ -31,9 +31,9 @@ $(function() {
 //---------------------------------------------------------------------------------
 function initNavBar(){
   hideAllSections();
-  $('#navBarItmOverview').css("background","url(https://sites.google.com/site/recgtasks/images/navbar-main.png)");
-  $('#navBarItmManage').css("background","url(https://sites.google.com/site/recgtasks/images/navbar-manage.png)");
-  $('#navBarItmSettings').css("background","url(https://sites.google.com/site/recgtasks/images/navbar-settings.png)");
+  $('#navBarItmOverview').css("background","url("+imgUrl("navbar-main-png")+")");
+  $('#navBarItmManage').css("background","url("+imgUrl("navbar-manage-png")+")");
+  $('#navBarItmSettings').css("background","url("+imgUrl("navbar-settings-png")+")");
 }
 
 //--------------------------------------------------------------------------------- 
@@ -84,17 +84,17 @@ function showErrorWindow(error, msg) {
   }
 
 var images = {
-    "icon-delete-20px-grey.png":"17v2HuvQ6koSEZG7u5Mc1t8tyeSH3EFW_",
-    "uninstall.png":"1Hn_TT7uiuw0NQG_rd8jpWX4_J3p5yyrL",
-    "questionmark.png":"1LxRPRk7pWnTLF8x7V6XorZLReJKWNHxW",
-    "navbar-settings.png":"1bXNZ1weJIOeJoPAkedU7m951J3VAqnJB",
-    "navbar-manage.png":"1jtFP8xOvdzkYzVScv6Mh8eLlfxYVMkgZ",
-    "navbar-main.png":"1-ekZOUvYJgenCW_UysF5yQ8nsFbKU3cc",
-    "navbar-logo.png":"1GUF-bLdVIOkgyKuSKWKY7hrK4qJedDRh",
-    "mouseclick.png":"1xIBJkda97Jxj-qXg3SpBfGZXo7q41L0W",
-    "icon-clear-20px-grey.png":"1fiSpBpW5D3K0aU-C1CujLf9PHPKUwDWE",
-    "clock.png":"1lZKzYpbIRQ8cFUvXFDF8njjr99kiJfqa",
-    "blank.png":"1ga0DyRh7h3Zkh0EhvWdNIFRpWLoJmh2J"
+    "icon-delete-20px-grey-png":"17v2HuvQ6koSEZG7u5Mc1t8tyeSH3EFW_",
+    "uninstall-png":"1Hn_TT7uiuw0NQG_rd8jpWX4_J3p5yyrL",
+    "questionmark-png":"1LxRPRk7pWnTLF8x7V6XorZLReJKWNHxW",
+    "navbar-settings-png":"1bXNZ1weJIOeJoPAkedU7m951J3VAqnJB",
+    "navbar-manage-png":"1jtFP8xOvdzkYzVScv6Mh8eLlfxYVMkgZ",
+    "navbar-main-png":"1-ekZOUvYJgenCW_UysF5yQ8nsFbKU3cc",
+    "navbar-logo-png":"1GUF-bLdVIOkgyKuSKWKY7hrK4qJedDRh",
+    "mouseclick-png":"1xIBJkda97Jxj-qXg3SpBfGZXo7q41L0W",
+    "icon-clear-20px-grey-png":"1fiSpBpW5D3K0aU-C1CujLf9PHPKUwDWE",
+    "clock-png":"1lZKzYpbIRQ8cFUvXFDF8njjr99kiJfqa",
+    "blank-png":"1ga0DyRh7h3Zkh0EhvWdNIFRpWLoJmh2J"
 }
 
 function imgUrl(s){
