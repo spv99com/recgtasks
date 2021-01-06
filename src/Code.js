@@ -202,7 +202,7 @@ function processRecurrentLists(testParam, manual) {
 
   }
   
-  logIt(LOG_ALL, "*** Execution completed: "+userEmail+" "+taskTotal.toString()+" tasks processed");
+  logIt(LOG_ALL, "*** Execution completed: "+taskTotal.toString()+" tasks processed");
   
   saveLog(Logger.getLog());
   logExecutionEnd();
