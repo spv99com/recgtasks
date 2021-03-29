@@ -9,7 +9,7 @@ var userToday = new Date();
 
 var userEmail = "xxxxx";
 
-var codeBuild = '187';  // code build number automatically updated by build script
+var codeBuild = '188';  // code build number automatically updated by build script
 
 /**
  * Special function that handles HTTP GET requests to the published web app.
