@@ -423,9 +423,10 @@ TaskCalendar.prototype.processRecTasks = function (rTasks, rangeStart, rangeEnd)
     parser.err.reset();
     t.title = rTasks[i].title;
     t.notes = rTasks[i].notes;
+    t.subtasks = [].concat(rTasks[i].subtasks);
     t.recDef.setDateFmt(this.localeDateFormat);
     t.recDef.setWeekStart(this.localeWeekStartsOn);
-
+    
     logIt(LOG_EXTINFO,'  > Task "%s"', t.title);
     
       
@@ -522,12 +523,19 @@ TaskCalendar.prototype.createTasks = function(rTask, rangeStart, rangeEnd) {
 }
 
 TaskCalendar.prototype.saveTaskWithSubTasks = function(task, taskListId) {
-  let ts = task.subtasks;
-  let tn = safeTaskInsert(task, taskListId);
+  var ts = task.subtasks.sort(function(a,b){return a.position>b.position?1:-1;});
+  var tn = safeTaskInsert(task, taskListId, {});
   if (tn && ts){
-    for(let t of ts){
-      t.parent = tn.id;
-      let tsn = safeTaskInsert(t,taskListId);
+    var subTask;
+    for (var i=0;i<ts.length;i++) {
+      var ns = {
+        parent: tn.id,
+        due: tn.due,
+        title: ts[i].title,
+        position: ts[i].position,
+        notes: ts[i].notes
+      }
+      subTask = safeTaskInsert(ns,taskListId,{parent:tn.id, previous:subTask?subTask.id:null});
     }
   }
   return tn;
@@ -549,7 +557,7 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
       if  (this.dayTasks[m][d].length > 0) {
         logIt(LOG_EXTINFO, '  > Day %s has %s tasks, %s', (d|0), this.dayTasks[m][d].length);
         for (i = 0; i < this.dayTasks[m][d].length; i++) {
-          task = safeTaskWithSubTasks(this.dayTasks[m][d][i], taskListId);
+          task = this.saveTaskWithSubTasks(this.dayTasks[m][d][i], taskListId);
           count++;
           
           if (task)

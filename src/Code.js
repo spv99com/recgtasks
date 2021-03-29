@@ -19,7 +19,7 @@ function doGet() {
     // upgrade if needed
     if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
     
-    return HtmlService.createTemplateFromFile('src/html/index').evaluate()
+    return HtmlService.createTemplateFromFile('src/html/index.html').evaluate()
         .setTitle('Recurring Tasks')
         .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
