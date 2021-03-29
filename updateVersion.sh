@@ -25,3 +25,4 @@ sed -i -E "s/^var codeBuild.*;/var codeBuild = '$BUILD';/" src/Code.js
 
 # commit changes
 git commit . -m "version bump $VERSION@$BUILD"
+git push
