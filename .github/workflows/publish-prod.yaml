@@ -28,4 +28,4 @@ jobs:
         run: bash ./updateVersion.sh
 
       - name: Deploy App Script
-        run: bach ./publish.sh
+        run: bash ./publish.sh
