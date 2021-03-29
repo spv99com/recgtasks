@@ -5,7 +5,7 @@ pendingCommit=$?
 if [ $pendingCommit -eq 1 ]
 then
   echo "Git changes detected. Please, commit first."
-  exit
+  exit 1
 fi
 
 # get curent version & build number
@@ -22,7 +22,3 @@ echo "VERSION=$VERSION" >> $DIR/.version
 # write version and build number to respective files
 sed -i -E "s/(recgversion.*[(]v)(.*)([)].*)/\1$VERSION@$BUILD\3/g" src/html/index.html
 sed -i -E "s/^var codeBuild.*;/var codeBuild = '$BUILD';/" src/Code.js
-
-# commit changes
-git commit . -m "version bump $VERSION@$BUILD"
-git push
