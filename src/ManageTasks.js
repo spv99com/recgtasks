@@ -55,6 +55,25 @@ function getTasks_paged(tlid, params){
   return t;
 }
 
+function buildTaskHierarchy(tasks) {
+  // get the list of top-tasks
+  let tt = tasks.filter(t=>t.parent?false:true);
+
+  // get sub-tasks 
+  let ts = tasks.filter(i=>i.parent?true:false);
+
+  // add sub-tasks under their parents
+  for (let t of ts){
+      let ti = tt.find(i=>i.id === t.parent);
+      if (ti) {
+        if (!ti.subtasks) ti.subtasks=[];
+        ti.subtasks.push(tk)
+      }
+  }
+
+  return tt;
+}
+
 
 //---------------------------------------------------------------------------------
 /**

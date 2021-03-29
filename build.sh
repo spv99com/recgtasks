@@ -29,3 +29,6 @@ git commit . -m "version bump $VERSION@$BUILD"
 # push changed script to google apps
 cd src
 clasp push -f
+
+source $DIR/.settings
+clasp deploy --deploymentId $testDeploymentId --description "$VERSION@$BUILD"

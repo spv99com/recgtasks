@@ -1,0 +1,11 @@
+{
+    "name": "recgtasks",
+    "version": "0.0.1",
+    "license": "MIT",
+    "engines": {
+        "node": "^12"
+    },
+    "dependencies": {
+        "@google/clasp": "^2.3.0"
+    }
+}

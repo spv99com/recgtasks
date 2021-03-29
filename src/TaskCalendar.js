@@ -62,6 +62,7 @@ TaskCalendar.prototype.copyTask = function(task) {
   t.title = task.title;
   t.notes = task.notes;
   t.due = task.due;
+  t.subtasks = task.subtasks;
   
   return t;
 }
@@ -520,6 +521,18 @@ TaskCalendar.prototype.createTasks = function(rTask, rangeStart, rangeEnd) {
   
 }
 
+TaskCalendar.prototype.saveTaskWithSubTasks = function(task, taskListId) {
+  let ts = task.subtasks;
+  let tn = safeTaskInsert(task, taskListId);
+  if (tn && ts){
+    for(let t of ts){
+      t.parent = tn.id;
+      let tsn = safeTaskInsert(t,taskListId);
+    }
+  }
+  return tn;
+}
+
 //--------------------------------------------------
 TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd) {
   // method saves ALL tasks stored in array dayTasks into specified Google Apps task list
@@ -536,7 +549,7 @@ TaskCalendar.prototype.saveAllTasks = function(taskListId, rangeStart, rangeEnd)
       if  (this.dayTasks[m][d].length > 0) {
         logIt(LOG_EXTINFO, '  > Day %s has %s tasks, %s', (d|0), this.dayTasks[m][d].length);
         for (i = 0; i < this.dayTasks[m][d].length; i++) {
-          task = safeTaskInsert(this.dayTasks[m][d][i], taskListId);
+          task = safeTaskWithSubTasks(this.dayTasks[m][d][i], taskListId);
           count++;
           
           if (task)
