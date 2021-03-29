@@ -47,7 +47,7 @@ jobs:
         run: echo ${CLASP_ID} > ~/claspcreds.json
 
       - name: CLASP login
-        run: yarn clasp login --creds ~/claspcreds.json
+        run: echo ~/claspcreds.json
 
       - name: Deploy App Script
         run: bash ./publish.sh
