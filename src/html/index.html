@@ -7,7 +7,7 @@
 
 <!-- html, head & body tags added automatically - see https://developers.google.com/apps-script/guides/html/best-practices#dont_use_html_head_or_body_tags -->
 
-<?!= HtmlService.createHtmlOutputFromFile('stylesheet').getContent(); ?>
+<?!= HtmlService.createHtmlOutputFromFile('src/html/stylesheet').getContent(); ?>
 
 <!-- ********** NAVIGATION BAR -->
 
@@ -47,7 +47,7 @@
     <tr>
       <td>
         <h1>Recurrent Tasks</h1>
-        <h1 class="subtitle"> for Google Tasks&trade; <span id=recgversion>(v2.1.0@179)</span></h1>
+        <h1 class="subtitle"> for Google Tasks&trade; <span id=recgversion>(v2.1.0@180)</span></h1>
       </td>
       <td>
         <p style="text-align:right;color: darkgray;vertical-align:top" >
@@ -483,12 +483,12 @@
 </div>
 <!-- ********** END OF APP -->
 
-<?!= HtmlService.createHtmlOutputFromFile('scripts-common').getContent(); ?>
-<?!= HtmlService.createHtmlOutputFromFile('scripts-gen-tasks').getContent(); ?>
-<?!= HtmlService.createHtmlOutputFromFile('scripts-settings').getContent(); ?>
-<?!= HtmlService.createHtmlOutputFromFile('scripts-manage').getContent(); ?>
-<?!= HtmlService.createHtmlOutputFromFile('scripts-main').getContent(); ?>
+<?!= HtmlService.createHtmlOutputFromFile('src/html/scripts-common').getContent(); ?>
+<?!= HtmlService.createHtmlOutputFromFile('src/html/scripts-gen-tasks').getContent(); ?>
+<?!= HtmlService.createHtmlOutputFromFile('src/html/scripts-settings').getContent(); ?>
+<?!= HtmlService.createHtmlOutputFromFile('src/html/scripts-manage').getContent(); ?>
+<?!= HtmlService.createHtmlOutputFromFile('src/html/scripts-main').getContent(); ?>
 
-<?!= HtmlService.createHtmlOutputFromFile('scripts').getContent(); ?>
+<?!= HtmlService.createHtmlOutputFromFile('src/html/scripts').getContent(); ?>
 
 

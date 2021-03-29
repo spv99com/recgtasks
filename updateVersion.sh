@@ -20,12 +20,9 @@ echo "BUILD=$BUILD" > $DIR/.version
 echo "VERSION=$VERSION" >> $DIR/.version
 
 # write version and build number to respective files
-sed -i -E "s/(recgversion.*[(]v)(.*)([)].*)/\1$VERSION@$BUILD\3/g" src/index.html
+sed -i -E "s/(recgversion.*[(]v)(.*)([)].*)/\1$VERSION@$BUILD\3/g" src/html/index.html
 sed -i -E "s/^var codeBuild.*;/var codeBuild = '$BUILD';/" src/Code.js
 
 # commit changes
 git commit . -m "version bump $VERSION@$BUILD"
-
-# push changed script to google apps
-cd src
-clasp push -f
+git push

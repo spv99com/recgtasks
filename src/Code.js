@@ -9,7 +9,7 @@ var userToday = new Date();
 
 var userEmail = "xxxxx";
 
-var codeBuild = '179';  // code build number automatically updated by build script
+var codeBuild = '180';  // code build number automatically updated by build script
 
 /**
  * Special function that handles HTTP GET requests to the published web app.
@@ -19,7 +19,7 @@ function doGet() {
     // upgrade if needed
     if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
     
-    return HtmlService.createTemplateFromFile('index').evaluate()
+    return HtmlService.createTemplateFromFile('src/html/index.html').evaluate()
         .setTitle('Recurring Tasks')
         .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
@@ -160,8 +160,13 @@ function processRecurrentLists(testParam, manual) {
       //fields: "items(id,title,notes,due)" //to limit amount of data transported
     });
     if (tasks){
-      tasks = tasks.filter(function(t){return !t.due}); // process only tasks with no due date - it is assumed task templates to have no due date
       taskTotal += tasks.length;
+      // process only tasks with no due date - it is assumed task templates to have no due date
+      tasks = tasks.filter(function(t){return !t.due}); 
+
+      // move subtasks under their parents
+      tasks - buildTaskHierarchy(tasks);
+      
       // create instances of recurrent tasks in task calendar
       taskCal.processRecTasks(tasks, dateStart, dateEnd);
     }
