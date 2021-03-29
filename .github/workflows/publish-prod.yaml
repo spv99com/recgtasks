@@ -11,6 +11,7 @@ on:
 
 jobs:
   publish:
+    environment: prod
     runs-on: ubuntu-latest
     env:
       GH_EMAIL: jsdev2015@gmail.com
