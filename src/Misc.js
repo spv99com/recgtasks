@@ -105,14 +105,14 @@ function safeTaskListRead(tlid,p){
 }
 
 //----------------------------------------------------
-function safeTaskInsert(task, taskListId){
+function safeTaskInsert(task, taskListId, args){
   var retry=true;
   var retryCount=10;
   var result=null;
 
   while (retry && retryCount > 0) {
     try {
-      result = Tasks.Tasks.insert(task, taskListId);
+      result = Tasks.Tasks.insert(task, taskListId, args);
       retry = false;
     } catch(e) {
       logIt(LOG_CRITICAL, "Internal Google Error occured: %s", JSON.stringify(e));

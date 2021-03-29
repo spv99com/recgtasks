@@ -1,0 +1,42 @@
+name: Publish production version
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - master
+
+jobs:
+  publish:
+    environment: prod
+    runs-on: ubuntu-latest
+    env:
+      GH_EMAIL: jsdev2015@gmail.com
+
+    steps:
+      - name: Setup repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Update version
+        run: bash ./updateVersion.sh
+
+      - name: Commit updated version
+        run: |
+          if [ $(git status --porcelain=v1 2>/dev/null | wc -l) != "0" ] ; then
+            git config --global user.email ${GH_EMAIL}
+            git config --global user.name ${GITHUB_ACTOR}
+            git add .
+            git commit -m "github-actions: version bump"
+            git push
+          fi

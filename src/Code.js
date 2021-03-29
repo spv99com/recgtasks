@@ -9,7 +9,7 @@ var userToday = new Date();
 
 var userEmail = "xxxxx";
 
-var codeBuild = '179';  // code build number automatically updated by build script
+var codeBuild = '192';  // code build number automatically updated by build script
 
 /**
  * Special function that handles HTTP GET requests to the published web app.
@@ -19,7 +19,7 @@ function doGet() {
     // upgrade if needed
     if (isUpgradeNeeded(codeBuild)) performUpgrade(codeBuild);
     
-    return HtmlService.createTemplateFromFile('index').evaluate()
+    return HtmlService.createTemplateFromFile('src/html/index.html').evaluate()
         .setTitle('Recurring Tasks')
         .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }

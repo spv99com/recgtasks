@@ -51,23 +51,28 @@ function getTasks_paged(tlid, params){
       t = t.concat(tasks.items);
   }
   
-  logIt(LOG_DEV, "[getTasks] Returning %d tasks", t.length);
+  logIt(LOG_DEV, "[getTasks] Returning %s tasks", t.length);
   return t;
 }
 
 function buildTaskHierarchy(tasks) {
   // get the list of top-tasks
-  let tt = tasks.filter(t=>t.parent?false:true);
+  var tt = tasks.filter(function(t){return t.parent?false:true;});
 
   // get sub-tasks 
-  let ts = tasks.filter(i=>i.parent?true:false);
+  var ts = tasks.filter(function(i){return i.parent?true:false;});
 
   // add sub-tasks under their parents
-  for (let t of ts){
-      let ti = tt.find(i=>i.id === t.parent);
-      if (ti) {
-        if (!ti.subtasks) ti.subtasks=[];
-        ti.subtasks.push(tk)
+  for (var i=0;i<ts.length;i++){
+      var ti = -1;
+      var idx = 0;
+      while (idx<tt.length){
+        if (tt[idx].id == ts[i].parent) {ti=idx; break;}
+        idx++;
+      }
+      if (ti>=0) {
+        if (!tt[ti].subtasks) tt[ti].subtasks=[];
+        tt[ti].subtasks.push(ts[i]);
       }
   }
 
@@ -272,7 +277,7 @@ function slideTasks(tlid, d) {
   logIt(LOG_DEV, ">> Getting list of overdue tasks: %s", date2rfc3339(yd));
   params = {showCompleted:false, dueMax:date2rfc3339(yd)};
   tasks = getTasks_paged(tlid,params);
-  logIt(LOG_EXTINFO, ">> Found %d overdute tasks", tasks.length);
+  logIt(LOG_EXTINFO, ">> Found %s overdute tasks", tasks.length);
 
   for (var i=0;i < tasks.length;i++){
     logIt(LOG_EXTINFO, ">> Sliding %s from %s", tasks[i].title, tasks[i].due);
@@ -285,7 +290,7 @@ function slideTasks(tlid, d) {
     Utilities.sleep(gTaskQTime); // artificial pause to manage API quota     
   };
 
-  logIt(LOG_EXTINFO, ">> Slid %d tasks", i);
+  logIt(LOG_EXTINFO, ">> Slid %s tasks", i);
 
 }
 
