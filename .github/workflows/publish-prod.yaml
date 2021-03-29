@@ -44,7 +44,10 @@ jobs:
       - name: Save CLASP credentials
         env:
           CLASP_ID: ${{ secrets.CLASP_ID }}
-        run: echo ${CLASP_ID} 
+        run: echo ${CLASP_ID} > ~/clasprc.json
+
+      - name: CLASP login
+        run: yarn clasp login --creds ~/clasprc.json
 
       - name: Deploy App Script
         run: bash ./publish.sh
