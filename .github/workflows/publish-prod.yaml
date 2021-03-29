@@ -41,5 +41,8 @@ jobs:
             git push
           fi
 
+      - name: Save CLASP credentials
+        run: echo ${CLASP_ID} > ~/clasprc.json
+
       - name: Deploy App Script
         run: bash ./publish.sh
