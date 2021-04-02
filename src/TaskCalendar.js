@@ -528,14 +528,16 @@ TaskCalendar.prototype.saveTaskWithSubTasks = function(task, taskListId) {
   if (tn && ts){
     var subTask;
     for (var i=0;i<ts.length;i++) {
-      var ns = {
-        parent: tn.id,
-        due: tn.due,
-        title: ts[i].title,
-        position: ts[i].position,
-        notes: ts[i].notes
+      if (ts[i]) {
+        var ns = {
+          parent: tn.id,
+          due: tn.due,
+          title: ts[i].title,
+          position: ts[i].position,
+          notes: ts[i].notes
+        }
+        subTask = safeTaskInsert(ns,taskListId,{parent:tn.id, previous:subTask?subTask.id:null});
       }
-      subTask = safeTaskInsert(ns,taskListId,{parent:tn.id, previous:subTask?subTask.id:null});
     }
   }
   return tn;
